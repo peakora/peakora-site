@@ -1,6 +1,6 @@
-// script.js
+// Tally embed loader + agent modal
 document.addEventListener('DOMContentLoaded', function () {
-  // Tally embed loader (ensures iframe loads src)
+  // Tally embed loader
   (function loadTally(){
     var d=document,w="https://tally.so/widgets/embed.js",v=function(){
       if (typeof Tally !== 'undefined') Tally.loadEmbeds();
@@ -19,30 +19,30 @@ document.addEventListener('DOMContentLoaded', function () {
   var agentForm = document.getElementById('agentForm');
   var agentThanks = document.getElementById('agentThanks');
 
-  agentBtn.addEventListener('click', function(){
-    agentModal.classList.add('open');
-    agentModal.setAttribute('aria-hidden','false');
-  });
-
-  agentClose.addEventListener('click', function(){
-    agentModal.classList.remove('open');
-    agentModal.setAttribute('aria-hidden','true');
-  });
-
-  agentForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    // Simulate send (replace with real endpoint if available)
-    agentForm.style.display = 'none';
-    agentThanks.hidden = false;
-    setTimeout(function(){
+  if (agentBtn && agentModal) {
+    agentBtn.addEventListener('click', function(){
+      agentModal.classList.add('open');
+      agentModal.setAttribute('aria-hidden','false');
+    });
+  }
+  if (agentClose) {
+    agentClose.addEventListener('click', function(){
       agentModal.classList.remove('open');
       agentModal.setAttribute('aria-hidden','true');
-      agentForm.reset();
-      agentForm.style.display = '';
-      agentThanks.hidden = true;
-    }, 1600);
-  });
-
-  // Optional: if you want to redirect after Tally submission,
-  // set the Tally form redirect to /thankyou.html in Tally settings.
+    });
+  }
+  if (agentForm) {
+    agentForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      agentForm.style.display = 'none';
+      agentThanks.hidden = false;
+      setTimeout(function(){
+        agentModal.classList.remove('open');
+        agentModal.setAttribute('aria-hidden','true');
+        agentForm.reset();
+        agentForm.style.display = '';
+        agentThanks.hidden = true;
+      }, 1400);
+    });
+  }
 });
