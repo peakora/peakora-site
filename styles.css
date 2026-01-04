@@ -1,3 +1,4 @@
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -12,133 +13,215 @@ body {
 }
 
 section {
-  padding: 60px 20px;
+  padding: 80px 20px;
 }
 
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* GLOBAL CONTAINER */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* HEADER */
 .header {
   width: 100%;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f0ebff;
+  padding: 20px 0;
   background: #ffffff;
+  border-bottom: 1px solid #f0ebff;
 }
 
 .header-inner {
-  max-width: 1040px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   justify-content: center;
 }
 
 .logo {
-  height: 120px;
-  max-width: 100%;
+  height: 160px;
 }
 
 /* HERO */
 .hero {
   background: radial-gradient(circle at top left, #f4f0ff 0, #ffffff 55%);
-  padding: 80px 20px;
 }
 
 .hero-content {
-  max-width: 1040px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 40px;
+  justify-content: space-between;
+  gap: 60px;
   flex-wrap: wrap;
 }
 
 .hero-text {
-  flex: 1 1 400px;
-  min-width: 280px;
+  flex: 1 1 420px;
 }
 
-.hero-visual img {
-  width: 100%;
-  max-width: 480px;
+.hero-text h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.hero-subtext {
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+.cta-button {
+  display: inline-block;
+  background: #6a4df5;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.hero-note {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.hero-visual {
+  flex: 1 1 420px;
+  display: flex;
+  justify-content: center;
+}
+
+/* SECTION LABEL */
+.section-label {
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: #6a4df5;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 /* BENEFITS */
-.benefits-visual img {
-  display: block;
-  margin: 0 auto 30px;
+.benefits {
+  text-align: center;
+}
+
+.benefits-visual {
+  margin: 0 auto 40px;
   max-width: 420px;
-  width: 100%;
+}
+
+.benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.benefit-card {
+  background: #faf7ff;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: left;
 }
 
 /* HOW IT WORKS */
 .how-layout {
-  display: flex;
-  gap: 40px;
-  max-width: 1040px;
+  max-width: 1100px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
   flex-wrap: wrap;
 }
 
-.how-visual img {
-  width: 100%;
-  max-width: 420px;
+.steps {
+  flex: 1 1 420px;
+}
+
+.step {
+  margin-bottom: 30px;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  background: #6a4df5;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.how-visual {
+  flex: 1 1 420px;
+  display: flex;
+  justify-content: center;
 }
 
 /* WHAT YOU GET */
 .what-layout {
-  display: flex;
-  gap: 40px;
-  max-width: 1040px;
+  max-width: 1100px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
   flex-wrap: wrap;
 }
 
-.what-visual img {
-  width: 100%;
-  max-width: 420px;
+.what-visual {
+  flex: 1 1 420px;
+  display: flex;
+  justify-content: center;
+}
+
+.get-grid {
+  flex: 1 1 420px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
 }
 
 /* WHY IT WORKS */
 .why-inner {
-  display: flex;
-  gap: 40px;
-  max-width: 1040px;
+  max-width: 1100px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
   flex-wrap: wrap;
 }
 
-.why-visual img {
-  width: 100%;
-  max-width: 420px;
+.why-text {
+  flex: 1 1 420px;
+}
+
+.why-visual {
+  flex: 1 1 420px;
+  display: flex;
+  justify-content: center;
 }
 
 /* FINAL CTA */
+.final-cta-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
 .final-cta-img {
-  width: 100%;
   max-width: 380px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
 }
 
-/* MEDIA QUERIES */
-@media (max-width: 768px) {
-  .hero-content,
-  .how-layout,
-  .what-layout,
-  .why-inner {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .hero-text {
-    text-align: center;
-  }
-
-  .logo {
-    height: 100px;
-  }
-
-  .cta-button,
-  .secondary-cta {
-    width: 100%;
-    max-width: 300px;
-    margin: 10px auto;
-  }
-}
+.secondary-cta {
