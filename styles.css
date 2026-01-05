@@ -1,7 +1,4 @@
-/* --------------------------------------------------
-   RESET
--------------------------------------------------- */
-
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -13,25 +10,19 @@ body {
   height: 100%;
   scroll-behavior: smooth;
   font-family: Arial, sans-serif;
-  background: #0b0f19;
+  background: #0f172a;
   color: #e6e9f0;
   line-height: 1.6;
 }
 
-/* --------------------------------------------------
-   GLOBAL CONTAINERS
--------------------------------------------------- */
-
+/* GLOBAL CONTAINERS */
 .container {
   width: 90%;
   max-width: 1100px;
   margin: 0 auto;
 }
 
-/* --------------------------------------------------
-   TYPOGRAPHY
--------------------------------------------------- */
-
+/* TYPOGRAPHY */
 h1,
 h2,
 h3 {
@@ -55,13 +46,10 @@ strong {
   color: #ffffff;
 }
 
-/* --------------------------------------------------
-   HEADER
--------------------------------------------------- */
-
+/* HEADER */
 .site-header {
   padding: 1.2rem 0;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(17, 24, 42, 0.9);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(6px);
 }
@@ -79,8 +67,10 @@ strong {
 }
 
 .brand-logo {
-  width: 42px;
-  height: 42px;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
 }
 
 .brand-name {
@@ -114,13 +104,10 @@ strong {
   font-weight: bold;
 }
 
-/* --------------------------------------------------
-   HERO
--------------------------------------------------- */
-
+/* HERO */
 .hero {
   padding: 5rem 0 4rem;
-  background: linear-gradient(180deg, #0b0f19 0%, #11182a 100%);
+  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
 }
 
 .hero-inner {
@@ -159,10 +146,7 @@ strong {
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
 }
 
-/* --------------------------------------------------
-   BUTTONS
--------------------------------------------------- */
-
+/* BUTTONS */
 .btn {
   display: inline-block;
   padding: 0.75rem 1.4rem;
@@ -192,10 +176,7 @@ strong {
   background: rgba(76, 111, 255, 0.1);
 }
 
-/* --------------------------------------------------
-   SECTIONS
--------------------------------------------------- */
-
+/* SECTIONS */
 .section {
   padding: 4rem 0;
 }
@@ -215,10 +196,7 @@ strong {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
-/* --------------------------------------------------
-   CARDS
--------------------------------------------------- */
-
+/* CARDS */
 .card {
   background: #11182a;
   padding: 1.8rem;
@@ -229,14 +207,11 @@ strong {
 
 .card-icon,
 .card-image {
-  width: 80px;
-  margin-bottom: 1rem;
+  width: 64px;
+  margin-bottom: 0.8rem;
 }
 
-/* --------------------------------------------------
-   HOW IT WORKS
--------------------------------------------------- */
-
+/* HOW IT WORKS */
 .how-inner {
   display: flex;
   gap: 3rem;
@@ -248,14 +223,14 @@ strong {
 }
 
 .how-image {
+  max-width: 320px;
   width: 100%;
+  margin: 0 auto;
+  display: block;
   border-radius: 12px;
 }
 
-/* --------------------------------------------------
-   WHY IT WORKS
--------------------------------------------------- */
-
+/* WHY IT WORKS */
 .why-inner {
   display: flex;
   gap: 3rem;
@@ -267,14 +242,14 @@ strong {
 }
 
 .why-image {
+  max-width: 320px;
   width: 100%;
+  margin: 0 auto;
+  display: block;
   border-radius: 12px;
 }
 
-/* --------------------------------------------------
-   START SECTION
--------------------------------------------------- */
-
+/* START SECTION */
 .start-inner {
   display: flex;
   gap: 3rem;
@@ -288,10 +263,7 @@ strong {
   border-radius: 12px;
 }
 
-/* --------------------------------------------------
-   FINAL CTA
--------------------------------------------------- */
-
+/* FINAL CTA */
 .final-cta-inner {
   display: flex;
   gap: 2rem;
@@ -299,7 +271,10 @@ strong {
 }
 
 .final-cta-img {
-  width: 260px;
+  max-width: 320px;
+  width: 100%;
+  margin: 0 auto;
+  display: block;
   border-radius: 12px;
 }
 
@@ -307,10 +282,7 @@ strong {
   flex: 1;
 }
 
-/* --------------------------------------------------
-   FOOTER
--------------------------------------------------- */
-
+/* FOOTER */
 .footer {
   padding: 2rem 0;
   background: #0b0f19;
@@ -331,10 +303,7 @@ strong {
   color: #c7ccda;
 }
 
-/* --------------------------------------------------
-   AGENT MODAL
--------------------------------------------------- */
-
+/* AGENT MODAL */
 .agent-btn {
   background: #4c6fff;
   color: #ffffff;
@@ -360,6 +329,7 @@ strong {
   border-radius: 12px;
   width: 100%;
   max-width: 420px;
+  margin: 0 auto;
 }
 
 .agent-close {
@@ -380,12 +350,9 @@ strong {
   color: #9bb8ff;
 }
 
-/* --------------------------------------------------
-   LEGAL PAGES
--------------------------------------------------- */
-
+/* LEGAL PAGES */
 .legal-body {
-  background: #0b0f19;
+  background: #0f172a;
 }
 
 .legal-section {
@@ -397,25 +364,20 @@ strong {
   margin: 0 auto;
 }
 
-/* --------------------------------------------------
-   THANK YOU PAGE
--------------------------------------------------- */
-
+/* THANK YOU PAGE */
 .thankyou-section {
   padding: 4rem 0;
   text-align: center;
 }
 
 .thankyou-image {
-  width: 260px;
+  max-width: 320px;
+  width: 100%;
   margin-top: 2rem;
   border-radius: 12px;
 }
 
-/* --------------------------------------------------
-   RESPONSIVE
--------------------------------------------------- */
-
+/* RESPONSIVE */
 @media (max-width: 900px) {
   .hero-inner,
   .how-inner,
