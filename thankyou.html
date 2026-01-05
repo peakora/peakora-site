@@ -1,24 +1,117 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Thanks — Peakora</title>
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    .thank { min-height:60vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:60px 20px; }
-    .thank .box { background:#fff; padding:36px; border-radius:12px; box-shadow:0 20px 50px rgba(36,26,58,0.08); max-width:720px; }
-    .thank h1 { font-size:28px; margin-bottom:12px; }
-    .thank p { color:#555; margin-bottom:18px; }
-  </style>
-</head>
-<body>
-  <main class="thank">
-    <div class="box">
-      <h1>Thanks — your plan is on its way</h1>
-      <p>We’ve received your answers and are preparing your 7‑day plan. Check your email or return to the site to start now.</p>
-      <a class="btn primary" href="/">Return to Peakora</a>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Thank You &mdash; Peakora</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Thank you for starting your 7&#8209;day reset with Peakora."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="thankyou-body">
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <img
+            src="assets/peakora-logo.png"
+            alt="Peakora logo"
+            class="brand-logo"
+          />
+          <div class="brand-text">
+            <span class="brand-name">Peakora</span>
+            <span class="brand-tagline">For a Better You</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THANK YOU SECTION -->
+    <section class="thankyou-section">
+      <div class="container thankyou-inner">
+        <h1>Thank you for starting your reset.</h1>
+
+        <p class="thankyou-lead">
+          Your 7&#8209;day plan is on its way to your inbox. If it does not
+          arrive in a few minutes, check your spam or promotions folder.
+        </p>
+
+        <p class="thankyou-note">
+          For now, take a breath. You just made a small, kind commitment to
+          yourself &mdash; and that matters more than you think.
+        </p>
+
+        <div class="thankyou-actions">
+          <a href="home.html" class="btn primary">Back to homepage</a>
+          <button id="agentBtn" class="btn ghost" type="button">
+            Ask Peakora a question
+          </button>
+        </div>
+
+        <img
+          src="assets/final-cta.jpeg"
+          alt="Gentle weekly reset visual"
+          class="thankyou-image"
+        />
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container footer-inner">
+        <p>
+          &copy; <strong>Peakora</strong> &mdash; For a Better You
+        </p>
+        <p class="footer-links">
+          <a href="privacy.html">Privacy</a>
+          <span class="footer-separator">&#183;</span>
+          <a href="terms.html">Terms</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- AGENT MODAL -->
+    <div id="agentModal" class="agent-modal" aria-hidden="true">
+      <div class="agent-panel">
+        <button
+          id="agentClose"
+          class="agent-close"
+          type="button"
+          aria-label="Close"
+        >
+          &#10005;
+        </button>
+        <h3>Need help?</h3>
+        <p>
+          Ask a quick question about your 7&#8209;day plan or share what feels
+          heavy right now. Peakora will help you find one small next step.
+        </p>
+
+        <form id="agentForm">
+          <label>
+            Email
+            <input type="email" name="email" required />
+          </label>
+
+          <label>
+            Message
+            <textarea name="message" rows="4" required></textarea>
+          </label>
+
+          <div class="agent-actions">
+            <button class="btn primary" type="submit">Send</button>
+          </div>
+        </form>
+
+        <div id="agentThanks" class="agent-thanks" hidden>
+          <p>Thank you &mdash; we will reply soon.</p>
+        </div>
+      </div>
     </div>
-  </main>
-</body>
+
+    <script src="script.js"></script>
+  </body>
 </html>
