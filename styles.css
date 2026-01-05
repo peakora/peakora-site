@@ -1,4 +1,7 @@
-/* RESET */
+/* --------------------------------------------------
+   RESET
+-------------------------------------------------- */
+
 * {
   margin: 0;
   padding: 0;
@@ -10,19 +13,25 @@ body {
   height: 100%;
   scroll-behavior: smooth;
   font-family: Arial, sans-serif;
-  background: #0f172a;
+  background: radial-gradient(circle at 20% 20%, #1e2a44 0%, #0f172a 70%);
   color: #e6e9f0;
   line-height: 1.6;
 }
 
-/* GLOBAL CONTAINERS */
+/* --------------------------------------------------
+   GLOBAL CONTAINERS
+-------------------------------------------------- */
+
 .container {
   width: 90%;
   max-width: 1100px;
   margin: 0 auto;
 }
 
-/* TYPOGRAPHY */
+/* --------------------------------------------------
+   TYPOGRAPHY
+-------------------------------------------------- */
+
 h1,
 h2,
 h3 {
@@ -46,10 +55,13 @@ strong {
   color: #ffffff;
 }
 
-/* HEADER */
+/* --------------------------------------------------
+   HEADER
+-------------------------------------------------- */
+
 .site-header {
   padding: 1.2rem 0;
-  background: rgba(17, 24, 42, 0.9);
+  background: rgba(17, 24, 42, 0.92);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(6px);
 }
@@ -67,14 +79,14 @@ strong {
 }
 
 .brand-logo {
-  width: 52px;
-  height: 52px;
+  width: 64px;
+  height: 64px;
   border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 18px rgba(76, 111, 255, 0.45);
 }
 
 .brand-name {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: #ffffff;
 }
@@ -104,10 +116,13 @@ strong {
   font-weight: bold;
 }
 
-/* HERO */
+/* --------------------------------------------------
+   HERO
+-------------------------------------------------- */
+
 .hero {
   padding: 5rem 0 4rem;
-  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0) 100%);
 }
 
 .hero-inner {
@@ -142,11 +157,15 @@ strong {
 
 .hero-image {
   width: 100%;
+  max-width: 420px;
   border-radius: 12px;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
 }
 
-/* BUTTONS */
+/* --------------------------------------------------
+   BUTTONS
+-------------------------------------------------- */
+
 .btn {
   display: inline-block;
   padding: 0.75rem 1.4rem;
@@ -176,7 +195,10 @@ strong {
   background: rgba(76, 111, 255, 0.1);
 }
 
-/* SECTIONS */
+/* --------------------------------------------------
+   SECTIONS
+-------------------------------------------------- */
+
 .section {
   padding: 4rem 0;
 }
@@ -196,7 +218,10 @@ strong {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
-/* CARDS */
+/* --------------------------------------------------
+   CARDS
+-------------------------------------------------- */
+
 .card {
   background: #11182a;
   padding: 1.8rem;
@@ -211,45 +236,68 @@ strong {
   margin-bottom: 0.8rem;
 }
 
-/* HOW IT WORKS */
+/* --------------------------------------------------
+   SIDE-BY-SIDE SECTIONS (NEW)
+-------------------------------------------------- */
+
+.side-section {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.side-section.reverse {
+  flex-direction: row-reverse;
+}
+
+.side-section img {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------
+   HOW IT WORKS
+-------------------------------------------------- */
+
 .how-inner {
   display: flex;
   gap: 3rem;
   align-items: center;
 }
 
-.steps li {
-  margin-bottom: 1rem;
-}
-
 .how-image {
-  max-width: 320px;
+  max-width: 420px;
   width: 100%;
   margin: 0 auto;
   display: block;
   border-radius: 12px;
 }
 
-/* WHY IT WORKS */
+/* --------------------------------------------------
+   WHY IT WORKS
+-------------------------------------------------- */
+
 .why-inner {
   display: flex;
   gap: 3rem;
   align-items: center;
 }
 
-.why-list li {
-  margin-bottom: 0.8rem;
-}
-
 .why-image {
-  max-width: 320px;
+  max-width: 420px;
   width: 100%;
   margin: 0 auto;
   display: block;
   border-radius: 12px;
 }
 
-/* START SECTION */
+/* --------------------------------------------------
+   START SECTION
+-------------------------------------------------- */
+
 .start-inner {
   display: flex;
   gap: 3rem;
@@ -263,7 +311,10 @@ strong {
   border-radius: 12px;
 }
 
-/* FINAL CTA */
+/* --------------------------------------------------
+   FINAL CTA
+-------------------------------------------------- */
+
 .final-cta-inner {
   display: flex;
   gap: 2rem;
@@ -282,7 +333,10 @@ strong {
   flex: 1;
 }
 
-/* FOOTER */
+/* --------------------------------------------------
+   FOOTER
+-------------------------------------------------- */
+
 .footer {
   padding: 2rem 0;
   background: #0b0f19;
@@ -303,7 +357,10 @@ strong {
   color: #c7ccda;
 }
 
-/* AGENT MODAL */
+/* --------------------------------------------------
+   AGENT MODAL
+-------------------------------------------------- */
+
 .agent-btn {
   background: #4c6fff;
   color: #ffffff;
@@ -350,7 +407,10 @@ strong {
   color: #9bb8ff;
 }
 
-/* LEGAL PAGES */
+/* --------------------------------------------------
+   LEGAL PAGES
+-------------------------------------------------- */
+
 .legal-body {
   background: #0f172a;
 }
@@ -364,7 +424,10 @@ strong {
   margin: 0 auto;
 }
 
-/* THANK YOU PAGE */
+/* --------------------------------------------------
+   THANK YOU PAGE
+-------------------------------------------------- */
+
 .thankyou-section {
   padding: 4rem 0;
   text-align: center;
@@ -377,13 +440,17 @@ strong {
   border-radius: 12px;
 }
 
-/* RESPONSIVE */
+/* --------------------------------------------------
+   RESPONSIVE
+-------------------------------------------------- */
+
 @media (max-width: 900px) {
   .hero-inner,
   .how-inner,
   .why-inner,
   .start-inner,
-  .final-cta-inner {
+  .final-cta-inner,
+  .side-section {
     flex-direction: column;
   }
 
