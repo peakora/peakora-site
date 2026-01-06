@@ -44,7 +44,7 @@ html, body {
   padding: 14px 0;
 }
 
-.brand-logo {
+.brand-logo {`n    height: 64px;
   height: 48px;
   filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
 }
@@ -432,3 +432,14 @@ html, body {
   text-align: center;
   margin-top: 20px;
 }
+
+.brand-logo { height: 64px !important; }
+
+/* FIX #1: Force logo size */
+.brand-logo { height: 64px !important; }
+
+/* FIX #1: Force logo size (200px) */
+.brand-logo { height: 200px !important; }
+
+/* FIX #1: Force logo size (120px) */
+.brand-logo { height: 120px !important; }
