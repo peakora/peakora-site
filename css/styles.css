@@ -74,7 +74,7 @@ html, body {
 .social-icon {
   width: 22px;
   height: 22px;
-  background-size: cover;
+  /* background-size removed for SVG */
   opacity: 0.85;
   transition: 0.2s ease;
 }
@@ -84,11 +84,11 @@ html, body {
 }
 
 /* Social icon images */
-.ig { background-image: url('../assets/instagram.svg'); }
-.pin { background-image: url('../assets/pinterest.svg'); }
-.fb { background-image: url('../assets/facebook.svg'); }
-.tt { background-image: url('../assets/tiktok.svg'); }
-.yt { background-image: url('../assets/youtube.svg'); }
+/* /* .ig { removed } */ */
+/* /* .pin { removed } */ */
+/* /* .fb { removed } */ */
+/* /* .tt { removed } */ */
+/* /* .yt { removed } */ */
 
 /* ------------------------------------------------------
    HERO SECTION
@@ -475,3 +475,6 @@ html, body {
 .social-icon:hover svg {
   opacity: 0.7;
 }
+
+
+
