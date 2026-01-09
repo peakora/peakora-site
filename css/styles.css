@@ -693,14 +693,10 @@ html, body {
   flex: 1 1 520px !important;
 }
 
-.main-wrapper,
-.page-wrapper,
-.hero,
-.section,
-.container,
-.content {
+.main-wrapper {
   background: transparent !important;
 }
+
 
 
 body {
