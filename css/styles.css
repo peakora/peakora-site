@@ -693,9 +693,10 @@ html, body {
   flex: 1 1 520px !important;
 }
 
-.page-wrapper {
+.hero {
   background: transparent !important;
 }
+
 
 
 body {
