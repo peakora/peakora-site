@@ -1,16 +1,14 @@
 /* ------------------------------------------------------
-   GLOBAL DARK BACKGROUND (MAGICAL + ALIVE)
+   GLOBAL DARK BACKGROUND — WARM, PREMIUM, NO EFFECTS
 ------------------------------------------------------ */
 
 body {
-  background:
-    radial-gradient(circle at 20% 15%, rgba(255, 120, 180, 0.35), transparent 60%),
-    radial-gradient(circle at 80% 75%, rgba(150, 90, 255, 0.30), transparent 65%),
-    linear-gradient(135deg, #1a0f2e 0%, #2b123d 40%, #3a0f2f 100%);
+  background: linear-gradient(135deg, #1a0f1f 0%, #2a0f24 40%, #3b0f2a 100%);
   background-attachment: fixed;
   position: relative;
   z-index: 0;
 }
+
 
 
 
