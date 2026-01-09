@@ -694,6 +694,6 @@ html, body {
 }
 
 body {
-  background: linear-gradient(135deg, #1a0f1f 0%, #2a0f24 40%, #3b0f2a 100%) !important;
-  background-attachment: fixed !important;
+  background: red !important;
 }
+
