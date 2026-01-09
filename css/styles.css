@@ -1,11 +1,17 @@
+/* ------------------------------------------------------
+   GLOBAL DARK BACKGROUND (MAGICAL + ALIVE)
+------------------------------------------------------ */
+
 body {
-  background: radial-gradient(circle at 30% 20%, rgba(255, 210, 230, 0.45), transparent 60%),
-              radial-gradient(circle at 70% 80%, rgba(200, 160, 255, 0.35), transparent 65%),
-              linear-gradient(135deg, #d8c7ff 0%, #f3b8d0 50%, #f7d7e8 100%);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 120, 180, 0.35), transparent 60%),
+    radial-gradient(circle at 80% 75%, rgba(150, 90, 255, 0.30), transparent 65%),
+    linear-gradient(135deg, #1a0f2e 0%, #2b123d 40%, #3a0f2f 100%);
   background-attachment: fixed;
   position: relative;
   z-index: 0;
 }
+
 
 
 /* FOOTER BACKGROUND OVERRIDE */
@@ -41,7 +47,7 @@ html, body {
 }
 
 /* ------------------------------------------------------
-   HEADER
+   HEADER — DARK GLASS
 ------------------------------------------------------ */
 
 .header {
@@ -49,13 +55,13 @@ html, body {
   top: 0;
   z-index: 1000;
 
-  /* Semi‑transparent warm glass */
-  background: rgba(255, 255, 255, 0.55);
+  /* Dark translucent glass */
+  background: rgba(20, 12, 35, 0.65);
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 .header-inner {
@@ -67,7 +73,7 @@ html, body {
 
 .brand-logo {
   height: 48px;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
 }
 
 .nav {
@@ -77,13 +83,13 @@ html, body {
 
 .nav-link {
   text-decoration: none;
-  color: #1a1a1a;
+  color: #ffffff;
   font-weight: 500;
   transition: 0.2s ease;
 }
 
 .nav-link:hover {
-  color: #4a3aff; /* warmer hover tone */
+  color: #ff7acb; /* warm hover tone */
 }
 
 /* HEADER SOCIAL ICONS */
@@ -95,12 +101,14 @@ html, body {
 .social-icon {
   width: 22px;
   height: 22px;
-  opacity: 0.85;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
   transition: 0.2s ease;
 }
 
 .social-icon:hover {
   opacity: 1;
+  filter: drop-shadow(0 0 6px rgba(255, 120, 180, 0.8));
 }
 
 
