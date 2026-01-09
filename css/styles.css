@@ -1,29 +1,10 @@
-/* GLOBAL PAGE BACKGROUND (excluding footer) */
 body {
-  background: linear-gradient(135deg, #dce9f8 0%, #bcd4f5 40%, #a7c7f3 100%);
+  background: linear-gradient(135deg, #f2f4ff 0%, #e6e0f8 40%, #fbe9f1 100%);
   background-attachment: fixed;
   position: relative;
   z-index: 0;
 }
 
-/* SUBTLE LIVE GLOW EFFECT */
-body::before {
-  content: "";
-  position: fixed;
-  top: -20%;
-  left: -20%;
-  width: 140%;
-  height: 140%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 255, 255, 0.35),
-    rgba(255, 255, 255, 0) 60%
-  );
-  pointer-events: none;
-  z-index: -1;
-  filter: blur(40px);
-  opacity: 0.8;
-}
 
 /* FOOTER BACKGROUND OVERRIDE */
 footer {
