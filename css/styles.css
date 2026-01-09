@@ -693,11 +693,9 @@ html, body {
   flex: 1 1 520px !important;
 }
 
-.section {
+.container {
   background: transparent !important;
 }
-
-
 
 
 body {
