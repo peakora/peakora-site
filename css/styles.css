@@ -50,14 +50,19 @@ html, body {
 
 /* Shrink header height */
 .header .container {
-  padding-top: 4px;
-  padding-bottom: 4px;
+  height: 48px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  display: flex;
+  align-items: center;
 }
 
+/* Flex layout */
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 }
 
 /* Logo — now cropped, so we can shrink it */
@@ -68,7 +73,7 @@ html, body {
 
 .brand-logo {
   display: block;
-  height: 28px;
+  height: 28px !important;
   margin: 0;
   padding: 0;
   filter: none;
@@ -109,20 +114,27 @@ html, body {
   opacity: 1;
 }
 
-/* SVG recoloring */
+/* ------------------------------------------------------
+   SVG ICON RECOLORING — MATCHES YOUR EXACT SVG STRUCTURE
+------------------------------------------------------ */
+
+/* Instagram icon shapes */
 .social-icon svg rect,
 .social-icon svg circle {
   stroke: #3a5cff !important;
   fill: none !important;
 }
 
+/* The small filled circle in Instagram */
 .social-icon svg circle[fill] {
   fill: #3a5cff !important;
 }
 
+/* TikTok icon */
 .social-icon svg path {
   stroke: #3a5cff !important;
 }
+
 
 /* ------------------------------------------------------
    SVG ICON RECOLORING — MATCHES YOUR EXACT SVG STRUCTURE
