@@ -297,7 +297,13 @@ header .brand img.brand-logo {
   fill: none;
 }
 
+#why .lead {
+  margin-bottom: 48px;
+} 
 
+#why .close {
+  margin-top: 48px; 
+}
 
 /* ------------------------------------------------------
    HOW IT WORKS
