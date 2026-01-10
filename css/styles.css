@@ -263,92 +263,59 @@ section {
   box-shadow: 0 0 40px rgba(0, 87, 255, 0.25);
 }
 
-/* ------------------------------------------------------
-   SHARED SECTION LEAD
-   (Used in WHY, WHAT, and other sections)
------------------------------------------------------- */
+<!-- WHY PEAKORA -->
 
-.section-lead {
-  text-align: center;
-  font-size: 20px;
-  line-height: 1.5;
-  color: #0f1f3d;
-  margin: 24px 0;
-}
+<section class="why">
+  <div class="container">
+    <h2 class="section-title">Why Peakora?</h2>
 
-/* If you want slightly more space before grids, you can use:
-.section-lead {
-  text-align: center;
-  font-size: 20px;
-  line-height: 1.5;
-  color: #0f1f3d;
-  margin: 24px 0 32px;
-}
-*/
+    <!-- TOP LINE -->
+    <p class="section-lead">
+      We built Peakora to feel like a companion, not a chore.
+    </p>
 
-/* ------------------------------------------------------
-   SHARED GRID LAYOUT FOR WHY + WHAT
------------------------------------------------------- */
+    <div class="what-grid">
+      <div class="what-card">
+        <div class="icon-wrap">
+          <!-- Droplet Icon -->
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#0057FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M24 4C24 4 12 18 12 28a12 12 0 0 0 24 0c0-10-12-24-12-24z"></path>
+          </svg>
+        </div>
+        <h3>Gentle by design</h3>
+        <p>We removed the pressure, the guilt, and the noise. You move at your own pace.</p>
+      </div>
 
-.what-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  padding: 40px 0;
-}
+      <div class="what-card">
+        <div class="icon-wrap">
+          <!-- Checkmark Icon -->
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#0057FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 24l8 8 12-12"></path>
+          </svg>
+        </div>
+        <h3>Built for real life</h3>
+        <p>We designed Peakora to fit into your day, not take it over. No overwhelm, no burnout.</p>
+      </div>
 
-@media (max-width: 1024px) {
-  .what-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+      <div class="what-card">
+        <div class="icon-wrap">
+          <!-- Sparkle Icon -->
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#0057FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M24 4l4 10 10 4-10 4-4 10-4-10-10-4 10-4z"></path>
+          </svg>
+        </div>
+        <h3>Emotionally aware</h3>
+        <p>We tuned every part of the experience to feel warm, human, and emotionally safe.</p>
+      </div>
+    </div>
 
-@media (max-width: 768px) {
-  .what-grid {
-    grid-template-columns: 1fr;
-  }
-}
+    <!-- BOTTOM LINE -->
+    <p class="section-lead">
+      It’s gentle, human, and designed to support you — not pressure you.
+    </p>
 
-/* ------------------------------------------------------
-   CARD STYLE (USED BY WHY + WHAT)
------------------------------------------------------- */
-
-.what-card {
-  background: rgba(0, 87, 255, 0.06);
-  padding: 28px;
-  border-radius: 18px;
-  text-align: center;
-  box-shadow: 0 8px 24px rgba(0, 87, 255, 0.08);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.what-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 87, 255, 0.12);
-}
-
-/* Icon container */
-
-.icon-wrap {
-  margin-bottom: 16px;
-}
-
-/* Card titles */
-
-.what-card h3 {
-  margin-bottom: 8px;
-  font-size: 20px;
-  color: #0f1f3d;
-}
-
-/* Card body copy */
-
-.what-card p {
-  margin: 0;
-  color: #0f1f3d;
-  line-height: 1.55;
-  font-size: 16px;
-}
+  </div>
+</section>
 
 /* ------------------------------------------------------
    HOW IT WORKS
