@@ -355,7 +355,12 @@ header .brand img.brand-logo {
   margin-bottom: 16px;
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(0, 87, 255, 0.15);
+
+  /* NEW: match header icon color */
+  stroke: #3a5cff;
+  fill: none;
 }
+
 
 /* ------------------------------------------------------
    HOW IT WORKS
