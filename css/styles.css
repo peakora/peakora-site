@@ -51,20 +51,23 @@ html, body {
   box-shadow: none;
 }
 
+/* This is the REAL height controller */
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  /* Reduced height */
+  /* Reduced header height */
   padding: 6px 0;
 }
 
+/* Logo */
 .brand-logo {
-  height: 40px; /* smaller for the new compact header */
+  height: 40px; /* smaller for compact header */
   filter: none; /* remove white glow */
 }
 
+/* Navigation */
 .nav {
   display: flex;
   gap: 20px;
@@ -78,15 +81,16 @@ html, body {
 }
 
 .nav-link:hover {
-  color: #3a5cff; /* blue hover tone to match new icons */
+  color: #3a5cff; /* blue hover tone */
 }
 
-/* HEADER SOCIAL ICONS */
+/* Social icons container */
 .header-social {
   display: flex;
   gap: 12px;
 }
 
+/* Social icon wrapper */
 .social-icon {
   width: 20px;
   height: 20px;
@@ -99,11 +103,26 @@ html, body {
   opacity: 1;
 }
 
-/* Recolor inline SVG icons to blue */
-.social-icon svg path {
+/* ------------------------------------------------------
+   SVG ICON RECOLORING — SPECIFIC TO YOUR SVG STRUCTURE
+------------------------------------------------------ */
+
+/* Instagram icon */
+.social-icon svg rect,
+.social-icon svg circle {
+  stroke: #3a5cff !important;
+  fill: none !important;
+}
+
+/* The small filled circle in Instagram */
+.social-icon svg circle[fill] {
   fill: #3a5cff !important;
 }
 
+/* TikTok icon */
+.social-icon svg path {
+  stroke: #3a5cff !important;
+}
 
 /* ------------------------------------------------------
    HERO SECTION
