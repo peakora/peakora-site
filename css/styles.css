@@ -493,19 +493,35 @@ section {
 }
 
 /* ------------------------------------------------------
-   DESIGNED FOR REAL LIFE
+   DESIGNED FOR REAL LIFE (MATCHES HOW SECTION)
 ------------------------------------------------------ */
 
-.real-life-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
+.real-life-container {
+  max-width: 1100px;
+  margin: 0 auto;
   padding: 80px 0;
 }
 
-.real-life-left {
-  max-width: 560px;
+.real-life-layout {
+  display: flex;
+  gap: 48px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* Left side: text */
+
+.real-life-text {
+  flex: 1;
+  text-align: left;
+}
+
+.real-life-lead {
+  font-size: 20px;
+  line-height: 1.5;
+  color: #0f1f3d;
+  margin-bottom: 32px;
 }
 
 .real-life-points {
@@ -529,15 +545,32 @@ section {
 }
 
 .real-life-transition {
-  font-size: 17px;
-  line-height: 1.6;
+  font-size: 18px;
+  line-height: 1.5;
   margin-bottom: 32px;
   color: #0f1f3d;
 }
 
-.real-life-img {
-  width: 420px;
-  max-width: 100%;
+/* CTA button (matches HOW) */
+
+.real-life-cta {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+/* Right side: illustration */
+
+.real-life-illustration {
+  flex: 1;
+  text-align: center;
+}
+
+.real-life-illustration img {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
   border-radius: 16px;
   box-shadow: 0 0 40px rgba(0, 87, 255, 0.25);
 }
@@ -546,19 +579,21 @@ section {
   white-space: nowrap;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .real-life-inner {
+/* Mobile */
+
+@media (max-width: 768px) {
+  .real-life-layout {
     flex-direction: column;
+    align-items: center;
     text-align: center;
   }
 
-  .real-life-left {
-    max-width: 100%;
+  .real-life-text {
+    text-align: center;
   }
 
-  .real-life-right {
-    margin-top: 40px;
+  .real-life-cta {
+    align-self: center;
   }
 }
 
