@@ -493,10 +493,10 @@ section {
 }
 
 /* ------------------------------------------------------
-   WHY IT WORKS
+   DESIGNED FOR REAL LIFE
 ------------------------------------------------------ */
 
-.why-works-inner {
+.real-life-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -504,11 +504,65 @@ section {
   padding: 80px 0;
 }
 
-.why-img {
+.real-life-left {
+  max-width: 560px;
+}
+
+.real-life-lead {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  color: #0f1f3d;
+}
+
+.real-life-points {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px 0;
+}
+
+.real-life-points li {
+  margin-bottom: 24px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #0f1f3d;
+}
+
+.real-life-points strong {
+  display: block;
+  font-size: 17px;
+  margin-bottom: 6px;
+  color: #003366;
+}
+
+.real-life-transition {
+  font-size: 17px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  color: #0f1f3d;
+}
+
+.real-life-img {
   width: 420px;
   max-width: 100%;
   border-radius: 16px;
   box-shadow: 0 0 40px rgba(0, 87, 255, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .real-life-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .real-life-left {
+    max-width: 100%;
+  }
+
+  .real-life-img {
+    margin-top: 40px;
+  }
 }
 
 /* ------------------------------------------------------
