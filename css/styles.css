@@ -508,13 +508,6 @@ section {
   max-width: 560px;
 }
 
-.real-life-lead {
-  font-size: 18px;
-  line-height: 1.6;
-  margin-bottom: 32px;
-  color: #0f1f3d;
-}
-
 .real-life-points {
   list-style: none;
   padding: 0;
@@ -549,6 +542,10 @@ section {
   box-shadow: 0 0 40px rgba(0, 87, 255, 0.25);
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .real-life-inner {
@@ -560,7 +557,7 @@ section {
     max-width: 100%;
   }
 
-  .real-life-img {
+  .real-life-right {
     margin-top: 40px;
   }
 }
