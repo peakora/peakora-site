@@ -1015,6 +1015,9 @@ section {
   background: none !important;
 }
 
+.section-title {
+  margin-bottom: 32px;
+}
 
 /* ------------------------------------------------------
    GLOBAL DARK BACKGROUND — WARM, PREMIUM, NO EFFECTS
