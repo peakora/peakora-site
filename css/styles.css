@@ -660,6 +660,29 @@ section {
   }
 }
 
+.real-life-button {
+  display: block;
+  margin: 48px auto 0 auto;
+  background: linear-gradient(to right, #0057FF, #3A8BFF);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 18px 36px;
+  border-radius: 12px;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 87, 255, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  z-index: 1;
+  max-width: fit-content;
+}
+
+/* Force button into its own row */
+.real-life-content .real-life-button {
+  align-self: center;
+}
+
 
 /* ------------------------------------------------------
    FINAL CTA
