@@ -493,7 +493,7 @@ section {
 }
 
 /* ------------------------------------------------------
-   REAL LIFE — FINAL CLEAN VERSION
+   REAL LIFE — FINAL VERSION WITH CENTERED BUTTON + GLOW
 ------------------------------------------------------ */
 
 /* Container */
@@ -560,7 +560,7 @@ section {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center; /* <<< THIS CENTERS THE BUTTON AND ALL CONTENT */
+  align-items: flex-start;
   text-align: left;
 }
 
@@ -599,10 +599,18 @@ section {
   text-align: center;
 }
 
-/* Custom CTA button */
-.real-life-button {
-  display: block;
+/* CTA wrapper — forces centering */
+.real-life-button-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
   margin-top: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+/* CTA button — glowing, centered */
+.real-life-button {
   background: linear-gradient(to right, #0057FF, #3A8BFF);
   color: #fff;
   font-size: 20px;
@@ -618,7 +626,7 @@ section {
 }
 
 /* Glow behind button */
-.real-life-button::before {
+.real-life-button-wrapper::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -633,7 +641,7 @@ section {
     transparent 100%
   );
   filter: blur(40px);
-  z-index: -1;
+  z-index: 0;
 }
 
 .real-life-button:hover {
@@ -658,10 +666,11 @@ section {
     text-align: center;
   }
 
-  .real-life-button {
+  .real-life-button-wrapper {
     margin-top: 48px;
   }
 }
+
 
 
 /* ------------------------------------------------------
