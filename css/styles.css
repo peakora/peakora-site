@@ -609,8 +609,10 @@ section {
   z-index: 1;
 }
 
-/* CTA button — glowing, centered */
+/* CTA button — glowing, centered, override-safe */
 .real-life-button {
+  display: inline-block;
+  margin: 0 auto;
   background: linear-gradient(to right, #0057FF, #3A8BFF);
   color: #fff;
   font-size: 20px;
@@ -623,6 +625,8 @@ section {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   z-index: 1;
+  max-width: fit-content;
+  float: none;
 }
 
 /* Glow behind button */
