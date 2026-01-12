@@ -502,6 +502,11 @@ section {
   padding: 80px 0;
 }
 
+.real-life-container .section-title,
+.real-life-lead {
+  text-align: center;
+}
+
 .real-life-layout {
   display: flex;
   gap: 48px;
@@ -510,7 +515,7 @@ section {
   flex-wrap: wrap;
 }
 
-/* Illustration (mirrors HOW) */
+/* Illustration */
 .real-life-illustration {
   flex: 1;
   text-align: center;
@@ -526,7 +531,7 @@ section {
   box-shadow: 0 0 40px rgba(0, 87, 255, 0.25);
 }
 
-/* Content (mirrors HOW steps column) */
+/* Content */
 .real-life-content {
   flex: 1;
   text-align: left;
@@ -567,17 +572,34 @@ section {
   color: #0f1f3d;
 }
 
-/* CTA (same behavior as HOW) */
+/* CTA button */
 .real-life-cta {
   margin-top: 8px;
   align-self: flex-start;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid #0057FF;
+  color: #0057FF;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: #0057FF;
+  color: #fff;
 }
 
 .nowrap {
   white-space: nowrap;
 }
 
-/* Mobile (same breakpoint + behavior as HOW) */
+/* Mobile */
 @media (max-width: 768px) {
   .real-life-layout {
     flex-direction: column;
