@@ -616,7 +616,8 @@ section {
 
 .peakora-crown-cta {
   width: 100%;
-  padding: 30px 0; /* shorter section so Stories is visible */
+  padding: 30px 0;
+  min-height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -626,32 +627,35 @@ section {
   z-index: 10;
 }
 
-/* Headline above the button */
+.peakora-crown-cta *,
+.peakora-crown-cta *::before,
+.peakora-crown-cta *::after {
+  box-sizing: border-box;
+}
+
 .peakora-cta-headline {
   font-size: 28px;
   font-weight: 700;
   color: #0f1f3d;
-  margin-bottom: 36px; /* more space above button */
+  margin-bottom: 36px !important;
   max-width: 640px;
 }
 
-/* Subline below the button */
 .peakora-cta-subline {
   font-size: 28px;
   font-weight: 700;
   color: #0f1f3d;
-  margin-top: 36px; /* more space below button */
+  margin-top: 36px !important;
   max-width: 640px;
 }
 
-/* Button – now 2.5x larger */
 .peakora-crown-button {
   display: inline-block;
   background: linear-gradient(to right, #0057FF, #3A88FF);
   color: #fff;
-  font-size: 28px; /* bigger text */
+  font-size: 28px !important;
   font-weight: 700;
-  padding: 32px 72px; /* much larger button */
+  padding: 32px 72px !important;
   border-radius: 18px;
   text-decoration: none;
   text-align: center;
@@ -666,13 +670,12 @@ section {
   box-shadow: 0 20px 52px rgba(0, 87, 255, 0.45);
 }
 
-/* Glow behind the button */
 .peakora-crown-cta::before {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 420px; /* slightly larger glow */
+  width: 420px;
   height: 420px;
   transform: translate(-50%, -50%);
   background: radial-gradient(
@@ -685,7 +688,6 @@ section {
   z-index: 1;
 }
 
-/* Mobile adjustments */
 @media (max-width: 768px) {
   .peakora-cta-headline,
   .peakora-cta-subline {
@@ -694,10 +696,11 @@ section {
   }
 
   .peakora-crown-button {
-    font-size: 22px;
-    padding: 26px 52px;
+    font-size: 22px !important;
+    padding: 26px 52px !important;
   }
 }
+
 
 
 /* ------------------------------------------------------
