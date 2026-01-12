@@ -493,7 +493,7 @@ section {
 }
 
 /* ------------------------------------------------------
-   DESIGNED FOR REAL LIFE (MATCHES HOW SECTION)
+   REAL LIFE — MATCHING HOW SECTION SPECS
 ------------------------------------------------------ */
 
 .real-life-container {
@@ -510,56 +510,7 @@ section {
   flex-wrap: wrap;
 }
 
-/* Left side: text */
-
-.real-life-text {
-  flex: 1;
-  text-align: left;
-}
-
-.real-life-lead {
-  font-size: 20px;
-  line-height: 1.5;
-  color: #0f1f3d;
-  margin-bottom: 32px;
-}
-
-.real-life-points {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 32px 0;
-}
-
-.real-life-points li {
-  margin-bottom: 24px;
-  font-size: 16px;
-  line-height: 1.55;
-  color: #0f1f3d;
-}
-
-.real-life-points strong {
-  display: block;
-  font-size: 17px;
-  margin-bottom: 6px;
-  color: #003366;
-}
-
-.real-life-transition {
-  font-size: 18px;
-  line-height: 1.5;
-  margin-bottom: 32px;
-  color: #0f1f3d;
-}
-
-/* CTA button (matches HOW) */
-
-.real-life-cta {
-  margin-top: 8px;
-  align-self: flex-start;
-}
-
-/* Right side: illustration */
-
+/* Illustration (mirrors HOW) */
 .real-life-illustration {
   flex: 1;
   text-align: center;
@@ -575,12 +526,58 @@ section {
   box-shadow: 0 0 40px rgba(0, 87, 255, 0.25);
 }
 
+/* Content (mirrors HOW steps column) */
+.real-life-content {
+  flex: 1;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.real-life-lead {
+  font-size: 20px;
+  line-height: 1.5;
+  color: #0f1f3d;
+  margin-bottom: 32px;
+}
+
+.real-life-point {
+  margin-bottom: 12px;
+}
+
+.real-life-point h3 {
+  margin-bottom: 4px;
+  font-size: 18px;
+  color: #003366;
+}
+
+.real-life-point p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #0f1f3d;
+}
+
+.real-life-reassurance {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #0f1f3d;
+}
+
+/* CTA (same behavior as HOW) */
+.real-life-cta {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
 .nowrap {
   white-space: nowrap;
 }
 
-/* Mobile */
-
+/* Mobile (same breakpoint + behavior as HOW) */
 @media (max-width: 768px) {
   .real-life-layout {
     flex-direction: column;
@@ -588,7 +585,8 @@ section {
     text-align: center;
   }
 
-  .real-life-text {
+  .real-life-content {
+    align-items: center;
     text-align: center;
   }
 
