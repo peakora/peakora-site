@@ -616,7 +616,7 @@ section {
 
 .peakora-crown-cta {
   width: 100%;
-  padding: 60px 0;
+  padding: 30px 0; /* shorter section so Stories is visible */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -626,32 +626,36 @@ section {
   z-index: 10;
 }
 
+/* Headline above the button */
 .peakora-cta-headline {
   font-size: 28px;
   font-weight: 700;
   color: #0f1f3d;
-  margin-bottom: 20px;
-  max-width: 600px;
+  margin-bottom: 36px; /* more space above button */
+  max-width: 640px;
 }
 
+/* Subline below the button */
 .peakora-cta-subline {
-  font-size: 18px;
+  font-size: 28px;
+  font-weight: 700;
   color: #0f1f3d;
-  margin-top: 20px;
-  max-width: 500px;
+  margin-top: 36px; /* more space below button */
+  max-width: 640px;
 }
 
+/* Button – now 2.5x larger */
 .peakora-crown-button {
   display: inline-block;
   background: linear-gradient(to right, #0057FF, #3A88FF);
   color: #fff;
-  font-size: 22px;
+  font-size: 28px; /* bigger text */
   font-weight: 700;
-  padding: 22px 48px;
-  border-radius: 14px;
+  padding: 32px 72px; /* much larger button */
+  border-radius: 18px;
   text-decoration: none;
   text-align: center;
-  box-shadow: 0 10px 28px rgba(0, 87, 255, 0.35);
+  box-shadow: 0 16px 44px rgba(0, 87, 255, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   z-index: 2;
@@ -659,16 +663,17 @@ section {
 
 .peakora-crown-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 36px rgba(0, 87, 255, 0.45);
+  box-shadow: 0 20px 52px rgba(0, 87, 255, 0.45);
 }
 
+/* Glow behind the button */
 .peakora-crown-cta::before {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 360px;
-  height: 360px;
+  width: 420px; /* slightly larger glow */
+  height: 420px;
   transform: translate(-50%, -50%);
   background: radial-gradient(
     circle,
@@ -676,20 +681,21 @@ section {
     rgba(0, 87, 255, 0.10) 60%,
     transparent 100%
   );
-  filter: blur(50px);
+  filter: blur(60px);
   z-index: 1;
 }
 
+/* Mobile adjustments */
 @media (max-width: 768px) {
-  .peakora-cta-headline {
-    font-size: 24px;
-  }
-  .peakora-crown-button {
-    font-size: 20px;
-    padding: 20px 40px;
-  }
+  .peakora-cta-headline,
   .peakora-cta-subline {
-    font-size: 16px;
+    font-size: 22px;
+    max-width: 90%;
+  }
+
+  .peakora-crown-button {
+    font-size: 22px;
+    padding: 26px 52px;
   }
 }
 
