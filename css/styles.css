@@ -968,6 +968,26 @@ section {
     }
 }
 
+/* FIX: Remove bullets from footer links */
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* FIX: Header social icons use Peakora blue */
+.header-social .social-icon svg {
+  stroke: #3a5cff;
+}
+
+/* FIX: Footer social icons stay white */
+.footer-social .social-icon svg {
+  stroke: white;
+}
+
 .contact-btn:hover {
   background: #003fcc;
 }
