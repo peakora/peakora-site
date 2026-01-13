@@ -968,6 +968,21 @@ section {
 }
 
 /* ============================
+  Social media Icons
+============================ */
+.header-social,
+.footer-social {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.header-social a svg,
+.footer-social a svg {
+  display: block;
+}
+
+/* ============================
    SMOOTH SCROLL OFFSET
 ============================ */
 html {
