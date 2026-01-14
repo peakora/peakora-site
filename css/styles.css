@@ -819,17 +819,25 @@ section {
   opacity: 1;
 }
 
-/* Mascot SVG */
-.peakora-mascot svg {
-  width: 58px;
-  height: 58px;
-  transition: all 0.35s ease;
-  filter: drop-shadow(0 0 6px rgba(0, 87, 255, 0.25));
+/* Mascot breathing glow */
+@keyframes peakoraGlow {
+  0%   { filter: drop-shadow(0 0 6px rgba(0, 87, 255, 0.25)); transform: scale(1); }
+  50%  { filter: drop-shadow(0 0 12px rgba(0, 87, 255, 0.45)); transform: scale(1.04); }
+  100% { filter: drop-shadow(0 0 6px rgba(0, 87, 255, 0.25)); transform: scale(1); }
 }
 
+.peakora-mascot svg {
+  width: 58px;
+  height: 78px;
+  transition: all 0.35s ease;
+  animation: peakoraGlow 3s ease-in-out infinite;
+}
+
+/* Active state — stronger glow + scale */
 .peakora-mascot.active svg {
-  transform: scale(1.06);
-  filter: drop-shadow(0 0 14px rgba(0, 87, 255, 0.55));
+  animation: none;
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 18px rgba(0, 87, 255, 0.65));
 }
 
 /* Basic modal styling (adjust to your existing styles) */
