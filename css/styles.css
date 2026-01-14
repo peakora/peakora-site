@@ -819,17 +819,17 @@ section {
   opacity: 1;
 }
 
-/* Mascot container */
+/* Mascot base (inactive) */
 .peakora-mascot svg {
-  width: 52px;
-  height: 68px;
+  width: 58px;
+  height: 78px;
   transition: all 0.35s ease;
   filter: drop-shadow(0 0 6px rgba(0, 87, 255, 0.25));
 }
 
-/* Active state (assistant open) */
+/* Mascot active (assistant open) */
 .peakora-mascot.active svg {
-  transform: scale(1.05);
+  transform: scale(1.06);
   filter: drop-shadow(0 0 14px rgba(0, 87, 255, 0.55));
 }
 
