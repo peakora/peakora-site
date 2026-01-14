@@ -790,7 +790,7 @@ section {
   background: #003fcc;
 }
 
-/* Floating button container */
+/* Floating button */
 .peakora-btn {
   position: fixed;
   bottom: 24px;
@@ -806,7 +806,7 @@ section {
   padding: 0;
 }
 
-/* Hover label */
+/* Label under mascot */
 .peakora-label {
   font-size: 16px;
   font-weight: 600;
@@ -819,18 +819,100 @@ section {
   opacity: 1;
 }
 
-/* Mascot base (inactive) */
+/* Mascot SVG */
 .peakora-mascot svg {
   width: 58px;
-  height: 78px;
+  height: 58px;
   transition: all 0.35s ease;
   filter: drop-shadow(0 0 6px rgba(0, 87, 255, 0.25));
 }
 
-/* Mascot active (assistant open) */
 .peakora-mascot.active svg {
   transform: scale(1.06);
   filter: drop-shadow(0 0 14px rgba(0, 87, 255, 0.55));
+}
+
+/* Basic modal styling (adjust to your existing styles) */
+.assistant-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+}
+
+.assistant-modal.open {
+  display: flex;
+}
+
+.assistant-modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 420px;
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assistant-close {
+  align-self: flex-end;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.assistant-messages {
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.assistant-message {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f4f6fb;
+  color: #222;
+  align-self: flex-start;
+}
+
+.assistant-message.user {
+  background: #0057ff;
+  color: #ffffff;
+  align-self: flex-end;
+}
+
+.assistant-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+#assistantInput {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid #d0d5e6;
+  font-size: 14px;
+}
+
+#assistantSend {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #0057ff;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 /* MODAL OVERLAY */
