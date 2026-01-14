@@ -1,45 +1,78 @@
 // ------------------------------------------------------
-// PEAKORA — Agent Modal + UI Interactions
-// Safe, clean, dependency‑free
+// PEAKORA — Unified Modal + UI Interactions
 // ------------------------------------------------------
 
-// ELEMENTS
+// --------------------
+// ASSISTANT MODAL
+// --------------------
 const agentBtn = document.getElementById("agentBtn");
 const agentModal = document.getElementById("agentModal");
 const agentClose = document.getElementById("agentClose");
 const agentForm = document.getElementById("agentForm");
 const agentThanks = document.getElementById("agentThanks");
 
-// OPEN MODAL
-agentBtn.addEventListener("click", () => {
-  agentModal.classList.add("active");
-  agentModal.setAttribute("aria-hidden", "false");
-});
+if (agentBtn) {
+  agentBtn.addEventListener("click", () => {
+    agentModal.classList.add("active");
+  });
+}
 
-// CLOSE MODAL
-agentClose.addEventListener("click", () => {
-  agentModal.classList.remove("active");
-  agentModal.setAttribute("aria-hidden", "true");
-});
-
-// CLOSE WHEN CLICKING OUTSIDE PANEL
-agentModal.addEventListener("click", (e) => {
-  if (e.target === agentModal) {
+if (agentClose) {
+  agentClose.addEventListener("click", () => {
     agentModal.classList.remove("active");
-    agentModal.setAttribute("aria-hidden", "true");
-  }
-});
+  });
+}
 
-// FORM SUBMIT (FAKE SUCCESS MESSAGE)
-agentForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+if (agentModal) {
+  agentModal.addEventListener("click", (e) => {
+    if (e.target === agentModal) {
+      agentModal.classList.remove("active");
+    }
+  });
+}
 
-  agentForm.hidden = true;
-  agentThanks.hidden = false;
+if (agentForm) {
+  agentForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    agentForm.hidden = true;
+    agentThanks.hidden = false;
 
-  setTimeout(() => {
-    agentThanks.hidden = true;
-    agentForm.hidden = false;
-    agentModal.classList.remove("active");
-  }, 2500);
-});
+    setTimeout(() => {
+      agentThanks.hidden = true;
+      agentForm.hidden = false;
+      agentModal.classList.remove("active");
+    }, 2500);
+  });
+}
+
+// --------------------
+// CONTACT FORM MODAL
+// --------------------
+const contactForm = document.getElementById("contactForm");
+const contactModal = document.getElementById("contactModal");
+const contactClose = document.getElementById("contactClose");
+
+if (contactForm) {
+  contactForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    contactModal.classList.add("active");
+
+    setTimeout(() => {
+      contactModal.classList.remove("active");
+    }, 3000);
+  });
+}
+
+if (contactClose) {
+  contactClose.addEventListener("click", () => {
+    contactModal.classList.remove("active");
+  });
+}
+
+if (contactModal) {
+  contactModal.addEventListener("click", (e) => {
+    if (e.target === contactModal) {
+      contactModal.classList.remove("active");
+    }
+  });
+}
