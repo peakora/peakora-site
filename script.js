@@ -47,18 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const assistantMessages = document.getElementById("assistantMessages");
   const assistantInput = document.getElementById("assistantInput");
   const assistantSend = document.getElementById("assistantSend");
-
-  function openAssistant() {
-    assistantModal.classList.add("open");
-    if (!assistantMessages.dataset.initialized) {
-      addAssistantMessage("You’re here. That’s enough for now. What feels present for you?");
-      assistantMessages.dataset.initialized = "true";
-    }
-  }
-
-  function closeAssistant() {
-    assistantModal.classList.remove("open");
-  }
+  const peakoraMascot = document.getElementById("peakoraMascot");
 
   function addAssistantMessage(text, isUser = false) {
     const msg = document.createElement("div");
@@ -69,15 +58,32 @@ document.addEventListener("DOMContentLoaded", () => {
     assistantMessages.scrollTop = assistantMessages.scrollHeight;
   }
 
+  function openAssistant() {
+    assistantModal.classList.add("open");
+    if (peakoraMascot) peakoraMascot.classList.add("active"); // eyes on
+
+    if (!assistantMessages.dataset.initialized) {
+      addAssistantMessage("You’re here. That’s enough for now. What feels present for you?");
+      assistantMessages.dataset.initialized = "true";
+    }
+  }
+
+  function closeAssistant() {
+    assistantModal.classList.remove("open");
+    if (peakoraMascot) peakoraMascot.classList.remove("active"); // eyes off
+  }
+
   function handleSend() {
-    const value = assistantInput.value.trim();
-    if (!value) return;
-    addAssistantMessage(value, true);
+    const text = assistantInput.value.trim();
+    if (!text) return;
+
+    addAssistantMessage(text, true);
     assistantInput.value = "";
 
+    // Simple placeholder logic — you’ll replace this later with real flows
     setTimeout(() => {
-      addAssistantMessage("Thank you for sharing that. Do you want clarity, support, or a small step forward?");
-    }, 500);
+      addAssistantMessage("Thank you for sharing that. Tell me a bit more about how this feels for you.");
+    }, 600);
   }
 
   assistantButton.addEventListener("click", openAssistant);
@@ -85,10 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
   assistantSend.addEventListener("click", handleSend);
 
   assistantInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSend();
-    }
+    if (e.key === "Enter") handleSend();
   });
 
   assistantModal.addEventListener("click", (e) => {
@@ -97,3 +100,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
