@@ -837,6 +837,7 @@ section {
   100% { box-shadow: 0 0 8px rgba(0, 87, 255, 0.25); }
 }
 
+
 /* -------------------------------------------------------
    MODAL OVERLAY (SLIDE-OUT FROM BUTTON)
 ------------------------------------------------------- */
@@ -846,6 +847,12 @@ section {
   right: 24px;
   display: none;
   z-index: 9998;
+
+  /* No fullscreen overlay */
+  width: auto;
+  height: auto;
+  background: none;
+  padding: 0;
 }
 
 .assistant-modal-overlay.open {
@@ -871,9 +878,15 @@ section {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 0 18px rgba(0, 87, 255, 0.35); /* soft Peakora glow */
+
+  /* Soft Peakora glow */
+  box-shadow: 0 0 18px rgba(0, 87, 255, 0.35);
   border: 1px solid rgba(0, 87, 255, 0.25);
+
   overflow: hidden;
+
+  /* Critical fix: anchor inside overlay */
+  position: relative;
 }
 
 
@@ -961,7 +974,6 @@ section {
 .assistant-send:hover {
   background: #003fcc;
 }
-
 
 /* ============================
    MOBILE ADJUSTMENTS
