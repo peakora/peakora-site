@@ -67,8 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
     assistantMessages.scrollTop = assistantMessages.scrollHeight;
   }
 
+  // ⭐ FIX: force overlay to flex when opened
   function openAssistant() {
     assistantModalOverlay.classList.add("open");
+    assistantModalOverlay.style.display = "flex";
 
     if (!assistantMessages.dataset.initialized) {
       addAssistantMessage("Hi, I’m Peakora.\nHow can I help you?");
@@ -76,8 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ⭐ FIX: hide overlay properly
   function closeAssistant() {
     assistantModalOverlay.classList.remove("open");
+    assistantModalOverlay.style.display = "none";
   }
 
   function handleSend() {
