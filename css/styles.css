@@ -790,54 +790,27 @@ section {
   background: #003fcc;
 }
 
-/* Floating button */
+/* Floating Ask Peakora button — clean reset */
 .peakora-btn {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-}
-
-/* Label under mascot */
-.peakora-label {
+  padding: 14px 22px;
+  background: rgba(0, 87, 255, 0.15); /* semi‑transparent Peakora blue */
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 87, 255, 0.25);
+  border-radius: 14px;
+  color: #0057ff;
   font-size: 16px;
   font-weight: 600;
-  color: #0057ff;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  cursor: pointer;
+  z-index: 9999;
+  transition: background 0.25s ease, transform 0.25s ease;
 }
 
-.peakora-btn:hover .peakora-label {
-  opacity: 1;
-}
-
-/* Breathing glow animation */
-@keyframes peakoraGlow {
-  0%   { filter: drop-shadow(0 0 6px rgba(0, 87, 255, 0.25)); transform: scale(1); }
-  50%  { filter: drop-shadow(0 0 14px rgba(0, 87, 255, 0.5)); transform: scale(1.04); }
-  100% { filter: drop-shadow(0 0 6px rgba(0, 87, 255, 0.25)); transform: scale(1); }
-}
-
-.peakora-mascot svg {
-  width: 58px;
-  height: 78px;
-  animation: peakoraGlow 3s ease-in-out infinite;
-  transition: transform 0.3s ease, filter 0.3s ease;
-}
-
-/* Active state — stronger glow */
-.peakora-mascot.active svg {
-  animation: none;
-  transform: scale(1.08);
-  filter: drop-shadow(0 0 20px rgba(0, 87, 255, 0.7));
+.peakora-btn:hover {
+  background: rgba(0, 87, 255, 0.25);
+  transform: translateY(-2px);
 }
 
 
