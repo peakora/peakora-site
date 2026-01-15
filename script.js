@@ -97,4 +97,3 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === assistantModal) closeAssistant();
   });
 });
-
