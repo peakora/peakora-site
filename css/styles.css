@@ -798,22 +798,22 @@ section {
   bottom: 24px;
   right: 24px;
   padding: 10px 18px;
-  background: rgba(255, 255, 255, 0.85); /* transparent white */
-  border: 1px solid #d0d5e6;
+  background: rgba(255, 255, 255, 0.0); /* fully transparent */
+  border: 1px solid rgba(255, 255, 255, 0.65); /* soft white outline */
   border-radius: 12px;
   color: #0057ff;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   z-index: 9999;
+  backdrop-filter: blur(8px); /* keeps it premium */
   transition: background 0.25s ease, transform 0.25s ease;
 }
 
 .peakora-btn:hover {
-  background: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.15); /* subtle hover */
   transform: translateY(-2px);
 }
-
 
 /* -------------------------------------------------------
    MODAL OVERLAY (SLIDE-OUT FROM BUTTON)
