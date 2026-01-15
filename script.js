@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const assistantMessages = document.getElementById("assistantMessages");
   const assistantInput = document.getElementById("assistantInput");
   const assistantSend = document.getElementById("assistantSend");
-  const peakoraMascot = document.getElementById("peakoraMascot");
 
   function addAssistantMessage(text, isUser = false) {
     const msg = document.createElement("div");
@@ -60,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function openAssistant() {
     assistantModal.classList.add("open");
-    peakoraMascot.classList.add("active");
 
     if (!assistantMessages.dataset.initialized) {
       addAssistantMessage("You’re here. That’s enough for now. What feels present for you?");
@@ -70,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function closeAssistant() {
     assistantModal.classList.remove("open");
-    peakoraMascot.classList.remove("active");
   }
 
   function handleSend() {
@@ -97,3 +94,4 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === assistantModal) closeAssistant();
   });
 });
+
