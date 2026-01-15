@@ -48,10 +48,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const assistantInput = document.getElementById("assistantInput");
   const assistantSend = document.getElementById("assistantSend");
 
-  function addAssistantMessage(text, isUser = false) {
+  let firstUserMessage = null;
+  let userName = null;
+
+  function addAssistantMessage(text) {
     const msg = document.createElement("div");
     msg.classList.add("assistant-message");
-    if (isUser) msg.classList.add("user");
+    msg.textContent = text;
+    assistantMessages.appendChild(msg);
+    assistantMessages.scrollTop = assistantMessages.scrollHeight;
+  }
+
+  function addUserMessage(text) {
+    const msg = document.createElement("div");
+    msg.classList.add("assistant-message", "user");
     msg.textContent = text;
     assistantMessages.appendChild(msg);
     assistantMessages.scrollTop = assistantMessages.scrollHeight;
@@ -61,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     assistantModal.classList.add("open");
 
     if (!assistantMessages.dataset.initialized) {
-      addAssistantMessage("You’re here. That’s enough for now. What feels present for you?");
+      addAssistantMessage("Hi, I’m Peakora.\nHow can I help you?");
       assistantMessages.dataset.initialized = "true";
     }
   }
@@ -74,12 +84,66 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = assistantInput.value.trim();
     if (!text) return;
 
-    addAssistantMessage(text, true);
+    addUserMessage(text);
     assistantInput.value = "";
 
-    setTimeout(() => {
-      addAssistantMessage("Thank you for sharing that. Tell me a bit more about how this feels for you.");
-    }, 600);
+    // FIRST USER MESSAGE
+    if (!firstUserMessage) {
+      firstUserMessage = text.toLowerCase();
+
+      const isGreeting =
+        firstUserMessage.includes("hi") ||
+        firstUserMessage.includes("hello") ||
+        firstUserMessage.includes("hey") ||
+        firstUserMessage.includes("morning") ||
+        firstUserMessage.includes("evening");
+
+      if (isGreeting) {
+        setTimeout(() => {
+          addAssistantMessage("It’s really nice to meet you.\nBefore we go further, may I know your name?");
+        }, 400);
+        return;
+      }
+
+      setTimeout(() => {
+        addAssistantMessage("I can definitely help you with that.\nBefore we go further, may I know your name?");
+      }, 400);
+      return;
+    }
+
+    // USER PROVIDES NAME
+    if (!userName) {
+      userName = text;
+
+      // If first message was a greeting → ask for request
+      const isGreeting =
+        firstUserMessage.includes("hi") ||
+        firstUserMessage.includes("hello") ||
+        firstUserMessage.includes("hey") ||
+        firstUserMessage.includes("morning") ||
+        firstUserMessage.includes("evening");
+
+      if (isGreeting) {
+        setTimeout(() => {
+          addAssistantMessage(`Thank you for sharing that, ${userName}.\nWhat would you like support with today?`);
+        }, 400);
+        return;
+      }
+
+      // If first message was a request → redirect
+      setTimeout(() => {
+        addAssistantMessage(`Thank you for sharing that, ${userName}.\nI know exactly where you’ll get the support you need.\nLet me connect you with the Peakora Assistant`);
+      }, 400);
+
+      return;
+    }
+
+    // USER GIVES REQUEST AFTER NAME
+    if (userName) {
+      setTimeout(() => {
+        addAssistantMessage(`Thank you for sharing that, ${userName}.\nI know exactly where you’ll get the support you need.\nLet me connect you with the Peakora Assistant`);
+      }, 400);
+    }
   }
 
   assistantButton.addEventListener("click", openAssistant);
@@ -89,9 +153,4 @@ document.addEventListener("DOMContentLoaded", () => {
   assistantInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleSend();
   });
-
-  assistantModal.addEventListener("click", (e) => {
-    if (e.target === assistantModal) closeAssistant();
-  });
 });
-
