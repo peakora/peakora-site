@@ -51,14 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let firstUserMessage = null;
   let userName = null;
 
-  /* Human-like rhythm based on message length */
+  /* Human-like rhythm */
   function rhythm(text) {
     const base = 900;
     const perChar = 45;
     return base + text.length * perChar;
   }
 
-  /* Smooth auto-scroll */
+  /* Smooth scroll */
   function smoothScroll() {
     assistantMessages.scrollTo({
       top: assistantMessages.scrollHeight,
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     smoothScroll();
   }
 
-  /* Premium iMessage typing indicator */
+  /* iMessage typing indicator */
   function showTypingIndicator() {
     if (document.getElementById("typingIndicator")) return;
 
@@ -83,17 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
     typing.id = "typingIndicator";
     typing.classList.add("typing-indicator");
 
-    const dot1 = document.createElement("div");
-    const dot2 = document.createElement("div");
-    const dot3 = document.createElement("div");
-
-    dot1.classList.add("dot");
-    dot2.classList.add("dot");
-    dot3.classList.add("dot");
-
-    typing.appendChild(dot1);
-    typing.appendChild(dot2);
-    typing.appendChild(dot3);
+    for (let i = 0; i < 3; i++) {
+      const dot = document.createElement("div");
+      dot.classList.add("dot");
+      typing.appendChild(dot);
+    }
 
     assistantMessages.appendChild(typing);
     smoothScroll();
@@ -104,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typing) typing.remove();
   }
 
-  /* Assistant message with rhythm + typing */
+  /* Assistant message */
   function addAssistantMessageWithDelay(text) {
     const delay = rhythm(text);
 
@@ -169,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     assistantModalOverlay.classList.remove("open");
   }
 
-  /* Toggle modal on button click */
+  /* Toggle modal */
   assistantButton.addEventListener("click", () => {
     if (assistantModalOverlay.classList.contains("open")) {
       closeAssistant();
@@ -181,12 +175,12 @@ document.addEventListener("DOMContentLoaded", () => {
   /* Close on X */
   assistantClose.addEventListener("click", closeAssistant);
 
-  /* Close when clicking outside modal */
+  /* Close on outside click */
   assistantModalOverlay.addEventListener("click", (e) => {
     if (e.target === assistantModalOverlay) closeAssistant();
   });
 
-  /* Main conversation logic */
+  /* Conversation logic */
   function handleSend() {
     const text = assistantInput.value.trim();
     if (!text) return;
