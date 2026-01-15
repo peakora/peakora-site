@@ -51,6 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let firstUserMessage = null;
   let userName = null;
 
+  function rhythm(text) {
+    const base = 900;
+    const perChar = 40;
+    return base + text.length * perChar;
+  }
+
   function addUserMessage(text) {
     const msg = document.createElement("div");
     msg.classList.add("assistant-message", "user");
@@ -60,9 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showTypingIndicator() {
+    if (document.getElementById("typingIndicator")) return;
+
     const typing = document.createElement("div");
-    typing.classList.add("assistant-message");
     typing.id = "typingIndicator";
+    typing.classList.add("typing-indicator");
     typing.textContent = "Peakora is typing…";
     assistantMessages.appendChild(typing);
     assistantMessages.scrollTop = assistantMessages.scrollHeight;
@@ -73,7 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typing) typing.remove();
   }
 
-  function addAssistantMessageWithDelay(text, delay) {
+  function addAssistantMessageWithDelay(text) {
+    const delay = rhythm(text);
+
     showTypingIndicator();
 
     setTimeout(() => {
@@ -87,7 +97,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }, delay);
   }
 
-  function addRedirectButton(delay) {
+  function addRedirectButton(text) {
+    const delay = rhythm(text);
+
     showTypingIndicator();
 
     setTimeout(() => {
@@ -121,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     assistantModalOverlay.classList.add("open");
 
     if (!assistantMessages.dataset.initialized) {
-      addAssistantMessageWithDelay("Hi, I’m Peakora.\nHow can I help you?", 1600);
+      addAssistantMessageWithDelay("Hi, I’m Peakora.\nHow can I help you?");
       assistantMessages.dataset.initialized = "true";
     }
   }
@@ -137,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
     addUserMessage(text);
     assistantInput.value = "";
 
-    // FIRST USER MESSAGE
     if (!firstUserMessage) {
       firstUserMessage = text.toLowerCase();
 
@@ -150,20 +161,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isGreeting) {
         addAssistantMessageWithDelay(
-          "It’s really nice to meet you.\nBefore we go further, may I know your name?",
-          1800
+          "It’s really nice to meet you.\nBefore we go further, may I know your name?"
         );
         return;
       }
 
       addAssistantMessageWithDelay(
-        "I can definitely help you with that.\nBefore we go further, may I know your name?",
-        1800
+        "I can definitely help you with that.\nBefore we go further, may I know your name?"
       );
       return;
     }
 
-    // USER PROVIDES NAME
     if (!userName) {
       userName = text;
 
@@ -176,30 +184,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isGreeting) {
         addAssistantMessageWithDelay(
-          `Thank you for sharing that, ${userName}.\nWhat would you like support with today?`,
-          1800
+          `Thank you for sharing that, ${userName}.\nWhat would you like support with today?`
         );
         return;
       }
 
-      addAssistantMessageWithDelay(
-        `Thank you for sharing that, ${userName}.\nI know exactly where you’ll get the support you need.\nLet me connect you with the Peakora Assistant`,
-        2000
-      );
+      const msg = `Thank you for sharing that, ${userName}.\nI know exactly where you’ll get the support you need.\nLet me connect you with the Peakora Assistant`;
 
-      addRedirectButton(2600);
+      addAssistantMessageWithDelay(msg);
+      addRedirectButton(msg);
       return;
     }
 
-    // ANY MESSAGE AFTER NAME → OFFER REDIRECT
-    if (userName) {
-      addAssistantMessageWithDelay(
-        `Thank you for sharing that, ${userName}.\nI know exactly where you’ll get the support you need.\nLet me connect you with the Peakora Assistant`,
-        2000
-      );
+    const msg = `Thank you for sharing that, ${userName}.\nI know exactly where you’ll get the support you need.\nLet me connect you with the Peakora Assistant`;
 
-      addRedirectButton(2600);
-    }
+    addAssistantMessageWithDelay(msg);
+    addRedirectButton(msg);
   }
 
   assistantButton.addEventListener("click", openAssistant);
