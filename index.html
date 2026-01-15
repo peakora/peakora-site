@@ -372,46 +372,19 @@
 </button>
 
 
+<!-- Floating Ask Peakora Button -->
+<button id="assistantButton" class="peakora-btn">
+  Ask Peakora
+</button>
+
 <!-- ASSISTANT MODAL -->
 <div id="assistantModal" class="assistant-modal-overlay">
   <div class="assistant-modal">
 
     <!-- HEADER -->
     <div class="assistant-header">
-      <span class="assistant-title">Peakora Assistant</span>
+      <span class="assistant-title">Peakora</span>
       <button id="assistantClose" class="assistant-close">&times;</button>
-    </div>
-
-    <!-- HALO DROPLET MASCOT -->
-    <div class="assistant-mascot-container">
-      <svg class="assistant-mascot-svg" viewBox="0 0 120 120">
-        <defs>
-          <!-- Core gradient -->
-          <radialGradient id="dropletGradient" cx="50%" cy="30%" r="65%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
-            <stop offset="40%" stop-color="#dbe7ff" stop-opacity="1" />
-            <stop offset="100%" stop-color="#7aa4ff" stop-opacity="1" />
-          </radialGradient>
-        </defs>
-
-        <!-- Halo ring -->
-        <circle
-          class="halo-ring"
-          cx="60"
-          cy="52"
-          r="34"
-        />
-
-        <!-- Droplet body -->
-        <path
-          class="droplet-body"
-          d="M60 18
-             Q86 46 78 72
-             Q72 94 60 102
-             Q48 94 42 72
-             Q34 46 60 18Z"
-        />
-      </svg>
     </div>
 
     <!-- MESSAGES -->
@@ -419,12 +392,13 @@
 
     <!-- INPUT AREA -->
     <div class="assistant-input-area">
-      <input id="assistantInput" type="text" placeholder="Type what feels present right now..." />
+      <input id="assistantInput" type="text" placeholder="Type your message…" />
       <button id="assistantSend" class="assistant-send">Send</button>
     </div>
 
   </div>
 </div>
+
 
 <script src="assistant.js"></script>
 
