@@ -793,35 +793,22 @@ section {
 /* -------------------------------------------------------
    FLOATING ASK PEAKORA BUTTON
 ------------------------------------------------------- */
+/* Floating Button */
 .peakora-btn {
   position: fixed;
   bottom: 24px;
   right: 24px;
-
-  /* Size */
   padding: 10px 18px;
-
-  /* Transparent white background */
   background: rgba(255, 255, 255, 0.0);
-
-  /* Soft white outline */
   border: 1px solid rgba(255, 255, 255, 0.65);
-
-  /* Shape */
   border-radius: 12px;
-
-  /* Text */
   color: #0057ff;
   font-size: 15px;
   font-weight: 600;
-
-  /* Behavior */
   cursor: pointer;
   z-index: 9999;
   backdrop-filter: blur(8px);
   transition: background 0.25s ease, transform 0.25s ease;
-
-  /* Breathing Peakora glow */
   animation: peakoraGlow 4s ease-in-out infinite;
 }
 
@@ -830,33 +817,28 @@ section {
   transform: translateY(-2px);
 }
 
-/* Breathing glow keyframes */
 @keyframes peakoraGlow {
   0%   { box-shadow: 0 0 8px rgba(0, 87, 255, 0.25); }
   50%  { box-shadow: 0 0 16px rgba(0, 87, 255, 0.45); }
   100% { box-shadow: 0 0 8px rgba(0, 87, 255, 0.25); }
 }
 
-
-/* -------------------------------------------------------
-   MODAL OVERLAY (SLIDE-OUT FROM BUTTON)
-------------------------------------------------------- */
+/* Overlay */
 .assistant-modal-overlay {
   position: fixed;
-  bottom: 80px;
-  right: 24px;
+  inset: 0;
   display: none;
   z-index: 9998;
+  background: transparent;
 
-  /* No fullscreen overlay */
-  width: auto;
-  height: auto;
-  background: none;
-  padding: 0;
+  /* Align modal bottom-right */
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0 24px 90px 24px;
 }
 
 .assistant-modal-overlay.open {
-  display: block;
+  display: flex;
   animation: slideUp 0.3s ease;
 }
 
@@ -865,10 +847,7 @@ section {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-
-/* -------------------------------------------------------
-   MODAL BOX (CLEAN, PROFESSIONAL, PEAKORA STYLE)
-------------------------------------------------------- */
+/* Modal Box */
 .assistant-modal {
   background: #ffffff;
   border-radius: 18px;
@@ -878,21 +857,12 @@ section {
   display: flex;
   flex-direction: column;
   gap: 16px;
-
-  /* Soft Peakora glow */
   box-shadow: 0 0 18px rgba(0, 87, 255, 0.35);
   border: 1px solid rgba(0, 87, 255, 0.25);
-
   overflow: hidden;
-
-  /* Critical fix: anchor inside overlay */
-  position: relative;
 }
 
-
-/* -------------------------------------------------------
-   HEADER
-------------------------------------------------------- */
+/* Header */
 .assistant-header {
   display: flex;
   justify-content: space-between;
@@ -913,10 +883,7 @@ section {
   color: #4a5670;
 }
 
-
-/* -------------------------------------------------------
-   MESSAGES AREA
-------------------------------------------------------- */
+/* Messages */
 .assistant-messages {
   flex: 1;
   display: flex;
@@ -943,10 +910,7 @@ section {
   color: white;
 }
 
-
-/* -------------------------------------------------------
-   INPUT AREA
-------------------------------------------------------- */
+/* Input */
 .assistant-input-area {
   display: flex;
   gap: 10px;
