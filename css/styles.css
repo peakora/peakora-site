@@ -939,6 +939,13 @@ section {
   background: #003fcc;
 }
 
+#smartReplies button {
+  transition: background 0.2s ease;
+}
+
+#smartReplies button:hover {
+  background: #e6e6e6;
+}
 
 /* ============================
    MOBILE ADJUSTMENTS
