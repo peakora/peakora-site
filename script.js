@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let userName = null;
   let conversationStage = 1;
   let assistantBusy = false;
+  let usedSmartReply = false; // NEW FLAG
 
   function rhythm(text) {
     const base = 900;
@@ -239,6 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       chip.addEventListener("click", () => {
         assistantInput.value = text;
+        usedSmartReply = true; // NEW
         handleSend();
       });
 
@@ -288,6 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
     smartReplies.innerHTML = "";
     userName = null;
     conversationStage = 1;
+    usedSmartReply = false;
     assistantMessages.dataset.initialized = "";
     openAssistant();
   });
@@ -309,6 +312,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // STAGE 1 — GREETING
     // -------------------------
     if (conversationStage === 1) {
+      usedSmartReply = false; // Smart replies do NOT skip Stage 1
+
       if (isGreeting(text)) {
         addAssistantMessageWithDelay("It’s really nice to meet you. What’s your name?");
         conversationStage = 2;
@@ -324,6 +329,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // STAGE 2 — NAME COLLECTION
     // -------------------------
     if (conversationStage === 2) {
+      usedSmartReply = false; // Smart replies do NOT skip Stage 2
+
       const lower = text.toLowerCase().trim();
 
       const optOutTriggers = [
@@ -361,7 +368,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // STAGE 3 — PROBLEM COLLECTION
     // -------------------------
     if (conversationStage === 3) {
-      if (!looksLikeProblem(text)) {
+      // Smart replies ONLY skip Stage 3
+      if (!looksLikeProblem(text) && !usedSmartReply) {
         addAssistantMessageWithDelay(`No worries, ${userName}. Take your time — what would you like support with today?`);
         showSmartReplies();
         return;
@@ -370,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addAssistantMessageWithDelay(`Thank you for sharing that, ${userName}. I know exactly where you’ll get the support you need.`);
       addRedirectButton();
       conversationStage = 4;
+      usedSmartReply = false; // Reset
       return;
     }
 
@@ -377,6 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // STAGE 4 — REDIRECT
     // -------------------------
     if (conversationStage === 4) {
+      usedSmartReply = false;
       addAssistantMessageWithDelay(`I’m here with you, ${userName}. You can continue with the Peakora Assistant whenever you're ready.`);
       return;
     }
