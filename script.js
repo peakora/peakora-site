@@ -140,6 +140,59 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
+  function looksLikeName(text) {
+    const lower = text.toLowerCase().trim();
+
+    const banned = [
+      "why",
+      "because",
+      "idk",
+      "i don't know",
+      "dont know",
+      "no",
+      "none",
+      "nothing",
+      "later",
+      "not now",
+      "skip",
+      "no name",
+      "anonymous",
+      "help",
+      "what can you do"
+    ];
+
+    if (banned.includes(lower)) return false;
+    if (lower.length < 2) return false;
+    if (lower.split(" ").length > 4) return false;
+
+    return true;
+  }
+
+  function looksLikeProblem(text) {
+    const lower = text.toLowerCase().trim();
+
+    const banned = [
+      "idk",
+      "i don't know",
+      "dont know",
+      "nothing",
+      "no",
+      "why",
+      "later",
+      "not now",
+      "skip",
+      "?",
+      "help",
+      "what can you do",
+      "not sure"
+    ];
+
+    if (banned.includes(lower)) return false;
+    if (lower.length < 3) return false;
+
+    return true;
+  }
+
   function openAssistant() {
     assistantModalOverlay.classList.add("open");
 
@@ -184,7 +237,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // User skipped greeting
       addAssistantMessageWithDelay("Before I help you, may I know your name?");
       conversationStage = 2;
       return;
@@ -194,15 +246,38 @@ document.addEventListener("DOMContentLoaded", () => {
     // STAGE 2 — NAME COLLECTION
     // -------------------------
     if (conversationStage === 2) {
-      const lower = text.toLowerCase();
+      const lower = text.toLowerCase().trim();
 
-      if (lower.includes("why") && lower.includes("name")) {
+      const optOutTriggers = [
+        "why",
+        "no",
+        "not now",
+        "later",
+        "skip",
+        "none",
+        "i don't want to",
+        "i dont want to",
+        "idk",
+        "don't know",
+        "dont know",
+        "no name",
+        "anonymous"
+      ];
+
+      if (optOutTriggers.includes(lower)) {
+        addAssistantMessageWithDelay("No worries — you can stay anonymous. What would you like support with?");
+        userName = "friend";
+        conversationStage = 3;
+        return;
+      }
+
+      if (lower.includes("why")) {
         addAssistantMessageWithDelay("I ask your name so I can speak to you personally. What should I call you?");
         return;
       }
 
-      if (text.length < 2) {
-        addAssistantMessageWithDelay("I didn’t catch that. What name should I use?");
+      if (!looksLikeName(text)) {
+        addAssistantMessageWithDelay("I didn’t quite catch that as a name. What name should I use for you?");
         return;
       }
 
@@ -216,6 +291,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // STAGE 3 — PROBLEM COLLECTION
     // -------------------------
     if (conversationStage === 3) {
+      if (!looksLikeProblem(text)) {
+        addAssistantMessageWithDelay(`No worries, ${userName}. Take your time — what would you like support with today?`);
+        return;
+      }
+
       addAssistantMessageWithDelay(`Thank you for sharing that, ${userName}. I know exactly where you’ll get the support you need.`);
       addRedirectButton();
       conversationStage = 4;
