@@ -4,16 +4,551 @@
   <meta charset="UTF-8" />
   <title>Peakora Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="assistant.css" />
 </head>
 <body>
-  <main class="assistant-page">
-    <h1>Peakora Assistant</h1>
-    <p>Your personal space to get a 7-day plan, tailored to you.</p>
-    <!-- The Tidio chatbot will appear as a widget on this page -->
-  </main>
+  <div class="assistant-shell">
+    <header class="assistant-header">
+      <div class="assistant-logo">Peakora</div>
+      <div class="assistant-subtitle">Gentle guidance. Real momentum.</div>
+    </header>
 
-  <!-- Tidio script: ONLY for testing on this page -->
-  <script src="//code.tidio.co/qrujfpkvvi51k9dylszwbmn9ousuexbi.js" async></script>
+    <main class="assistant-main">
+      <section class="assistant-card" id="step-container">
+        <!-- Dynamic content injected by JS -->
+      </section>
+
+      <div class="assistant-progress">
+        <div class="assistant-progress-label" id="progress-label">Step 1 of 7</div>
+        <div class="assistant-progress-bar">
+          <div class="assistant-progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="assistant-footer">
+      <span>Peakora Assistant · This is not medical advice.</span>
+    </footer>
+  </div>
+
+  <script>
+    // ====== STATE ======
+    const state = {
+      stepIndex: 0,
+      goal: null,
+      challenge: null,
+      timeCommitment: null,
+      insight: null,
+      email: null,
+      leadScore: 0,
+    };
+
+    const steps = [
+      "welcome",
+      "explanation",
+      "goal",
+      "challenge",
+      "time",
+      "insight",
+      "email",
+      "processing",
+      "recommendations",
+      "pricing",
+      "done",
+    ];
+
+    const totalMainSteps = 7; // for progress display
+
+    // ====== HELPERS ======
+    function setProgress() {
+      const mainStepMap = {
+        welcome: 1,
+        explanation: 1,
+        goal: 2,
+        challenge: 3,
+        time: 4,
+        insight: 5,
+        email: 6,
+        processing: 7,
+        recommendations: 7,
+        pricing: 7,
+        done: 7,
+      };
+      const currentStepKey = steps[state.stepIndex];
+      const current = mainStepMap[currentStepKey] || 1;
+      const percent = (current / totalMainSteps) * 100;
+
+      document.getElementById("progress-label").textContent =
+        `Step ${current} of ${totalMainSteps}`;
+      document.getElementById("progress-fill").style.width = percent + "%";
+    }
+
+    function renderStep() {
+      const container = document.getElementById("step-container");
+      const stepKey = steps[state.stepIndex];
+      setProgress();
+
+      switch (stepKey) {
+        case "welcome":
+          container.innerHTML = `
+            <h1 class="assistant-title">Hi, I’m Peakora.</h1>
+            <p class="assistant-text">
+              I’m here to help you feel better, gain clarity, and build momentum.
+              I’ll ask you a few gentle questions so I can create your personalized 7‑day plan.
+            </p>
+            <div class="assistant-actions">
+              <button class="btn primary" data-action="next" data-target="goal">I’m ready</button>
+              <button class="btn ghost" data-action="next" data-target="explanation">What is this?</button>
+              <button class="btn subtle" data-action="end">Not now</button>
+            </div>
+          `;
+          break;
+
+        case "explanation":
+          container.innerHTML = `
+            <h2 class="assistant-title">What we’ll do together</h2>
+            <p class="assistant-text">
+              I’ll ask about your goals, your current challenges, and how much time you realistically have.
+              Then I’ll create a personalized 7‑day plan and send it to your email.
+            </p>
+            <div class="assistant-actions">
+              <button class="btn primary" data-action="next" data-target="goal">Continue</button>
+            </div>
+          `;
+          break;
+
+        case "goal":
+          container.innerHTML = `
+            <h2 class="assistant-title">What’s your main goal right now?</h2>
+            <p class="assistant-text">Choose the one that feels closest, even if it’s not perfect.</p>
+            <div class="assistant-actions vertical">
+              <button class="btn primary" data-goal="Lose weight">Lose weight</button>
+              <button class="btn primary" data-goal="Improve energy">Improve energy</button>
+              <button class="btn primary" data-goal="Reduce stress">Reduce stress</button>
+              <button class="btn primary" data-goal="Build healthy habits">Build healthy habits</button>
+              <button class="btn ghost" data-goal="Other">Something else</button>
+            </div>
+            <div class="assistant-input-wrapper" id="goal-other-wrapper" style="display:none;">
+              <label class="assistant-label">Tell me in your own words</label>
+              <textarea class="assistant-input" id="goal-other-input" rows="3"></textarea>
+              <button class="btn primary" id="goal-other-submit">Continue</button>
+            </div>
+          `;
+          break;
+
+        case "challenge":
+          container.innerHTML = `
+            <h2 class="assistant-title">What’s your biggest challenge right now?</h2>
+            <p class="assistant-text">Be honest with yourself here—this helps me shape your plan.</p>
+            <div class="assistant-actions vertical">
+              <button class="btn primary" data-challenge="Motivation">Motivation</button>
+              <button class="btn primary" data-challenge="Time">Time</button>
+              <button class="btn primary" data-challenge="Consistency">Consistency</button>
+              <button class="btn primary" data-challenge="Stress / overwhelm">Stress / overwhelm</button>
+              <button class="btn ghost" data-challenge="Other">Something else</button>
+            </div>
+            <div class="assistant-input-wrapper" id="challenge-other-wrapper" style="display:none;">
+              <label class="assistant-label">Tell me in your own words</label>
+              <textarea class="assistant-input" id="challenge-other-input" rows="3"></textarea>
+              <button class="btn primary" id="challenge-other-submit">Continue</button>
+            </div>
+          `;
+          break;
+
+        case "time":
+          container.innerHTML = `
+            <h2 class="assistant-title">How much time can you commit each day?</h2>
+            <p class="assistant-text">Choose what feels realistic, not ideal.</p>
+            <div class="assistant-actions vertical">
+              <button class="btn primary" data-time="5 minutes">5 minutes</button>
+              <button class="btn primary" data-time="10 minutes">10 minutes</button>
+              <button class="btn primary" data-time="15 minutes">15 minutes</button>
+              <button class="btn primary" data-time="20+ minutes">20+ minutes</button>
+            </div>
+          `;
+          break;
+
+        case "insight":
+          container.innerHTML = `
+            <h2 class="assistant-title">One last thing before we create your plan</h2>
+            <p class="assistant-text">
+              What’s something you want me to know about your current situation?
+              You can share as much or as little as you like.
+            </p>
+            <div class="assistant-input-wrapper">
+              <textarea class="assistant-input" id="insight-input" rows="4"></textarea>
+            </div>
+            <div class="assistant-actions">
+              <button class="btn primary" id="insight-submit">Continue</button>
+            </div>
+          `;
+          break;
+
+        case "email":
+          container.innerHTML = `
+            <h2 class="assistant-title">Where should I send your 7‑day plan?</h2>
+            <p class="assistant-text">
+              I’ll use your answers to create a personalized plan and send it to your inbox.
+            </p>
+            <div class="assistant-input-wrapper">
+              <label class="assistant-label">Email address</label>
+              <input type="email" class="assistant-input" id="email-input" placeholder="you@example.com" />
+            </div>
+            <div class="assistant-actions">
+              <button class="btn primary" id="email-submit">Create my plan</button>
+            </div>
+          `;
+          break;
+
+        case "processing":
+          container.innerHTML = `
+            <h2 class="assistant-title">Creating your plan…</h2>
+            <p class="assistant-text">
+              I’m putting everything together based on what you shared—this usually takes just a moment.
+            </p>
+            <div class="assistant-loader"></div>
+          `;
+          // Trigger webhook call
+          sendToWebhook();
+          break;
+
+        case "recommendations":
+          container.innerHTML = buildRecommendationsHTML();
+          break;
+
+        case "pricing":
+          container.innerHTML = `
+            <h2 class="assistant-title">If you want deeper support</h2>
+            <p class="assistant-text">
+              Your 7‑day plan is on its way. If you’d like to go further, here are some options.
+            </p>
+            <div class="assistant-actions vertical">
+              <a class="btn primary" href="#" target="_blank">Free plan (already sent)</a>
+              <a class="btn ghost" href="#" target="_blank">Low‑ticket program</a>
+              <a class="btn ghost" href="#" target="_blank">Core program</a>
+              <a class="btn ghost" href="#" target="_blank">Premium coaching</a>
+            </div>
+            <div class="assistant-actions">
+              <button class="btn subtle" data-action="finish">I’m done for now</button>
+            </div>
+          `;
+          break;
+
+        case "done":
+          container.innerHTML = `
+            <h2 class="assistant-title">You’re all set</h2>
+            <p class="assistant-text">
+              Your personalized 7‑day plan is on its way to your inbox.
+              If you don’t see it in a few minutes, check your spam or promotions folder.
+            </p>
+            <div class="assistant-actions">
+              <button class="btn primary" data-action="redirect-thankyou">Go to thank you page</button>
+            </div>
+          `;
+          break;
+      }
+
+      attachHandlers(stepKey);
+    }
+
+    function attachHandlers(stepKey) {
+      const container = document.getElementById("step-container");
+
+      if (stepKey === "welcome") {
+        container.querySelectorAll("button").forEach(btn => {
+          const action = btn.getAttribute("data-action");
+          const target = btn.getAttribute("data-target");
+
+          if (action === "next") {
+            btn.addEventListener("click", () => goToStep(target));
+          } else if (action === "end") {
+            btn.addEventListener("click", () => {
+              state.stepIndex = steps.indexOf("done");
+              renderStep();
+            });
+          }
+        });
+      }
+
+      if (stepKey === "explanation") {
+        container.querySelector("[data-action='next']").addEventListener("click", () => {
+          goToStep("goal");
+        });
+      }
+
+      if (stepKey === "goal") {
+        const buttons = container.querySelectorAll("[data-goal]");
+        const otherWrapper = document.getElementById("goal-other-wrapper");
+        const otherInput = document.getElementById("goal-other-input");
+        const otherSubmit = document.getElementById("goal-other-submit");
+
+        buttons.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const value = btn.getAttribute("data-goal");
+            if (value === "Other") {
+              otherWrapper.style.display = "block";
+            } else {
+              state.goal = value;
+              updateLeadScoreForGoal(value);
+              goToStep("challenge");
+            }
+          });
+        });
+
+        if (otherSubmit) {
+          otherSubmit.addEventListener("click", () => {
+            const val = (otherInput.value || "").trim();
+            if (!val) return;
+            state.goal = val;
+            updateLeadScoreForGoal("Other");
+            goToStep("challenge");
+          });
+        }
+      }
+
+      if (stepKey === "challenge") {
+        const buttons = container.querySelectorAll("[data-challenge]");
+        const otherWrapper = document.getElementById("challenge-other-wrapper");
+        const otherInput = document.getElementById("challenge-other-input");
+        const otherSubmit = document.getElementById("challenge-other-submit");
+
+        buttons.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const value = btn.getAttribute("data-challenge");
+            if (value === "Other") {
+              otherWrapper.style.display = "block";
+            } else {
+              state.challenge = value;
+              updateLeadScoreForChallenge(value);
+              goToStep("time");
+            }
+          });
+        });
+
+        if (otherSubmit) {
+          otherSubmit.addEventListener("click", () => {
+            const val = (otherInput.value || "").trim();
+            if (!val) return;
+            state.challenge = val;
+            updateLeadScoreForChallenge("Other");
+            goToStep("time");
+          });
+        }
+      }
+
+      if (stepKey === "time") {
+        const buttons = container.querySelectorAll("[data-time]");
+        buttons.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const value = btn.getAttribute("data-time");
+            state.timeCommitment = value;
+            updateLeadScoreForTime(value);
+            goToStep("insight");
+          });
+        });
+      }
+
+      if (stepKey === "insight") {
+        const submit = document.getElementById("insight-submit");
+        const input = document.getElementById("insight-input");
+        submit.addEventListener("click", () => {
+          const val = (input.value || "").trim();
+          state.insight = val;
+          updateLeadScoreForInsight(val);
+          goToStep("email");
+        });
+      }
+
+      if (stepKey === "email") {
+        const submit = document.getElementById("email-submit");
+        const input = document.getElementById("email-input");
+        submit.addEventListener("click", () => {
+          const val = (input.value || "").trim();
+          if (!val || !val.includes("@")) {
+            input.classList.add("input-error");
+            return;
+          }
+          input.classList.remove("input-error");
+          state.email = val;
+          goToStep("processing");
+        });
+      }
+
+      if (stepKey === "recommendations") {
+        const skipBtn = container.querySelector("[data-action='skip']");
+        const nextBtn = container.querySelector("[data-action='next-pricing']");
+        if (skipBtn) skipBtn.addEventListener("click", () => goToStep("pricing"));
+        if (nextBtn) nextBtn.addEventListener("click", () => goToStep("pricing"));
+      }
+
+      if (stepKey === "pricing") {
+        const finishBtn = container.querySelector("[data-action='finish']");
+        if (finishBtn) finishBtn.addEventListener("click", () => {
+          goToStep("done");
+        });
+      }
+
+      if (stepKey === "done") {
+        const btn = container.querySelector("[data-action='redirect-thankyou']");
+        if (btn) {
+          btn.addEventListener("click", () => {
+            // Replace with your real thank-you page URL
+            window.location.href = "thank-you.html";
+          });
+        }
+      }
+    }
+
+    function goToStep(targetKey) {
+      const idx = steps.indexOf(targetKey);
+      if (idx === -1) return;
+      state.stepIndex = idx;
+      renderStep();
+    }
+
+    // ====== LEAD SCORING ======
+    function updateLeadScoreForGoal(goal) {
+      switch (goal) {
+        case "Lose weight":
+          state.leadScore += 3;
+          break;
+        case "Improve energy":
+          state.leadScore += 2;
+          break;
+        case "Build healthy habits":
+          state.leadScore += 2;
+          break;
+        case "Reduce stress":
+          state.leadScore += 1;
+          break;
+        case "Other":
+          state.leadScore += 1;
+          break;
+      }
+    }
+
+    function updateLeadScoreForChallenge(challenge) {
+      switch (challenge) {
+        case "Motivation":
+          state.leadScore += 2;
+          break;
+        case "Consistency":
+          state.leadScore += 2;
+          break;
+        case "Time":
+          state.leadScore += 1;
+          break;
+        case "Stress / overwhelm":
+          state.leadScore += 1;
+          break;
+        case "Other":
+          state.leadScore += 1;
+          break;
+      }
+    }
+
+    function updateLeadScoreForTime(time) {
+      switch (time) {
+        case "20+ minutes":
+          state.leadScore += 3;
+          break;
+        case "15 minutes":
+          state.leadScore += 2;
+          break;
+        case "10 minutes":
+          state.leadScore += 1;
+          break;
+        case "5 minutes":
+          state.leadScore += 0;
+          break;
+      }
+    }
+
+    function updateLeadScoreForInsight(text) {
+      const lower = (text || "").toLowerCase();
+      if (lower.match(/desperate|struggling|need help|lost|stuck/)) {
+        state.leadScore += 3;
+      } else if (lower.match(/ready|committed|let's do this|lets do this|motivated/)) {
+        state.leadScore += 2;
+      } else {
+        state.leadScore += 1;
+      }
+    }
+
+    // ====== WEBHOOK ======
+    function sendToWebhook() {
+      const payload = {
+        goal: state.goal,
+        challenge: state.challenge,
+        time_commitment: state.timeCommitment,
+        insight: state.insight,
+        lead_score: state.leadScore,
+        email: state.email,
+      };
+
+      // Replace this with your real Zapier/Make webhook URL
+      const webhookUrl = "https://your-zapier-webhook-url.com/hook";
+
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+        .catch(() => {
+          // Fail silently for now; you can add error UI if you want
+        })
+        .finally(() => {
+          // After sending, move to recommendations
+          setTimeout(() => {
+            goToStep("recommendations");
+          }, 1200);
+        });
+    }
+
+    // ====== RECOMMENDATIONS ======
+    function buildRecommendationsHTML() {
+      let title = "A gentle recommendation for you";
+      let text = "Based on what you shared, this might be a supportive next step.";
+      let link = "#";
+      let linkLabel = "Learn more";
+
+      if (state.goal && state.goal.toLowerCase().includes("weight")) {
+        title = "Support for your weight goals";
+        link = "https://placeholder-weight-loss-affiliate.com";
+      } else if (state.goal && state.goal.toLowerCase().includes("energy")) {
+        title = "Support for your energy";
+        link = "https://placeholder-energy-affiliate.com";
+      } else if (state.goal && state.goal.toLowerCase().includes("stress")) {
+        title = "Support for your stress and sleep";
+        link = "https://placeholder-stress-affiliate.com";
+      } else if (state.goal && state.goal.toLowerCase().includes("habit")) {
+        title = "Support for your habits";
+        link = "https://placeholder-habits-affiliate.com";
+      }
+
+      return `
+        <h2 class="assistant-title">${title}</h2>
+        <p class="assistant-text">
+          This is completely optional. Your 7‑day plan is already on its way,
+          but if you’d like an extra layer of support, this could be a good fit.
+        </p>
+        <div class="assistant-actions vertical">
+          <a class="btn primary" href="${link}" target="_blank">${linkLabel}</a>
+        </div>
+        <div class="assistant-actions">
+          <button class="btn subtle" data-action="skip">Skip</button>
+          <button class="btn ghost" data-action="next-pricing">Continue</button>
+        </div>
+      `;
+    }
+
+    // ====== INIT ======
+    document.addEventListener("DOMContentLoaded", () => {
+      state.stepIndex = 0;
+      renderStep();
+    });
+  </script>
 </body>
 </html>
