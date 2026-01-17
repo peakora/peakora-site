@@ -35,6 +35,8 @@ body {
   display: flex;
   align-items: stretch;
   justify-content: center;
+  animation: bgBreath 18s ease-in-out infinite alternate;
+  background-size: 200% 200%;
 }
 
 .assistant-shell {
@@ -88,7 +90,10 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  animation: fadeIn 260ms ease-out;
+}
+
+.assistant-card.card-enter {
+  animation: cardEnter 260ms ease-out;
 }
 
 .assistant-title {
@@ -235,20 +240,29 @@ body {
 }
 
 /* Animations */
-@keyframes fadeIn {
+@keyframes cardEnter {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(6px) scale(0.99);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes bgBreath {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
   }
 }
 
