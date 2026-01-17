@@ -803,20 +803,19 @@
     document.addEventListener("DOMContentLoaded", () => {
       const hasState = loadState();
 
-      if (hasState && state.email) {
-        // finished onboarding before → treat as returning
-        state.stepIndex = steps.indexOf("returning");
-        renderStep();
-      } else if (hasState && isOnboardingStep(steps[state.stepIndex])) {
-        // mid-onboarding → offer returning choice
-        state.mode = "onboarding";
-        state.stepIndex = steps.indexOf("returning");
-        renderStep();
-      } else {
-        // fresh
-        state.stepIndex = 0;
-        renderStep();
-      }
+    if (hasState && state.email) {
+    clearState();
+    state.stepIndex = 0;
+    renderStep();
+} else if (hasState && isOnboardingStep(steps[state.stepIndex])) {
+    state.mode = "onboarding";
+    state.stepIndex = 0;
+    renderStep();
+} else {
+    state.stepIndex = 0;
+    renderStep();
+}
+
     });
   </script>
 </body>
