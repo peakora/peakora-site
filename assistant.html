@@ -4,14 +4,22 @@
   <meta charset="UTF-8" />
   <title>Peakora Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Neutral premium Peakora dot favicon -->
+  <link rel="icon" href="data:image/svg+xml,
+    <svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'>
+      <circle cx='32' cy='32' r='28' fill='%23f5b35c'/>
+    </svg>">
+
   <link rel="stylesheet" href="assistant.css" />
 </head>
+
 <body>
   <div class="assistant-shell">
-    <div class="assistant-card">
+    <div class="assistant-card fade">
       <header class="assistant-header">
         <div class="brand">
-          <span class="brand-mark">●</span>
+          <span class="brand-mark"></span>
           <span class="brand-name">PEAKORA</span>
         </div>
         <div class="brand-tagline">Gentle guidance. Real momentum.</div>
@@ -24,8 +32,7 @@
         </div>
       </div>
 
-      <main id="step-container" class="assistant-body">
-        <!-- Steps render here -->
+      <main id="step-container" class="assistant-body fade">
       </main>
 
       <footer class="assistant-footer">
@@ -35,8 +42,6 @@
   </div>
 
   <script>
-    // --- STATE & STEPS -------------------------------------------------------
-
     const steps = [
       "welcome",
       "explanation",
@@ -51,8 +56,8 @@
       "recommendations",
       "pricing",
       "done",
-      "returning",   // returning user mode
-      "exit",        // for "Not now"
+      "returning",
+      "exit",
       "daily_intro",
       "daily_checkin",
       "daily_summary",
@@ -83,57 +88,38 @@
 
     const STORAGE_KEY = "peakora_assistant_state_v1";
 
-    // --- STORAGE -------------------------------------------------------------
-
     function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (e) {
-        console.warn("Could not save state:", e);
-      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
     function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return false;
         const parsed = JSON.parse(raw);
-        if (typeof parsed !== "object" || parsed === null) return false;
-
-        state.stepIndex = typeof parsed.stepIndex === "number" ? parsed.stepIndex : 0;
+        state.stepIndex = parsed.stepIndex || 0;
         state.answers = parsed.answers || {};
         state.email = parsed.email || "";
         state.completed = !!parsed.completed;
         return true;
-      } catch (e) {
-        console.warn("Could not load state:", e);
+      } catch {
         return false;
       }
     }
 
     function clearState() {
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-      } catch (e) {
-        console.warn("Could not clear state:", e);
-      }
+      localStorage.removeItem(STORAGE_KEY);
       state.stepIndex = 0;
       state.answers = {};
       state.email = "";
       state.completed = false;
     }
 
-    // --- PROGRESS ------------------------------------------------------------
-
     function setProgress() {
       const label = document.getElementById("progress-label");
       const fill = document.getElementById("progress-fill");
-
-      const currentStepKey = steps[state.stepIndex];
-
-      // Only onboarding steps count toward "Step X of Y"
-      const idx = onboardingSteps.indexOf(currentStepKey);
-      const total = onboardingSteps.length;
+      const key = steps[state.stepIndex];
+      const idx = onboardingSteps.indexOf(key);
 
       if (idx === -1) {
         label.textContent = "Peakora Assistant";
@@ -141,494 +127,386 @@
         return;
       }
 
-      const stepNumber = idx + 1;
-      label.textContent = `Step ${stepNumber} of ${total}`;
-      const percent = (stepNumber / total) * 100;
-      fill.style.width = `${percent}%`;
+      const stepNum = idx + 1;
+      const total = onboardingSteps.length;
+      label.textContent = `Step ${stepNum} of ${total}`;
+      fill.style.width = `${(stepNum / total) * 100}%`;
     }
-
-    // --- NAVIGATION ----------------------------------------------------------
 
     function goToStepKey(key) {
       const idx = steps.indexOf(key);
-      if (idx === -1) {
-        console.error("Unknown step key:", key);
-        return;
-      }
+      if (idx === -1) return;
       state.stepIndex = idx;
       saveState();
       renderStep();
     }
 
     function goToNext() {
-      // For onboarding, just move forward
-      if (state.stepIndex < steps.length - 1) {
-        state.stepIndex += 1;
-        saveState();
-        renderStep();
-      }
+      state.stepIndex += 1;
+      saveState();
+      renderStep();
     }
 
     function goToPrevious() {
-      if (state.stepIndex > 0) {
-        state.stepIndex -= 1;
-        saveState();
-        renderStep();
-      }
+      if (state.stepIndex === 0) return;
+      state.stepIndex -= 1;
+      saveState();
+      renderStep();
     }
 
-    // --- RENDERING -----------------------------------------------------------
+    function fadeIn() {
+      const card = document.querySelector(".assistant-card");
+      const body = document.querySelector(".assistant-body");
+      card.classList.remove("fade");
+      body.classList.remove("fade");
+      void card.offsetWidth;
+      card.classList.add("fade");
+      body.classList.add("fade");
+    }
 
     function renderStep() {
+      fadeIn();
       const container = document.getElementById("step-container");
-      const stepKey = steps[state.stepIndex];
-
+      const key = steps[state.stepIndex];
       setProgress();
 
-      switch (stepKey) {
-        case "welcome":
-          container.innerHTML = `
-            <div class="step">
-              <h1>Hi, I’m Peakora.</h1>
-              <p>Let’s create a gentle, realistic plan that actually fits your life.</p>
-              <div class="actions">
-                <button class="btn primary" onclick="goToStepKey('explanation')">Start</button>
-              </div>
+      if (key === "welcome") {
+        container.innerHTML = `
+          <div class="step">
+            <h1>Hi, I’m Peakora.</h1>
+            <p>Let’s take a gentle step toward the version of you that feels more grounded and steady.</p>
+            <div class="actions">
+              <button class="btn primary" onclick="goToStepKey('explanation')">Begin</button>
             </div>
-          `;
-          break;
-
-        case "explanation":
-          container.innerHTML = `
-            <div class="step">
-              <h2>How this works</h2>
-              <p>I’ll ask you a few focused questions about your energy, time, and current challenges.</p>
-              <p>Then I’ll build a 7‑day plan that feels kind, not punishing.</p>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('welcome')">Back</button>
-                <button class="btn primary" onclick="goToStepKey('goal')">Continue</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "goal":
-          container.innerHTML = `
-            <div class="step">
-              <h2>What do you want to focus on first?</h2>
-              <textarea
-                class="input"
-                id="goal-input"
-                placeholder="For example: sleep, stress, focus, movement, or something else…"
-              ></textarea>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('explanation')">Back</button>
-                <button class="btn primary" onclick="handleGoal()">Continue</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "challenge":
-          container.innerHTML = `
-            <div class="step">
-              <h2>What’s making this hard right now?</h2>
-              <textarea
-                class="input"
-                id="challenge-input"
-                placeholder="Be honest. Overwhelm, time, motivation, pain, burnout…"
-              ></textarea>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('goal')">Back</button>
-                <button class="btn primary" onclick="handleChallenge()">Continue</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "time":
-          container.innerHTML = `
-            <div class="step">
-              <h2>How much time can you realistically give this?</h2>
-              <div class="options">
-                <button class="btn ghost" onclick="handleTime('5–10 minutes')">5–10 minutes</button>
-                <button class="btn ghost" onclick="handleTime('15–20 minutes')">15–20 minutes</button>
-                <button class="btn ghost" onclick="handleTime('30+ minutes')">30+ minutes</button>
-              </div>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('challenge')">Back</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "insight":
-          container.innerHTML = `
-            <div class="step">
-              <h2>Before we build your plan…</h2>
-              <p>Is there anything else I should know about your energy, mood, or current season of life?</p>
-              <textarea
-                class="input"
-                id="insight-input"
-                placeholder="You can skip this if nothing comes to mind."
-              ></textarea>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('time')">Back</button>
-                <button class="btn primary" onclick="handleInsight()">Continue</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "extended1":
-          container.innerHTML = `
-            <div class="step">
-              <h2>What does “success” look like for you in the next 7 days?</h2>
-              <textarea
-                class="input"
-                id="extended1-input"
-                placeholder="Small, specific wins. Not perfection."
-              ></textarea>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('insight')">Back</button>
-                <button class="btn primary" onclick="handleExtended1()">Continue</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "extended2":
-          container.innerHTML = `
-            <div class="step">
-              <h2>What usually derails you when you try to change things?</h2>
-              <textarea
-                class="input"
-                id="extended2-input"
-                placeholder="Patterns, triggers, people, thoughts… whatever feels true."
-              ></textarea>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('extended1')">Back</button>
-                <button class="btn primary" onclick="handleExtended2()">Continue</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "email":
-          container.innerHTML = `
-            <div class="step">
-              <h2>Where should I send your 7‑day plan?</h2>
-              <input
-                type="email"
-                class="input"
-                id="email-input"
-                placeholder="you@example.com"
-                value="${state.email || ""}"
-              />
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('extended2')">Back</button>
-                <button class="btn primary" onclick="handleEmail()">Get my plan</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "processing":
-          container.innerHTML = `
-            <div class="step step-centered">
-              <h2>Building your plan…</h2>
-              <p>I’m weaving your answers into something kind, realistic, and doable.</p>
-              <div class="loader"></div>
-            </div>
-          `;
-          // Simulate processing then move to recommendations
-          setTimeout(() => {
-            goToStepKey("recommendations");
-          }, 1200);
-          break;
-
-        case "recommendations":
-          container.innerHTML = `
-            <div class="step">
-              <h2>Your 7‑day plan is ready</h2>
-              <p>I’ve sent it to <strong>${state.email || "your email"}</strong>.</p>
-              <p>Here’s a quick preview of the kind of structure you’ll see:</p>
-              <ul class="preview-list">
-                <li>Gentle daily focus aligned with your goal</li>
-                <li>One anchor habit that doesn’t collapse when life gets loud</li>
-                <li>Built‑in forgiveness for off days</li>
-              </ul>
-              <div class="actions">
-                <button class="btn primary" onclick="goToStepKey('pricing')">Continue</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "pricing":
-          container.innerHTML = `
-            <div class="step">
-              <h2>What’s coming next inside Peakora</h2>
-              <p>Right now, this assistant is free. Soon, you’ll be able to:</p>
-              <ul class="preview-list">
-                <li>Save multiple plans and revisit them anytime</li>
-                <li>Track gentle daily check‑ins and see your patterns</li>
-                <li>Get small, personalized nudges when you start to drift</li>
-              </ul>
-              <p>You’ll also be able to add Peakora to your home screen and use it like a light app.</p>
-              <div class="actions">
-                <button class="btn primary" onclick="goToStepKey('done')">Finish</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "done":
-          state.completed = true;
-          saveState();
-          container.innerHTML = `
-            <div class="step step-centered">
-              <h2>You’re all set for now.</h2>
-              <p>Your plan is on its way. You did something good for yourself today.</p>
-              <p class="soft-note">You can come back anytime to explore new plans or gentle daily check‑ins.</p>
-            </div>
-          `;
-          break;
-
-        case "returning":
-          renderReturningStep(container);
-          break;
-
-        case "exit":
-          container.innerHTML = `
-            <div class="step step-centered">
-              <h2>All good for now.</h2>
-              <p>You can come back to Peakora whenever you’re ready to explore your next gentle step.</p>
-              <div class="actions">
-                <button class="btn primary" onclick="handleBackToHome()">Back to home</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "daily_intro":
-          container.innerHTML = `
-            <div class="step">
-              <h2>Daily check‑in</h2>
-              <p>Let’s take a quick snapshot of how you’re doing today.</p>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('returning')">Back</button>
-                <button class="btn primary" onclick="goToStepKey('daily_checkin')">Start check‑in</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "daily_checkin":
-          container.innerHTML = `
-            <div class="step">
-              <h2>How are you feeling today?</h2>
-              <textarea
-                class="input"
-                id="daily-input"
-                placeholder="You can be as brief or detailed as you like."
-              ></textarea>
-              <div class="actions">
-                <button class="btn secondary" onclick="goToStepKey('daily_intro')">Back</button>
-                <button class="btn primary" onclick="handleDailyCheckin()">Continue</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        case "daily_summary":
-          container.innerHTML = `
-            <div class="step step-centered">
-              <h2>Check‑in saved.</h2>
-              <p>Thank you for pausing with yourself today.</p>
-              <p class="soft-note">Soon, you’ll see patterns and gentle insights based on these moments.</p>
-              <div class="actions">
-                <button class="btn primary" onclick="goToStepKey('returning')">Back to menu</button>
-              </div>
-            </div>
-          `;
-          break;
-
-        default:
-          container.innerHTML = `
-            <div class="step step-centered">
-              <h2>Something went off track.</h2>
-              <p>Let’s reset and start fresh.</p>
-              <div class="actions">
-                <button class="btn primary" onclick="resetAssistant()">Start over</button>
-              </div>
-            </div>
-          `;
-          break;
-      }
-    }
-
-    // --- RETURNING USER SCREEN ----------------------------------------------
-
-    function renderReturningStep(container) {
-      const name = state.answers.name || "";
-      const displayName = name ? `, ${name}` : "";
-
-      const midOnboarding = !state.completed;
-
-      container.innerHTML = `
-        <div class="step">
-          <h2>Welcome back${displayName}.</h2>
-          <p>What would you like to do today?</p>
-          <div class="options vertical">
-            ${
-              midOnboarding
-                ? `<button class="btn ghost" onclick="handleReturningChoice('continue')">
-                     Continue where I left off
-                   </button>`
-                : `<button class="btn ghost disabled">
-                     You’ve completed your last plan
-                   </button>`
-            }
-            <button class="btn ghost" onclick="handleReturningChoice('new')">
-              Start a new plan
-            </button>
-            <button class="btn ghost" onclick="handleReturningChoice('daily')">
-              Daily check‑in
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    function handleReturningChoice(choice) {
-      if (choice === "continue") {
-        // Resume from saved stepIndex if still in onboarding
-        if (!state.completed && onboardingSteps.includes(steps[state.stepIndex])) {
-          renderStep();
-        } else {
-          // If something is off, restart onboarding
-          state.stepIndex = steps.indexOf("welcome");
-          state.completed = false;
-          saveState();
-          renderStep();
-        }
+          </div>`;
+        return;
       }
 
-      if (choice === "new") {
-        clearState();
-        state.stepIndex = steps.indexOf("welcome");
+      if (key === "explanation") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>How this works</h2>
+            <p>I’ll ask a few simple questions about your energy, your time, and what’s weighing on you.</p>
+            <p>Then I’ll shape a 7‑day plan that feels doable, not overwhelming.</p>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+              <button class="btn primary" onclick="goToStepKey('goal')">Continue</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "goal") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>What do you want to focus on right now?</h2>
+            <textarea class="input" id="goal-input" placeholder="Sleep, stress, focus, movement… whatever feels true."></textarea>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+              <button class="btn primary" onclick="handleGoal()">Continue</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "challenge") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>What’s been getting in the way?</h2>
+            <textarea class="input" id="challenge-input" placeholder="Be honest. Overwhelm, time, burnout, pain…"></textarea>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+              <button class="btn primary" onclick="handleChallenge()">Continue</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "time") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>How much time can you realistically give this?</h2>
+            <div class="options">
+              <button class="btn ghost" onclick="handleTime('5–10 minutes')">5–10 minutes</button>
+              <button class="btn ghost" onclick="handleTime('15–20 minutes')">15–20 minutes</button>
+              <button class="btn ghost" onclick="handleTime('30+ minutes')">30+ minutes</button>
+            </div>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "insight") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>Anything else I should understand about your current season?</h2>
+            <textarea class="input" id="insight-input" placeholder="You can skip this if nothing comes to mind."></textarea>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+              <button class="btn primary" onclick="handleInsight()">Continue</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "extended1") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>What would a small win look like this week?</h2>
+            <textarea class="input" id="extended1-input" placeholder="Something gentle and specific."></textarea>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+              <button class="btn primary" onclick="handleExtended1()">Continue</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "extended2") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>What usually derails you?</h2>
+            <textarea class="input" id="extended2-input" placeholder="Patterns, triggers, thoughts…"></textarea>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+              <button class="btn primary" onclick="handleExtended2()">Continue</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "email") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>Where should I send your plan?</h2>
+            <input type="email" class="input" id="email-input" placeholder="you@example.com" value="${state.email}">
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+              <button class="btn primary" onclick="handleEmail()">Send my plan</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "processing") {
+        container.innerHTML = `
+          <div class="step step-centered">
+            <h2>One moment</h2>
+            <p>I’m shaping your plan with everything you shared.</p>
+            <div class="loader"></div>
+          </div>`;
+        setTimeout(() => goToStepKey("recommendations"), 1200);
+        return;
+      }
+
+      if (key === "recommendations") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>Your plan is ready</h2>
+            <p>I’ve sent it to <strong>${state.email}</strong>.</p>
+            <p>Here’s a small preview of what you’ll find inside:</p>
+            <ul class="preview-list">
+              <li>Daily focus that matches your energy</li>
+              <li>One anchor habit to keep you steady</li>
+              <li>Built‑in forgiveness for off days</li>
+            </ul>
+            <div class="actions">
+              <button class="btn primary" onclick="goToStepKey('pricing')">Continue</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "pricing") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>What’s coming next</h2>
+            <p>Right now, Peakora is free. Soon, you’ll be able to:</p>
+            <ul class="preview-list">
+              <li>Save multiple plans</li>
+              <li>Track gentle daily check‑ins</li>
+              <li>See patterns and insights over time</li>
+            </ul>
+            <p>You’ll also be able to add Peakora to your home screen for quick access.</p>
+            <div class="actions">
+              <button class="btn primary" onclick="goToStepKey('done')">Finish</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "done") {
+        state.completed = true;
         saveState();
-        renderStep();
+        container.innerHTML = `
+          <div class="step step-centered">
+            <h2>Your plan is on its way</h2>
+            <p>You showed up for yourself today. That matters more than you think.</p>
+            <p class="soft-note">Come back anytime for a new plan or a gentle check‑in.</p>
+          </div>`;
+        return;
       }
 
-      if (choice === "daily") {
-        state.stepIndex = steps.indexOf("daily_intro");
-        saveState();
-        renderStep();
+      if (key === "returning") {
+        const name = state.answers.name || "";
+        container.innerHTML = `
+          <div class="step">
+            <h2>Welcome back${name ? ", " + name : ""}</h2>
+            <p>What would you like to do today?</p>
+            <div class="options vertical">
+              ${
+                !state.completed
+                  ? `<button class="btn ghost" onclick="handleReturningChoice('continue')">Continue where I left off</button>`
+                  : `<button class="btn ghost disabled">You’ve completed your last plan</button>`
+              }
+              <button class="btn ghost" onclick="handleReturningChoice('new')">Start a new plan</button>
+              <button class="btn ghost" onclick="handleReturningChoice('daily')">Daily check‑in</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "exit") {
+        container.innerHTML = `
+          <div class="step step-centered">
+            <h2>All good</h2>
+            <p>Whenever you’re ready, I’ll be here.</p>
+            <div class="actions">
+              <button class="btn primary" onclick="handleBackToHome()">Back to home</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "daily_intro") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>Daily check‑in</h2>
+            <p>Let’s take a quick snapshot of how you’re doing today.</p>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToStepKey('returning')">Back</button>
+              <button class="btn primary" onclick="goToStepKey('daily_checkin')">Start</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "daily_checkin") {
+        container.innerHTML = `
+          <div class="step">
+            <h2>How are you feeling today?</h2>
+            <textarea class="input" id="daily-input" placeholder="You can be brief or detailed."></textarea>
+            <div class="actions">
+              <button class="btn secondary" onclick="goToPrevious()">Back</button>
+              <button class="btn primary" onclick="handleDailyCheckin()">Continue</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      if (key === "daily_summary") {
+        container.innerHTML = `
+          <div class="step step-centered">
+            <h2>Check‑in saved</h2>
+            <p>Thank you for pausing with yourself today.</p>
+            <p class="soft-note">Soon, you’ll see patterns and gentle insights based on these moments.</p>
+            <div class="actions">
+              <button class="btn primary" onclick="goToStepKey('returning')">Back to menu</button>
+            </div>
+          </div>`;
+        return;
       }
     }
-
-    // --- HANDLERS ------------------------------------------------------------
 
     function handleGoal() {
-      const el = document.getElementById("goal-input");
-      state.answers.goal = el.value.trim();
+      state.answers.goal = document.getElementById("goal-input").value.trim();
       saveState();
       goToStepKey("challenge");
     }
 
     function handleChallenge() {
-      const el = document.getElementById("challenge-input");
-      state.answers.challenge = el.value.trim();
+      state.answers.challenge = document.getElementById("challenge-input").value.trim();
       saveState();
       goToStepKey("time");
     }
 
-    function handleTime(value) {
-      state.answers.time = value;
+    function handleTime(v) {
+      state.answers.time = v;
       saveState();
       goToStepKey("insight");
     }
 
     function handleInsight() {
-      const el = document.getElementById("insight-input");
-      state.answers.insight = el.value.trim();
+      state.answers.insight = document.getElementById("insight-input").value.trim();
       saveState();
       goToStepKey("extended1");
     }
 
     function handleExtended1() {
-      const el = document.getElementById("extended1-input");
-      state.answers.extended1 = el.value.trim();
+      state.answers.extended1 = document.getElementById("extended1-input").value.trim();
       saveState();
       goToStepKey("extended2");
     }
 
     function handleExtended2() {
-      const el = document.getElementById("extended2-input");
-      state.answers.extended2 = el.value.trim();
+      state.answers.extended2 = document.getElementById("extended2-input").value.trim();
       saveState();
       goToStepKey("email");
     }
 
     function handleEmail() {
       const el = document.getElementById("email-input");
-      const value = el.value.trim();
-      if (!value || !value.includes("@")) {
+      const v = el.value.trim();
+      if (!v.includes("@")) {
         el.classList.add("input-error");
         return;
       }
       el.classList.remove("input-error");
-      state.email = value;
+      state.email = v;
       saveState();
       goToStepKey("processing");
     }
 
     function handleDailyCheckin() {
-      const el = document.getElementById("daily-input");
-      const value = el.value.trim();
-      state.answers.lastDaily = value;
+      state.answers.lastDaily = document.getElementById("daily-input").value.trim();
       saveState();
       goToStepKey("daily_summary");
     }
 
+    function handleReturningChoice(c) {
+      if (c === "continue") {
+        renderStep();
+        return;
+      }
+      if (c === "new") {
+        clearState();
+        saveState();
+        goToStepKey("welcome");
+        return;
+      }
+      if (c === "daily") {
+        goToStepKey("daily_intro");
+        return;
+      }
+    }
+
     function handleBackToHome() {
-      // This is just a hook. On the live site, this can redirect to your homepage.
       window.location.href = "/";
     }
 
-    function resetAssistant() {
-      clearState();
-      state.stepIndex = steps.indexOf("welcome");
-      saveState();
-      renderStep();
-    }
-
-    // --- INIT ----------------------------------------------------------------
-
     document.addEventListener("DOMContentLoaded", () => {
       const hasState = loadState();
-
       if (!hasState) {
-        state.stepIndex = steps.indexOf("welcome");
-        renderStep();
+        goToStepKey("welcome");
         return;
       }
-
-      // If user has completed onboarding before → show returning screen
-      if (state.completed === true) {
-        state.stepIndex = steps.indexOf("returning");
-        renderStep();
+      if (state.completed) {
+        goToStepKey("returning");
         return;
       }
-
-      // If user is mid-onboarding → also show returning screen with "continue"
-      if (state.completed === false) {
-        state.stepIndex = steps.indexOf("returning");
-        renderStep();
-        return;
-      }
+      goToStepKey("returning");
     });
   </script>
 </body>
