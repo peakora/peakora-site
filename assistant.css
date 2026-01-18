@@ -34,6 +34,20 @@ body {
   padding: 16px;
 }
 
+/* Fade-in animation */
+.fade {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .assistant-shell {
   width: 100%;
   max-width: 720px;
