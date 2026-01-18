@@ -3,49 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <title>Peakora Assistant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="assistant.css" />
 </head>
 <body>
   <div class="assistant-shell">
-    <header class="assistant-header">
-      <div class="assistant-logo">Peakora</div>
-      <div class="assistant-subtitle">Gentle guidance. Real momentum.</div>
-    </header>
+    <div class="assistant-card">
+      <header class="assistant-header">
+        <div class="brand">
+          <span class="brand-mark">●</span>
+          <span class="brand-name">PEAKORA</span>
+        </div>
+        <div class="brand-tagline">Gentle guidance. Real momentum.</div>
+      </header>
 
-    <main class="assistant-main">
-      <section class="assistant-card card-enter" id="step-container">
-        <!-- Dynamic content injected by JS -->
-      </section>
-
-      <div class="assistant-progress" id="progress-wrapper">
-        <div class="assistant-progress-label" id="progress-label">Step 1 of 9</div>
-        <div class="assistant-progress-bar">
-          <div class="assistant-progress-fill" id="progress-fill"></div>
+      <div class="assistant-progress">
+        <div class="progress-label" id="progress-label">Step 1 of 9</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
         </div>
       </div>
-    </main>
 
-    <footer class="assistant-footer">
-      <span>Peakora Assistant · This is not medical advice.</span>
-    </footer>
+      <main id="step-container" class="assistant-body">
+        <!-- Steps render here -->
+      </main>
+
+      <footer class="assistant-footer">
+        <span>Peakora Assistant · This is not medical advice.</span>
+      </footer>
+    </div>
   </div>
 
   <script>
-    // ====== STATE ======
-    const state = {
-      stepIndex: 0,
-      goal: null,
-      challenge: null,
-      timeCommitment: null,
-      insight: null,
-      extended1: null,
-      extended2: null,
-      email: null,
-      leadScore: 0,
-      tone: "neutral", // emotional tone
-      mode: "onboarding", // onboarding | daily_checkin
-    };
+    // --- STATE & STEPS -------------------------------------------------------
 
     const steps = [
       "welcome",
@@ -61,14 +51,13 @@
       "recommendations",
       "pricing",
       "done",
-      "exit",       // for "Not now"
-      "returning",  // returning user mode
+      "returning",   // returning user mode
+      "exit",        // for "Not now"
       "daily_intro",
       "daily_checkin",
       "daily_summary",
     ];
 
-    // Onboarding steps (for progress bar)
     const onboardingSteps = [
       "welcome",
       "explanation",
@@ -79,42 +68,28 @@
       "extended1",
       "extended2",
       "email",
+      "processing",
+      "recommendations",
+      "pricing",
+      "done",
     ];
-    const totalOnboardingSteps = onboardingSteps.length;
+
+    const state = {
+      stepIndex: 0,
+      answers: {},
+      email: "",
+      completed: false,
+    };
 
     const STORAGE_KEY = "peakora_assistant_state_v1";
 
-    // ====== HELPERS ======
-    function isOnboardingStep(stepKey) {
-      return onboardingSteps.includes(stepKey);
-    }
-
-    function setProgress() {
-      const stepKey = steps[state.stepIndex];
-      const progressWrapper = document.getElementById("progress-wrapper");
-
-      if (!isOnboardingStep(stepKey)) {
-        progressWrapper.style.display = "none";
-        return;
-      } else {
-        progressWrapper.style.display = "block";
-      }
-
-      const currentIndex = onboardingSteps.indexOf(stepKey);
-      const current = currentIndex === -1 ? 0 : currentIndex + 1;
-      const percent = (current / totalOnboardingSteps) * 100;
-
-      document.getElementById("progress-label").textContent =
-        `Step ${current} of ${totalOnboardingSteps}`;
-      document.getElementById("progress-fill").style.width = percent + "%";
-    }
+    // --- STORAGE -------------------------------------------------------------
 
     function saveState() {
       try {
-        const toStore = { ...state };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       } catch (e) {
-        // ignore
+        console.warn("Could not save state:", e);
       }
     }
 
@@ -123,9 +98,15 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return false;
         const parsed = JSON.parse(raw);
-        Object.assign(state, parsed);
+        if (typeof parsed !== "object" || parsed === null) return false;
+
+        state.stepIndex = typeof parsed.stepIndex === "number" ? parsed.stepIndex : 0;
+        state.answers = parsed.answers || {};
+        state.email = parsed.email || "";
+        state.completed = !!parsed.completed;
         return true;
       } catch (e) {
+        console.warn("Could not load state:", e);
         return false;
       }
     }
@@ -133,703 +114,522 @@
     function clearState() {
       try {
         localStorage.removeItem(STORAGE_KEY);
-      } catch (e) {}
+      } catch (e) {
+        console.warn("Could not clear state:", e);
+      }
+      state.stepIndex = 0;
+      state.answers = {};
+      state.email = "";
+      state.completed = false;
     }
+
+    // --- PROGRESS ------------------------------------------------------------
+
+    function setProgress() {
+      const label = document.getElementById("progress-label");
+      const fill = document.getElementById("progress-fill");
+
+      const currentStepKey = steps[state.stepIndex];
+
+      // Only onboarding steps count toward "Step X of Y"
+      const idx = onboardingSteps.indexOf(currentStepKey);
+      const total = onboardingSteps.length;
+
+      if (idx === -1) {
+        label.textContent = "Peakora Assistant";
+        fill.style.width = "0%";
+        return;
+      }
+
+      const stepNumber = idx + 1;
+      label.textContent = `Step ${stepNumber} of ${total}`;
+      const percent = (stepNumber / total) * 100;
+      fill.style.width = `${percent}%`;
+    }
+
+    // --- NAVIGATION ----------------------------------------------------------
+
+    function goToStepKey(key) {
+      const idx = steps.indexOf(key);
+      if (idx === -1) {
+        console.error("Unknown step key:", key);
+        return;
+      }
+      state.stepIndex = idx;
+      saveState();
+      renderStep();
+    }
+
+    function goToNext() {
+      // For onboarding, just move forward
+      if (state.stepIndex < steps.length - 1) {
+        state.stepIndex += 1;
+        saveState();
+        renderStep();
+      }
+    }
+
+    function goToPrevious() {
+      if (state.stepIndex > 0) {
+        state.stepIndex -= 1;
+        saveState();
+        renderStep();
+      }
+    }
+
+    // --- RENDERING -----------------------------------------------------------
 
     function renderStep() {
       const container = document.getElementById("step-container");
       const stepKey = steps[state.stepIndex];
-      setProgress();
 
-      // micro-animation class reset
-      container.classList.remove("card-enter");
-      void container.offsetWidth; // force reflow
-      container.classList.add("card-enter");
+      setProgress();
 
       switch (stepKey) {
         case "welcome":
           container.innerHTML = `
-            <h1 class="assistant-title">Hi, I’m Peakora.</h1>
-            <p class="assistant-text">
-              I’m here to help you feel better, gain clarity, and build momentum.
-              I’ll ask you a few gentle questions so I can create your personalized 7‑day plan.
-            </p>
-            <div class="assistant-actions">
-              <button class="btn primary" data-action="next" data-target="goal">I’m ready</button>
-              <button class="btn ghost" data-action="next" data-target="explanation">What is this?</button>
-              <button class="btn subtle" data-action="exit">Not now</button>
+            <div class="step">
+              <h1>Hi, I’m Peakora.</h1>
+              <p>Let’s create a gentle, realistic plan that actually fits your life.</p>
+              <div class="actions">
+                <button class="btn primary" onclick="goToStepKey('explanation')">Start</button>
+              </div>
             </div>
           `;
           break;
 
         case "explanation":
           container.innerHTML = `
-            <h2 class="assistant-title">What we’ll do together</h2>
-            <p class="assistant-text">
-              I’ll ask about your goals, your current challenges, and how much time you realistically have.
-              Then I’ll create a personalized 7‑day plan and send it to your email.
-            </p>
-            <div class="assistant-actions">
-              <button class="btn primary" data-action="next" data-target="goal">Continue</button>
+            <div class="step">
+              <h2>How this works</h2>
+              <p>I’ll ask you a few focused questions about your energy, time, and current challenges.</p>
+              <p>Then I’ll build a 7‑day plan that feels kind, not punishing.</p>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('welcome')">Back</button>
+                <button class="btn primary" onclick="goToStepKey('goal')">Continue</button>
+              </div>
             </div>
           `;
           break;
 
         case "goal":
           container.innerHTML = `
-            <h2 class="assistant-title">What’s your main goal right now?</h2>
-            <p class="assistant-text">Choose the one that feels closest, even if it’s not perfect.</p>
-            <div class="assistant-actions vertical">
-              <button class="btn primary" data-goal="Lose weight">Lose weight</button>
-              <button class="btn primary" data-goal="Improve energy">Improve energy</button>
-              <button class="btn primary" data-goal="Reduce stress">Reduce stress</button>
-              <button class="btn primary" data-goal="Build healthy habits">Build healthy habits</button>
-              <button class="btn ghost" data-goal="Other">Something else</button>
-            </div>
-            <div class="assistant-input-wrapper" id="goal-other-wrapper" style="display:none;">
-              <label class="assistant-label">Tell me in your own words</label>
-              <textarea class="assistant-input" id="goal-other-input" rows="3"></textarea>
-              <button class="btn primary" id="goal-other-submit">Continue</button>
+            <div class="step">
+              <h2>What do you want to focus on first?</h2>
+              <textarea
+                class="input"
+                id="goal-input"
+                placeholder="For example: sleep, stress, focus, movement, or something else…"
+              ></textarea>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('explanation')">Back</button>
+                <button class="btn primary" onclick="handleGoal()">Continue</button>
+              </div>
             </div>
           `;
           break;
 
         case "challenge":
           container.innerHTML = `
-            <h2 class="assistant-title">What’s your biggest challenge right now?</h2>
-            <p class="assistant-text">Be honest with yourself here—this helps me shape your plan.</p>
-            <div class="assistant-actions vertical">
-              <button class="btn primary" data-challenge="Motivation">Motivation</button>
-              <button class="btn primary" data-challenge="Time">Time</button>
-              <button class="btn primary" data-challenge="Consistency">Consistency</button>
-              <button class="btn primary" data-challenge="Stress / overwhelm">Stress / overwhelm</button>
-              <button class="btn ghost" data-challenge="Other">Something else</button>
-            </div>
-            <div class="assistant-input-wrapper" id="challenge-other-wrapper" style="display:none;">
-              <label class="assistant-label">Tell me in your own words</label>
-              <textarea class="assistant-input" id="challenge-other-input" rows="3"></textarea>
-              <button class="btn primary" id="challenge-other-submit">Continue</button>
+            <div class="step">
+              <h2>What’s making this hard right now?</h2>
+              <textarea
+                class="input"
+                id="challenge-input"
+                placeholder="Be honest. Overwhelm, time, motivation, pain, burnout…"
+              ></textarea>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('goal')">Back</button>
+                <button class="btn primary" onclick="handleChallenge()">Continue</button>
+              </div>
             </div>
           `;
           break;
 
         case "time":
           container.innerHTML = `
-            <h2 class="assistant-title">How much time can you commit each day?</h2>
-            <p class="assistant-text">Choose what feels realistic, not ideal.</p>
-            <div class="assistant-actions vertical">
-              <button class="btn primary" data-time="5 minutes">5 minutes</button>
-              <button class="btn primary" data-time="10 minutes">10 minutes</button>
-              <button class="btn primary" data-time="15 minutes">15 minutes</button>
-              <button class="btn primary" data-time="20+ minutes">20+ minutes</button>
+            <div class="step">
+              <h2>How much time can you realistically give this?</h2>
+              <div class="options">
+                <button class="btn ghost" onclick="handleTime('5–10 minutes')">5–10 minutes</button>
+                <button class="btn ghost" onclick="handleTime('15–20 minutes')">15–20 minutes</button>
+                <button class="btn ghost" onclick="handleTime('30+ minutes')">30+ minutes</button>
+              </div>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('challenge')">Back</button>
+              </div>
             </div>
           `;
           break;
 
         case "insight":
           container.innerHTML = `
-            <h2 class="assistant-title">One last thing before we go deeper</h2>
-            <p class="assistant-text">
-              What’s something you want me to know about your current situation?
-              You can share as much or as little as you like.
-            </p>
-            <div class="assistant-input-wrapper">
-              <textarea class="assistant-input" id="insight-input" rows="4"></textarea>
-            </div>
-            <div class="assistant-actions">
-              <button class="btn primary" id="insight-submit">Continue</button>
+            <div class="step">
+              <h2>Before we build your plan…</h2>
+              <p>Is there anything else I should know about your energy, mood, or current season of life?</p>
+              <textarea
+                class="input"
+                id="insight-input"
+                placeholder="You can skip this if nothing comes to mind."
+              ></textarea>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('time')">Back</button>
+                <button class="btn primary" onclick="handleInsight()">Continue</button>
+              </div>
             </div>
           `;
           break;
 
         case "extended1":
           container.innerHTML = `
-            <h2 class="assistant-title">What’s one thing you wish you could change immediately?</h2>
-            <p class="assistant-text">
-              This helps me understand what feels most urgent for you right now.
-            </p>
-            <div class="assistant-input-wrapper">
-              <textarea class="assistant-input" id="extended1-input" rows="3"></textarea>
-            </div>
-            <div class="assistant-actions">
-              <button class="btn primary" id="extended1-submit">Continue</button>
+            <div class="step">
+              <h2>What does “success” look like for you in the next 7 days?</h2>
+              <textarea
+                class="input"
+                id="extended1-input"
+                placeholder="Small, specific wins. Not perfection."
+              ></textarea>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('insight')">Back</button>
+                <button class="btn primary" onclick="handleExtended1()">Continue</button>
+              </div>
             </div>
           `;
           break;
 
         case "extended2":
           container.innerHTML = `
-            <h2 class="assistant-title">What’s the biggest thing that throws you off track?</h2>
-            <p class="assistant-text">
-              This will help me design a plan that works with your reality, not against it.
-            </p>
-            <div class="assistant-input-wrapper">
-              <textarea class="assistant-input" id="extended2-input" rows="3"></textarea>
-            </div>
-            <div class="assistant-actions">
-              <button class="btn primary" id="extended2-submit">Continue</button>
+            <div class="step">
+              <h2>What usually derails you when you try to change things?</h2>
+              <textarea
+                class="input"
+                id="extended2-input"
+                placeholder="Patterns, triggers, people, thoughts… whatever feels true."
+              ></textarea>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('extended1')">Back</button>
+                <button class="btn primary" onclick="handleExtended2()">Continue</button>
+              </div>
             </div>
           `;
           break;
 
         case "email":
           container.innerHTML = `
-            <h2 class="assistant-title">Where should I send your 7‑day plan?</h2>
-            <p class="assistant-text">
-              I’ll use your answers to create a personalized plan and send it to your inbox.
-            </p>
-            <div class="assistant-input-wrapper">
-              <label class="assistant-label">Email address</label>
-              <input type="email" class="assistant-input" id="email-input" placeholder="you@example.com" />
-            </div>
-            <div class="assistant-actions">
-              <button class="btn primary" id="email-submit">Create my plan</button>
+            <div class="step">
+              <h2>Where should I send your 7‑day plan?</h2>
+              <input
+                type="email"
+                class="input"
+                id="email-input"
+                placeholder="you@example.com"
+                value="${state.email || ""}"
+              />
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('extended2')">Back</button>
+                <button class="btn primary" onclick="handleEmail()">Get my plan</button>
+              </div>
             </div>
           `;
           break;
 
         case "processing":
           container.innerHTML = `
-            <h2 class="assistant-title">Creating your plan…</h2>
-            <p class="assistant-text">
-              I’m putting everything together based on what you shared—this usually takes just a moment.
-            </p>
-            <div class="assistant-loader"></div>
+            <div class="step step-centered">
+              <h2>Building your plan…</h2>
+              <p>I’m weaving your answers into something kind, realistic, and doable.</p>
+              <div class="loader"></div>
+            </div>
           `;
-          sendToWebhook();
+          // Simulate processing then move to recommendations
+          setTimeout(() => {
+            goToStepKey("recommendations");
+          }, 1200);
           break;
 
         case "recommendations":
-          container.innerHTML = buildRecommendationsHTML();
+          container.innerHTML = `
+            <div class="step">
+              <h2>Your 7‑day plan is ready</h2>
+              <p>I’ve sent it to <strong>${state.email || "your email"}</strong>.</p>
+              <p>Here’s a quick preview of the kind of structure you’ll see:</p>
+              <ul class="preview-list">
+                <li>Gentle daily focus aligned with your goal</li>
+                <li>One anchor habit that doesn’t collapse when life gets loud</li>
+                <li>Built‑in forgiveness for off days</li>
+              </ul>
+              <div class="actions">
+                <button class="btn primary" onclick="goToStepKey('pricing')">Continue</button>
+              </div>
+            </div>
+          `;
           break;
 
         case "pricing":
           container.innerHTML = `
-            <h2 class="assistant-title">If you want deeper support</h2>
-            <p class="assistant-text">
-              Your 7‑day plan is on its way. If you’d like to go further, here are some options.
-            </p>
-            <div class="assistant-actions vertical">
-              <a class="btn primary" href="#" target="_blank">Free plan (already sent)</a>
-              <a class="btn ghost" href="#" target="_blank">Starter program</a>
-              <a class="btn ghost" href="#" target="_blank">Core program</a>
-              <a class="btn ghost" href="#" target="_blank">Premium coaching</a>
-            </div>
-            <div class="assistant-actions">
-              <button class="btn subtle" data-action="finish">I’m done for now</button>
+            <div class="step">
+              <h2>What’s coming next inside Peakora</h2>
+              <p>Right now, this assistant is free. Soon, you’ll be able to:</p>
+              <ul class="preview-list">
+                <li>Save multiple plans and revisit them anytime</li>
+                <li>Track gentle daily check‑ins and see your patterns</li>
+                <li>Get small, personalized nudges when you start to drift</li>
+              </ul>
+              <p>You’ll also be able to add Peakora to your home screen and use it like a light app.</p>
+              <div class="actions">
+                <button class="btn primary" onclick="goToStepKey('done')">Finish</button>
+              </div>
             </div>
           `;
           break;
 
         case "done":
+          state.completed = true;
+          saveState();
           container.innerHTML = `
-            <h2 class="assistant-title">Your plan is on its way</h2>
-            <p class="assistant-text">
-              I’ve started preparing your personalized 7‑day plan based on everything you shared.
-              It will arrive in your inbox shortly. If you don’t see it, check your spam or promotions folder.
-            </p>
+            <div class="step step-centered">
+              <h2>You’re all set for now.</h2>
+              <p>Your plan is on its way. You did something good for yourself today.</p>
+              <p class="soft-note">You can come back anytime to explore new plans or gentle daily check‑ins.</p>
+            </div>
           `;
-          clearState();
+          break;
+
+        case "returning":
+          renderReturningStep(container);
           break;
 
         case "exit":
           container.innerHTML = `
-            <h2 class="assistant-title">You’re all set for now</h2>
-            <p class="assistant-text">
-              No pressure. Whenever you feel ready, I’ll be here to help you create your personalized 7‑day plan.
-            </p>
-          `;
-          clearState();
-          break;
-
-        case "returning":
-          container.innerHTML = `
-            <h2 class="assistant-title">Welcome back</h2>
-            <p class="assistant-text">
-              I remember you. Would you like to continue where you left off, start a new plan,
-              or check in on how you’re doing today?
-            </p>
-            <div class="assistant-actions vertical">
-              <button class="btn primary" data-action="resume">Continue where I left off</button>
-              <button class="btn ghost" data-action="restart">Start a new plan</button>
-              <button class="btn ghost" data-action="daily">Daily check‑in</button>
+            <div class="step step-centered">
+              <h2>All good for now.</h2>
+              <p>You can come back to Peakora whenever you’re ready to explore your next gentle step.</p>
+              <div class="actions">
+                <button class="btn primary" onclick="handleBackToHome()">Back to home</button>
+              </div>
             </div>
           `;
           break;
 
         case "daily_intro":
           container.innerHTML = `
-            <h2 class="assistant-title">Daily check‑in</h2>
-            <p class="assistant-text">
-              Let’s take a quick moment to reflect on today. This helps you build momentum gently over time.
-            </p>
-            <div class="assistant-actions">
-              <button class="btn primary" data-action="next" data-target="daily_checkin">Start today’s check‑in</button>
+            <div class="step">
+              <h2>Daily check‑in</h2>
+              <p>Let’s take a quick snapshot of how you’re doing today.</p>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('returning')">Back</button>
+                <button class="btn primary" onclick="goToStepKey('daily_checkin')">Start check‑in</button>
+              </div>
             </div>
           `;
           break;
 
         case "daily_checkin":
           container.innerHTML = `
-            <h2 class="assistant-title">How did today feel?</h2>
-            <p class="assistant-text">
-              You can share a win, a struggle, or just how your day was overall.
-            </p>
-            <div class="assistant-input-wrapper">
-              <textarea class="assistant-input" id="daily-input" rows="3"></textarea>
-            </div>
-            <div class="assistant-actions">
-              <button class="btn primary" id="daily-submit">Finish check‑in</button>
+            <div class="step">
+              <h2>How are you feeling today?</h2>
+              <textarea
+                class="input"
+                id="daily-input"
+                placeholder="You can be as brief or detailed as you like."
+              ></textarea>
+              <div class="actions">
+                <button class="btn secondary" onclick="goToStepKey('daily_intro')">Back</button>
+                <button class="btn primary" onclick="handleDailyCheckin()">Continue</button>
+              </div>
             </div>
           `;
           break;
 
         case "daily_summary":
           container.innerHTML = `
-            <h2 class="assistant-title">Thank you for checking in</h2>
-            <p class="assistant-text">
-              Small reflections like this add up. You’re building awareness and momentum, one day at a time.
-            </p>
+            <div class="step step-centered">
+              <h2>Check‑in saved.</h2>
+              <p>Thank you for pausing with yourself today.</p>
+              <p class="soft-note">Soon, you’ll see patterns and gentle insights based on these moments.</p>
+              <div class="actions">
+                <button class="btn primary" onclick="goToStepKey('returning')">Back to menu</button>
+              </div>
+            </div>
+          `;
+          break;
+
+        default:
+          container.innerHTML = `
+            <div class="step step-centered">
+              <h2>Something went off track.</h2>
+              <p>Let’s reset and start fresh.</p>
+              <div class="actions">
+                <button class="btn primary" onclick="resetAssistant()">Start over</button>
+              </div>
+            </div>
           `;
           break;
       }
-
-      attachHandlers(stepKey);
-      saveState();
     }
 
-    function attachHandlers(stepKey) {
-      const container = document.getElementById("step-container");
+    // --- RETURNING USER SCREEN ----------------------------------------------
 
-      if (stepKey === "welcome") {
-        container.querySelectorAll("button").forEach(btn => {
-          const action = btn.getAttribute("data-action");
-          const target = btn.getAttribute("data-target");
+    function renderReturningStep(container) {
+      const name = state.answers.name || "";
+      const displayName = name ? `, ${name}` : "";
 
-          if (action === "next") {
-            btn.addEventListener("click", () => goToStep(target));
-          } else if (action === "exit") {
-            state.stepIndex = steps.indexOf("exit");
-            renderStep();
-          }
-        });
-      }
+      const midOnboarding = !state.completed;
 
-      if (stepKey === "explanation") {
-        const btn = container.querySelector("[data-action='next']");
-        if (btn) btn.addEventListener("click", () => goToStep("goal"));
-      }
-
-      if (stepKey === "goal") {
-        const buttons = container.querySelectorAll("[data-goal]");
-        const otherWrapper = document.getElementById("goal-other-wrapper");
-        const otherInput = document.getElementById("goal-other-input");
-        const otherSubmit = document.getElementById("goal-other-submit");
-
-        buttons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            const value = btn.getAttribute("data-goal");
-            if (value === "Other") {
-              otherWrapper.style.display = "block";
-            } else {
-              state.goal = value;
-              updateLeadScoreForGoal(value);
-              goToStep("challenge");
+      container.innerHTML = `
+        <div class="step">
+          <h2>Welcome back${displayName}.</h2>
+          <p>What would you like to do today?</p>
+          <div class="options vertical">
+            ${
+              midOnboarding
+                ? `<button class="btn ghost" onclick="handleReturningChoice('continue')">
+                     Continue where I left off
+                   </button>`
+                : `<button class="btn ghost disabled">
+                     You’ve completed your last plan
+                   </button>`
             }
-          });
-        });
-
-        if (otherSubmit) {
-          otherSubmit.addEventListener("click", () => {
-            const val = (otherInput.value || "").trim();
-            if (!val) return;
-            state.goal = val;
-            updateLeadScoreForGoal(mapCustomGoalToCategory(val));
-            goToStep("challenge");
-          });
-        }
-      }
-
-      if (stepKey === "challenge") {
-        const buttons = container.querySelectorAll("[data-challenge]");
-        const otherWrapper = document.getElementById("challenge-other-wrapper");
-        const otherInput = document.getElementById("challenge-other-input");
-        const otherSubmit = document.getElementById("challenge-other-submit");
-
-        buttons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            const value = btn.getAttribute("data-challenge");
-            if (value === "Other") {
-              otherWrapper.style.display = "block";
-            } else {
-              state.challenge = value;
-              updateLeadScoreForChallenge(value);
-              goToStep("time");
-            }
-          });
-        });
-
-        if (otherSubmit) {
-          otherSubmit.addEventListener("click", () => {
-            const val = (otherInput.value || "").trim();
-            if (!val) return;
-            state.challenge = val;
-            updateLeadScoreForChallenge(mapCustomChallengeToCategory(val));
-            goToStep("time");
-          });
-        }
-      }
-
-      if (stepKey === "time") {
-        const buttons = container.querySelectorAll("[data-time]");
-        buttons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            const value = btn.getAttribute("data-time");
-            state.timeCommitment = value;
-            updateLeadScoreForTime(value);
-            goToStep("insight");
-          });
-        });
-      }
-
-      if (stepKey === "insight") {
-        const submit = document.getElementById("insight-submit");
-        const input = document.getElementById("insight-input");
-        submit.addEventListener("click", () => {
-          const val = (input.value || "").trim();
-          state.insight = val;
-          updateLeadScoreForInsight(val);
-          updateToneFromText(val);
-          goToStep("extended1");
-        });
-      }
-
-      if (stepKey === "extended1") {
-        const submit = document.getElementById("extended1-submit");
-        const input = document.getElementById("extended1-input");
-        submit.addEventListener("click", () => {
-          const val = (input.value || "").trim();
-          state.extended1 = val;
-          updateLeadScoreForExtended(val);
-          updateToneFromText(val);
-          goToStep("extended2");
-        });
-      }
-
-      if (stepKey === "extended2") {
-        const submit = document.getElementById("extended2-submit");
-        const input = document.getElementById("extended2-input");
-        submit.addEventListener("click", () => {
-          const val = (input.value || "").trim();
-          state.extended2 = val;
-          updateLeadScoreForExtended(val);
-          updateToneFromText(val);
-          goToStep("email");
-        });
-      }
-
-      if (stepKey === "email") {
-        const submit = document.getElementById("email-submit");
-        const input = document.getElementById("email-input");
-        submit.addEventListener("click", () => {
-          const val = (input.value || "").trim();
-          if (!val || !val.includes("@")) {
-            input.classList.add("input-error");
-            return;
-          }
-          input.classList.remove("input-error");
-          state.email = val;
-          goToStep("processing");
-        });
-      }
-
-      if (stepKey === "recommendations") {
-        const skipBtn = container.querySelector("[data-action='skip']");
-        const nextBtn = container.querySelector("[data-action='next-pricing']");
-        if (skipBtn) skipBtn.addEventListener("click", () => goToStep("pricing"));
-        if (nextBtn) nextBtn.addEventListener("click", () => goToStep("pricing"));
-      }
-
-      if (stepKey === "pricing") {
-        const finishBtn = container.querySelector("[data-action='finish']");
-        if (finishBtn) finishBtn.addEventListener("click", () => {
-          goToStep("done");
-        });
-      }
-
-      if (stepKey === "returning") {
-        const resumeBtn = container.querySelector("[data-action='resume']");
-        const restartBtn = container.querySelector("[data-action='restart']");
-        const dailyBtn = container.querySelector("[data-action='daily']");
-
-        if (resumeBtn) resumeBtn.addEventListener("click", () => {
-          // resume from stored stepIndex
-          renderStep();
-        });
-
-        if (restartBtn) restartBtn.addEventListener("click", () => {
-          clearState();
-          Object.assign(state, {
-            stepIndex: 0,
-            goal: null,
-            challenge: null,
-            timeCommitment: null,
-            insight: null,
-            extended1: null,
-            extended2: null,
-            email: null,
-            leadScore: 0,
-            tone: "neutral",
-            mode: "onboarding",
-          });
-          renderStep();
-        });
-
-        if (dailyBtn) dailyBtn.addEventListener("click", () => {
-          state.mode = "daily_checkin";
-          goToStep("daily_intro");
-        });
-      }
-
-      if (stepKey === "daily_intro") {
-        const btn = container.querySelector("[data-action='next']");
-        if (btn) btn.addEventListener("click", () => goToStep("daily_checkin"));
-      }
-
-      if (stepKey === "daily_checkin") {
-        const submit = container.querySelector("#daily-submit");
-        const input = container.querySelector("#daily-input");
-        submit.addEventListener("click", () => {
-          const val = (input.value || "").trim();
-          // optional: send daily check-in to another webhook
-          goToStep("daily_summary");
-        });
-      }
-    }
-
-    function goToStep(targetKey) {
-      const idx = steps.indexOf(targetKey);
-      if (idx === -1) return;
-      state.stepIndex = idx;
-      renderStep();
-    }
-
-    // ====== LEAD SCORING ======
-    function updateLeadScoreForGoal(goalCategory) {
-      switch (goalCategory) {
-        case "Lose weight":
-          state.leadScore += 3;
-          break;
-        case "Improve energy":
-          state.leadScore += 2;
-          break;
-        case "Build healthy habits":
-          state.leadScore += 2;
-          break;
-        case "Reduce stress":
-          state.leadScore += 1;
-          break;
-        default:
-          state.leadScore += 1;
-          break;
-      }
-    }
-
-    function updateLeadScoreForChallenge(challengeCategory) {
-      switch (challengeCategory) {
-        case "Motivation":
-          state.leadScore += 2;
-          break;
-        case "Consistency":
-          state.leadScore += 2;
-          break;
-        case "Time":
-          state.leadScore += 1;
-          break;
-        case "Stress / overwhelm":
-          state.leadScore += 1;
-          break;
-        default:
-          state.leadScore += 1;
-          break;
-      }
-    }
-
-    function updateLeadScoreForTime(time) {
-      switch (time) {
-        case "20+ minutes":
-          state.leadScore += 3;
-          break;
-        case "15 minutes":
-          state.leadScore += 2;
-          break;
-        case "10 minutes":
-          state.leadScore += 1;
-          break;
-        case "5 minutes":
-          state.leadScore += 0;
-          break;
-      }
-    }
-
-    function updateLeadScoreForInsight(text) {
-      const lower = (text || "").toLowerCase();
-      if (lower.match(/desperate|struggling|need help|lost|stuck|overwhelmed/)) {
-        state.leadScore += 3;
-      } else if (lower.match(/ready|committed|let's do this|lets do this|motivated|excited/)) {
-        state.leadScore += 2;
-      } else if (lower.trim().length > 0) {
-        state.leadScore += 1;
-      }
-    }
-
-    function updateLeadScoreForExtended(text) {
-      const lower = (text || "").toLowerCase();
-      if (lower.match(/urgent|immediately|right now|can't take|cant take/)) {
-        state.leadScore += 2;
-      } else if (lower.trim().length > 0) {
-        state.leadScore += 1;
-      }
-    }
-
-    // Emotional tone
-    function updateToneFromText(text) {
-      const lower = (text || "").toLowerCase();
-      if (lower.match(/overwhelmed|anxious|anxiety|burnout|exhausted|stressed/)) {
-        state.tone = "soothing";
-      } else if (lower.match(/excited|ready|motivated|pumped|let's do this|lets do this/)) {
-        state.tone = "energizing";
-      }
-    }
-
-    // Map custom goal text to closest category
-    function mapCustomGoalToCategory(text) {
-      const lower = text.toLowerCase();
-      if (lower.match(/weight|fat|kilos|kg|tone/)) return "Lose weight";
-      if (lower.match(/energy|tired|fatigue|exhausted/)) return "Improve energy";
-      if (lower.match(/stress|anxiety|overwhelm|sleep/)) return "Reduce stress";
-      if (lower.match(/habit|routine|consistency|discipline/)) return "Build healthy habits";
-      return "Other";
-    }
-
-    // Map custom challenge text to closest category
-    function mapCustomChallengeToCategory(text) {
-      const lower = text.toLowerCase();
-      if (lower.match(/motivation|don't feel like|dont feel like|no drive/)) return "Motivation";
-      if (lower.match(/time|busy|schedule|no time/)) return "Time";
-      if (lower.match(/consistency|stick|keep up|on and off/)) return "Consistency";
-      if (lower.match(/stress|overwhelm|anxiety|burnout/)) return "Stress / overwhelm";
-      return "Other";
-    }
-
-    // ====== WEBHOOK ======
-    function sendToWebhook() {
-      const payload = {
-        goal: state.goal,
-        challenge: state.challenge,
-        time_commitment: state.timeCommitment,
-        insight: state.insight,
-        extended1: state.extended1,
-        extended2: state.extended2,
-        lead_score: state.leadScore,
-        email: state.email,
-        tone: state.tone,
-      };
-
-      // Replace this with your real Zapier/Make webhook URL
-      const webhookUrl = "https://your-zapier-webhook-url.com/hook";
-
-      fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      })
-        .catch(() => {})
-        .finally(() => {
-          setTimeout(() => {
-            goToStep("recommendations");
-          }, 1200);
-        });
-    }
-
-    // ====== RECOMMENDATIONS ======
-    function buildRecommendationsHTML() {
-      let title = "A gentle recommendation for you";
-      let text = "Based on what you shared, this might be a supportive next step.";
-      let link = "#";
-      let linkLabel = "Learn more";
-
-      if (state.goal && state.goal.toLowerCase().includes("weight")) {
-        title = "Support for your weight goals";
-        link = "https://placeholder-weight-loss-affiliate.com";
-      } else if (state.goal && state.goal.toLowerCase().includes("energy")) {
-        title = "Support for your energy";
-        link = "https://placeholder-energy-affiliate.com";
-      } else if (state.goal && state.goal.toLowerCase().includes("stress")) {
-        title = "Support for your stress and sleep";
-        link = "https://placeholder-stress-affiliate.com";
-      } else if (state.goal && state.goal.toLowerCase().includes("habit")) {
-        title = "Support for your habits";
-        link = "https://placeholder-habits-affiliate.com";
-      }
-
-      // tone-based micro copy
-      if (state.tone === "soothing") {
-        text =
-          "You’ve been carrying a lot. This is completely optional, but it might offer a bit more support.";
-      } else if (state.tone === "energizing") {
-        text =
-          "You’re clearly ready to move. If you’d like to go a step further, this could help you channel that momentum.";
-      }
-
-      return `
-        <h2 class="assistant-title">${title}</h2>
-        <p class="assistant-text">
-          ${text}
-        </p>
-        <div class="assistant-actions vertical">
-          <a class="btn primary" href="${link}" target="_blank">${linkLabel}</a>
-        </div>
-        <div class="assistant-actions">
-          <button class="btn subtle" data-action="skip">Skip</button>
-          <button class="btn ghost" data-action="next-pricing">Continue</button>
+            <button class="btn ghost" onclick="handleReturningChoice('new')">
+              Start a new plan
+            </button>
+            <button class="btn ghost" onclick="handleReturningChoice('daily')">
+              Daily check‑in
+            </button>
+          </div>
         </div>
       `;
     }
 
-    // ====== INIT ======
-document.addEventListener("DOMContentLoaded", () => {
-  const hasState = loadState();
+    function handleReturningChoice(choice) {
+      if (choice === "continue") {
+        // Resume from saved stepIndex if still in onboarding
+        if (!state.completed && onboardingSteps.includes(steps[state.stepIndex])) {
+          renderStep();
+        } else {
+          // If something is off, restart onboarding
+          state.stepIndex = steps.indexOf("welcome");
+          state.completed = false;
+          saveState();
+          renderStep();
+        }
+      }
 
-  // CASE 1 — First-time user
-  if (!hasState) {
-    const welcomeIndex = steps.indexOf("welcome");
-    state.stepIndex = welcomeIndex >= 0 ? welcomeIndex : 0;
-    renderStep();
-    return;
-  }
+      if (choice === "new") {
+        clearState();
+        state.stepIndex = steps.indexOf("welcome");
+        saveState();
+        renderStep();
+      }
 
-  // CASE 2 — Returning user who completed onboarding
-  if (state.completed === true) {
-    const returningIndex = steps.indexOf("returning");
-    state.stepIndex = returningIndex >= 0 ? returningIndex : 0;
-    renderStep();
-    return;
-  }
+      if (choice === "daily") {
+        state.stepIndex = steps.indexOf("daily_intro");
+        saveState();
+        renderStep();
+      }
+    }
 
-  // CASE 3 — Returning user mid-onboarding
-  if (state.completed === false) {
-    const returningIndex = steps.indexOf("returning");
-    state.stepIndex = returningIndex >= 0 ? returningIndex : 0;
-    renderStep();
-    return;
-  }
-});
+    // --- HANDLERS ------------------------------------------------------------
 
+    function handleGoal() {
+      const el = document.getElementById("goal-input");
+      state.answers.goal = el.value.trim();
+      saveState();
+      goToStepKey("challenge");
+    }
 
+    function handleChallenge() {
+      const el = document.getElementById("challenge-input");
+      state.answers.challenge = el.value.trim();
+      saveState();
+      goToStepKey("time");
+    }
+
+    function handleTime(value) {
+      state.answers.time = value;
+      saveState();
+      goToStepKey("insight");
+    }
+
+    function handleInsight() {
+      const el = document.getElementById("insight-input");
+      state.answers.insight = el.value.trim();
+      saveState();
+      goToStepKey("extended1");
+    }
+
+    function handleExtended1() {
+      const el = document.getElementById("extended1-input");
+      state.answers.extended1 = el.value.trim();
+      saveState();
+      goToStepKey("extended2");
+    }
+
+    function handleExtended2() {
+      const el = document.getElementById("extended2-input");
+      state.answers.extended2 = el.value.trim();
+      saveState();
+      goToStepKey("email");
+    }
+
+    function handleEmail() {
+      const el = document.getElementById("email-input");
+      const value = el.value.trim();
+      if (!value || !value.includes("@")) {
+        el.classList.add("input-error");
+        return;
+      }
+      el.classList.remove("input-error");
+      state.email = value;
+      saveState();
+      goToStepKey("processing");
+    }
+
+    function handleDailyCheckin() {
+      const el = document.getElementById("daily-input");
+      const value = el.value.trim();
+      state.answers.lastDaily = value;
+      saveState();
+      goToStepKey("daily_summary");
+    }
+
+    function handleBackToHome() {
+      // This is just a hook. On the live site, this can redirect to your homepage.
+      window.location.href = "/";
+    }
+
+    function resetAssistant() {
+      clearState();
+      state.stepIndex = steps.indexOf("welcome");
+      saveState();
+      renderStep();
+    }
+
+    // --- INIT ----------------------------------------------------------------
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const hasState = loadState();
+
+      if (!hasState) {
+        state.stepIndex = steps.indexOf("welcome");
+        renderStep();
+        return;
+      }
+
+      // If user has completed onboarding before → show returning screen
+      if (state.completed === true) {
+        state.stepIndex = steps.indexOf("returning");
+        renderStep();
+        return;
+      }
+
+      // If user is mid-onboarding → also show returning screen with "continue"
+      if (state.completed === false) {
+        state.stepIndex = steps.indexOf("returning");
+        renderStep();
+        return;
+      }
+    });
   </script>
 </body>
 </html>
- 
