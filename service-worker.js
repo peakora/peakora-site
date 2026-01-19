@@ -1,11 +1,12 @@
 const CACHE_NAME = "peakora-cache-v1";
+
 const FILES_TO_CACHE = [
-  "/",
-  "/index.html",
-  "/assistant.html",
-  "/assistant.css",
-  "/manifest.json",
-  "/assets/peakora-logo.png"
+  "/peakora-site/",
+  "/peakora-site/index.html",
+  "/peakora-site/assistant.html",
+  "/peakora-site/assistant.css",
+  "/peakora-site/manifest.json",
+  "/peakora-site/assets/peakora-logo.png"
 ];
 
 self.addEventListener("install", event => {
