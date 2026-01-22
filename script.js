@@ -1,5 +1,5 @@
 // ------------------------------------------------------
-// PEAKORA — Unified Modal + UI Interactions
+// PEAKORA - Unified Modal + UI Interactions
 // ------------------------------------------------------
 
 
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const assistantInput = document.getElementById("assistantInput");
   const assistantSend = document.getElementById("assistantSend");
 
-  // NEW: Smart reply container
+  // Smart reply container
   const smartReplies = document.createElement("div");
   smartReplies.id = "smartReplies";
   smartReplies.style.display = "none";
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   assistantMessages.parentNode.insertBefore(smartReplies, assistantMessages.nextSibling);
 
-  // NEW: Session reset button
+  // Session reset button - inside modal, top right
   const resetButton = document.createElement("button");
   resetButton.textContent = "Reset chat";
   resetButton.style.position = "absolute";
@@ -74,9 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
   resetButton.style.textDecoration = "underline";
   resetButton.style.display = "none";
 
-  assistantModalOverlay.appendChild(resetButton);
+  // Try to attach to inner modal content if it exists
+  const innerModal = document.querySelector("#assistantModal .assistant-modal") || assistantModalOverlay;
+  innerModal.appendChild(resetButton);
 
-  // NEW: Online status
+  // Online status
   const onlineStatus = document.createElement("div");
   onlineStatus.textContent = "Peakora is online";
   onlineStatus.style.fontSize = "12px";
@@ -88,7 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let userName = null;
   let conversationStage = 1;
   let assistantBusy = false;
-  let usedSmartReply = false; // NEW FLAG
+  let usedSmartReply = false;
+  let currentIntent = null;
 
   function rhythm(text) {
     const base = 900;
@@ -119,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const typing = document.createElement("div");
     typing.id = "typingIndicator";
     typing.classList.add("assistant-message");
-    typing.textContent = "Peakora is typing…";
+    typing.textContent = "Peakora is typing...";
     assistantMessages.appendChild(typing);
     scrollSmooth();
   }
@@ -145,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, delay);
   }
 
-  function addRedirectButton() {
+  function addRedirectBlock() {
     const delay = 1200;
     showTypingIndicator();
 
@@ -154,6 +157,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const wrapper = document.createElement("div");
       wrapper.classList.add("assistant-message");
+
+      const textEl = document.createElement("p");
+      textEl.style.margin = "0 0 8px 0";
+      textEl.textContent = "For deeper support and a full plan, I will take you to the Peakora Assistant when you are ready.";
 
       const btn = document.createElement("button");
       btn.textContent = "Connect me to Peakora Assistant";
@@ -170,6 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.open("https://peakora.github.io/peakora-site//assistant.html", "_blank");
       });
 
+      wrapper.appendChild(textEl);
       wrapper.appendChild(btn);
       assistantMessages.appendChild(wrapper);
       scrollSmooth();
@@ -222,9 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
     smartReplies.style.display = "flex";
 
     const replies = [
-      "I need support",
-      "I have a question",
-      "I want guidance"
+      "I want to feel calmer today",
+      "I need help with my routine",
+      "I’m feeling overwhelmed",
+      "I want a small step I can take now"
     ];
 
     replies.forEach(text => {
@@ -240,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       chip.addEventListener("click", () => {
         assistantInput.value = text;
-        usedSmartReply = true; // NEW
+        usedSmartReply = true;
         handleSend();
       });
 
@@ -259,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!assistantMessages.dataset.initialized) {
       setTimeout(() => {
-        addAssistantMessageWithDelay("Hi, I’m Peakora.\nHow can I help you?");
+        addAssistantMessageWithDelay("Hi, I am Peakora.\nHow can I help you?");
         showSmartReplies();
       }, 600);
 
@@ -291,6 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
     userName = null;
     conversationStage = 1;
     usedSmartReply = false;
+    currentIntent = null;
     assistantMessages.dataset.initialized = "";
     openAssistant();
   });
@@ -298,6 +308,123 @@ document.addEventListener("DOMContentLoaded", () => {
   assistantInput.addEventListener("input", () => {
     assistantSend.disabled = assistantInput.value.trim().length === 0 || assistantBusy;
   });
+
+  function detectIntent(text) {
+    const lower = text.toLowerCase();
+
+    if (
+      lower.includes("calm") ||
+      lower.includes("anxious") ||
+      lower.includes("anxiety") ||
+      lower.includes("stress") ||
+      lower.includes("stressed")
+    ) {
+      return "calm";
+    }
+
+    if (
+      lower.includes("routine") ||
+      lower.includes("habit") ||
+      lower.includes("schedule") ||
+      lower.includes("structure") ||
+      lower.includes("morning") ||
+      lower.includes("evening")
+    ) {
+      return "routine";
+    }
+
+    if (
+      lower.includes("overwhelmed") ||
+      lower.includes("overwhelm") ||
+      lower.includes("too much") ||
+      lower.includes("burnout") ||
+      lower.includes("burned out")
+    ) {
+      return "overwhelm";
+    }
+
+    if (
+      lower.includes("small step") ||
+      lower.includes("first step") ||
+      lower.includes("start") ||
+      lower.includes("begin")
+    ) {
+      return "small_step";
+    }
+
+    return "general";
+  }
+
+  function mapSmartReplyToIntent(text) {
+    const lower = text.toLowerCase();
+
+    if (lower.includes("calmer")) return "calm";
+    if (lower.includes("routine")) return "routine";
+    if (lower.includes("overwhelmed")) return "overwhelm";
+    if (lower.includes("small step")) return "small_step";
+
+    return "general";
+  }
+
+  function respondFirstStepForIntent(intent) {
+    if (intent === "calm") {
+      addAssistantMessageWithDelay(
+        `Thank you for telling me, ${userName}. What part of your day feels the heaviest right now?`
+      );
+      return;
+    }
+
+    if (intent === "routine") {
+      addAssistantMessageWithDelay(
+        `Got it, ${userName}. Which part of your routine feels most out of sync right now, mornings or evenings?`
+      );
+      return;
+    }
+
+    if (intent === "overwhelm") {
+      addAssistantMessageWithDelay(
+        `You are carrying a lot, ${userName}. What feels most overwhelming for you at this moment?`
+      );
+      return;
+    }
+
+    if (intent === "small_step") {
+      addAssistantMessageWithDelay(
+        `We can start gently, ${userName}. Do you want something calming, energizing, or grounding as a first step?`
+      );
+      return;
+    }
+
+    addAssistantMessageWithDelay(
+      `Thank you for sharing that, ${userName}. Tell me a little more about what you are feeling right now.`
+    );
+  }
+
+  function respondSecondStepForIntent(intent) {
+    if (intent === "calm") {
+      addAssistantMessageWithDelay(
+        "Here is a gentle step you can try: take one slow breath in, hold for two seconds, and let it out softly. Notice how your body feels after that."
+      );
+    } else if (intent === "routine") {
+      addAssistantMessageWithDelay(
+        "Let us anchor one moment in your day. Choose one small thing you want to do tomorrow that would make your day feel a little more yours."
+      );
+    } else if (intent === "overwhelm") {
+      addAssistantMessageWithDelay(
+        "Let us shrink the day a bit. It is okay to let something wait. Choose one thing you can set aside for now so you can breathe."
+      );
+    } else if (intent === "small_step") {
+      addAssistantMessageWithDelay(
+        "Here is a small step you can take now: drink a glass of water, stretch your shoulders, and soften your jaw. It helps your body remember that it is safe to slow down."
+      );
+    } else {
+      addAssistantMessageWithDelay(
+        "Thank you for opening up. Even small moments of honesty with yourself are a real step forward."
+      );
+    }
+
+    addRedirectBlock();
+  }
 
   function handleSend() {
     const text = assistantInput.value.trim();
@@ -308,14 +435,12 @@ document.addEventListener("DOMContentLoaded", () => {
     assistantInput.value = "";
     assistantSend.disabled = true;
 
-    // -------------------------
-    // STAGE 1 — GREETING
-    // -------------------------
+    // STAGE 1 - GREETING (kept as is)
     if (conversationStage === 1) {
-      usedSmartReply = false; // Smart replies do NOT skip Stage 1
+      usedSmartReply = false;
 
       if (isGreeting(text)) {
-        addAssistantMessageWithDelay("It’s really nice to meet you. What’s your name?");
+        addAssistantMessageWithDelay("It is really nice to meet you. What is your name?");
         conversationStage = 2;
         return;
       }
@@ -325,11 +450,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // -------------------------
-    // STAGE 2 — NAME COLLECTION
-    // -------------------------
+    // STAGE 2 - NAME COLLECTION (kept, no skip)
     if (conversationStage === 2) {
-      usedSmartReply = false; // Smart replies do NOT skip Stage 2
+      usedSmartReply = false;
 
       const lower = text.toLowerCase().trim();
 
@@ -340,7 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ];
 
       if (optOutTriggers.includes(lower)) {
-        addAssistantMessageWithDelay("No worries — you can stay anonymous. What would you like support with?");
+        addAssistantMessageWithDelay("No worries, you can stay anonymous. What would you like support with today?");
         userName = "friend";
         conversationStage = 3;
         showSmartReplies();
@@ -353,7 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (!looksLikeName(text)) {
-        addAssistantMessageWithDelay("I didn’t quite catch that as a name. What name should I use for you?");
+        addAssistantMessageWithDelay("I did not quite catch that as a name. What name should I use for you?");
         return;
       }
 
@@ -364,30 +487,43 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // -------------------------
-    // STAGE 3 — PROBLEM COLLECTION
-    // -------------------------
+    // STAGE 3 - FIRST INTENT AND FOCUSED QUESTION
     if (conversationStage === 3) {
-      // Smart replies ONLY skip Stage 3
-      if (!looksLikeProblem(text) && !usedSmartReply) {
-        addAssistantMessageWithDelay(`No worries, ${userName}. Take your time — what would you like support with today?`);
-        showSmartReplies();
-        return;
+      let intent;
+
+      if (usedSmartReply) {
+        intent = mapSmartReplyToIntent(text);
+      } else {
+        if (!looksLikeProblem(text)) {
+          addAssistantMessageWithDelay(
+            `I want to understand you clearly, ${userName}. Tell me what you are feeling in a few simple words.`
+          );
+          showSmartReplies();
+          return;
+        }
+        intent = detectIntent(text);
       }
 
-      addAssistantMessageWithDelay(`Thank you for sharing that, ${userName}. I know exactly where you’ll get the support you need.`);
-      addRedirectButton();
+      currentIntent = intent;
+      usedSmartReply = false;
+
+      respondFirstStepForIntent(intent);
       conversationStage = 4;
-      usedSmartReply = false; // Reset
       return;
     }
 
-    // -------------------------
-    // STAGE 4 — REDIRECT
-    // -------------------------
+    // STAGE 4 - MICRO GUIDANCE AND REDIRECT BLOCK
     if (conversationStage === 4) {
-      usedSmartReply = false;
-      addAssistantMessageWithDelay(`I’m here with you, ${userName}. You can continue with the Peakora Assistant whenever you're ready.`);
+      respondSecondStepForIntent(currentIntent || "general");
+      conversationStage = 5;
+      return;
+    }
+
+    // STAGE 5 - AFTER REDIRECT SUGGESTION
+    if (conversationStage === 5) {
+      addAssistantMessageWithDelay(
+        `I am still here with you, ${userName}. You can continue with the Peakora Assistant whenever you feel ready.`
+      );
       return;
     }
   }
@@ -398,4 +534,3 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") handleSend();
   });
 });
-
