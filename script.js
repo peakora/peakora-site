@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------
   // CONVERSATION ENGINE — HANDLE USER INPUT
   // ------------------------------------------------------
-  function handleSend(forcedText = null, fromSmartReply = false) {
+    function handleSend(forcedText = null, fromSmartReply = false) {
     const text = forcedText || assistantInput.value.trim();
     if (!text) return;
 
@@ -247,6 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
       usedSmartReply = false;
 
       respondFirstStepForIntent(intent);
+      showSmartRepliesForIntent(); // ✅ Show again after first follow-up
       conversationStage = 4;
       return;
     }
