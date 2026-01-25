@@ -181,108 +181,132 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------
   // CONVERSATION ENGINE — HANDLE USER INPUT
   // ------------------------------------------------------
-    function handleSend(forcedText = null, fromSmartReply = false) {
-    const text = forcedText || assistantInput.value.trim();
-    if (!text) return;
+   function handleSend(forcedText = null, fromSmartReply = false) {
+  const text = forcedText || assistantInput.value.trim();
+  if (!text) return;
 
+  // Only show the user bubble once
+  if (!fromSmartReply) {
     addUserMessage(text);
-    assistantInput.value = "";
-    clearSmartReplies();
+  }
 
-    // --------------------
-    // STAGE 1 — ASK NAME
-    // --------------------
-    if (conversationStage === 1) {
+  assistantInput.value = "";
+  clearSmartReplies();
+
+  // --------------------
+  // STAGE 1 — FIRST USER MESSAGE → ASK NAME
+  // --------------------
+  if (conversationStage === 1) {
+    addAssistantMessageWithDelay(
+      "I'm here with you. What name feels right for me to call you?"
+    );
+    showSmartRepliesForName();
+    conversationStage = 2;
+    return;
+  }
+
+  // --------------------
+  // STAGE 2 — GET NAME (OR CHOOSE NOT TO SHARE)
+  // --------------------
+  if (conversationStage === 2) {
+    const lower = text.toLowerCase();
+
+    // If user clicked a smart reply about not sharing name
+    if (fromSmartReply &&
+        (lower.includes("prefer not to share") ||
+         lower.includes("call me friend") ||
+         lower.includes("share it later"))) {
+
+      userName = "friend";
+
       addAssistantMessageWithDelay(
-        "I’m here with you. What name feels right for me to call you?"
-      );
-      showSmartRepliesForName();
-      conversationStage = 2;
-      return;
-    }
-
-    // --------------------
-    // STAGE 2 — GET NAME
-    // --------------------
-    if (conversationStage === 2) {
-      if (!looksLikeName(text)) {
-        addAssistantMessageWithDelay(
-          "That’s okay. You can share a name, a nickname, or anything you’re comfortable with."
-        );
-        showSmartRepliesForName();
-        return;
-      }
-
-      userName = text;
-      addAssistantMessageWithDelay(
-        `Thank you, ${userName}. What’s been weighing on you lately?`
+        "Thank you for being here with me. What has been weighing on you lately?"
       );
       showSmartRepliesForIntent();
       conversationStage = 3;
       return;
     }
 
-    // --------------------
-    // STAGE 3 — INTENT DETECTION + FIRST FOLLOW-UP
-    // --------------------
-    if (conversationStage === 3) {
-      let intent;
-
-      if (fromSmartReply) {
-        intent = mapSmartReplyToIntent(text);
-      } else {
-        if (!looksLikeProblem(text)) {
-          addAssistantMessageWithDelay(
-            `I want to understand you clearly, ${userName}. Tell me what you’re feeling in a few simple words.`
-          );
-          showSmartRepliesForIntent();
-          return;
-        }
-        intent = detectIntent(text);
-      }
-
-      currentIntent = intent;
-      usedSmartReply = false;
-
-      respondFirstStepForIntent(intent);
-      showSmartRepliesForIntent(); // ✅ Show again after first follow-up
-      conversationStage = 4;
-      return;
-    }
-
-    // --------------------
-    // STAGE 4 — SECOND EMOTIONAL FOLLOW-UP
-    // --------------------
-    if (conversationStage === 4) {
-      respondSecondStepForIntent(currentIntent || "general");
-      conversationStage = 5;
-      return;
-    }
-
-    // --------------------
-    // STAGE 5 — THIRD EMOTIONAL FOLLOW-UP + REDIRECT
-    // --------------------
-    if (conversationStage === 5) {
-      respondThirdStepForIntent(currentIntent || "general");
-
-      setTimeout(() => {
-        addRedirectBlock();
-        conversationStage = 6;
-      }, 1200);
-
-      return;
-    }
-
-    // --------------------
-    // STAGE 6 — FINAL SUPPORTIVE MESSAGE
-    // --------------------
-    if (conversationStage === 6) {
+    // Manual text: validate as a name
+    if (!looksLikeName(text)) {
       addAssistantMessageWithDelay(
-        `I’m still right here with you, ${userName}. Whenever you’re ready, we can continue together.`
+        "That is okay. You can share a name, a nickname, or anything you are comfortable with."
       );
+      showSmartRepliesForName();
       return;
     }
+
+    // Valid name
+    userName = text;
+    addAssistantMessageWithDelay(
+      `Thank you, ${userName}. What has been weighing on you lately?`
+    );
+    showSmartRepliesForIntent();
+    conversationStage = 3;
+    return;
   }
+
+  // --------------------
+  // STAGE 3 — INTENT DETECTION + FIRST FOLLOW UP
+  // --------------------
+  if (conversationStage === 3) {
+    let intent;
+
+    if (fromSmartReply) {
+      addUserMessage(text); // show the chosen smart reply once here
+      intent = mapSmartReplyToIntent(text);
+    } else {
+      if (!looksLikeProblem(text)) {
+        addAssistantMessageWithDelay(
+          `I want to understand you clearly, ${userName}. Tell me what you are feeling in a few simple words.`
+        );
+        showSmartRepliesForIntent();
+        return;
+      }
+      intent = detectIntent(text);
+    }
+
+    currentIntent = intent;
+    usedSmartReply = false;
+
+    respondFirstStepForIntent(intent);
+    conversationStage = 4;
+    return;
+  }
+
+  // --------------------
+  // STAGE 4 — SECOND EMOTIONAL FOLLOW UP
+  // --------------------
+  if (conversationStage === 4) {
+    respondSecondStepForIntent(currentIntent || "general");
+    conversationStage = 5;
+    return;
+  }
+
+  // --------------------
+  // STAGE 5 — THIRD EMOTIONAL FOLLOW UP + REDIRECT
+  // --------------------
+  if (conversationStage === 5) {
+    respondThirdStepForIntent(currentIntent || "general");
+
+    setTimeout(() => {
+      addRedirectBlock();
+      conversationStage = 6;
+    }, 1200);
+
+    return;
+  }
+
+  // --------------------
+  // STAGE 6 — FINAL SUPPORTIVE MESSAGE
+  // --------------------
+  if (conversationStage === 6) {
+    addAssistantMessageWithDelay(
+      `I am still here with you, ${userName}. Whenever you are ready, we can continue together.`
+    );
+    return;
+  }
+}
 
   // ------------------------------------------------------
   // INTENT DETECTION
