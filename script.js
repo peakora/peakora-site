@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --------------------
-  // SMART REPLIES
+  // SMART REPLIES (iMessage style)
   // --------------------
   function clearSmartReplies() {
     const existing = assistantMessages.querySelectorAll(".assistant-smart-replies");
@@ -101,27 +101,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const btn = document.createElement("button");
     btn.classList.add("assistant-smart-reply");
     btn.textContent = label;
+
     btn.addEventListener("click", () => {
       usedSmartReply = true;
       clearSmartReplies();
       addUserMessage(value);
       handleSend(value, true);
     });
+
     return btn;
   }
 
   function showSmartRepliesForName() {
     clearSmartReplies();
+
     const container = document.createElement("div");
     container.classList.add("assistant-smart-replies");
 
-    const btn1 = createSmartReplyButton("I prefer not to share my name", "I prefer not to share my name");
-    const btn2 = createSmartReplyButton("Call me friend", "You can call me friend");
-    const btn3 = createSmartReplyButton("I’ll share it later", "I’ll share it later");
-
-    container.appendChild(btn1);
-    container.appendChild(btn2);
-    container.appendChild(btn3);
+    container.appendChild(createSmartReplyButton("I prefer not to share my name", "I prefer not to share my name"));
+    container.appendChild(createSmartReplyButton("Call me friend", "Call me friend"));
+    container.appendChild(createSmartReplyButton("I'll share it later", "I'll share it later"));
 
     assistantMessages.appendChild(container);
     scrollSmooth();
@@ -129,16 +128,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showSmartRepliesForIntent() {
     clearSmartReplies();
+
     const container = document.createElement("div");
     container.classList.add("assistant-smart-replies");
 
-    const btn1 = createSmartReplyButton("I feel overwhelmed", "I feel overwhelmed");
-    const btn2 = createSmartReplyButton("My routine is off", "My routine is off");
-    const btn3 = createSmartReplyButton("I just need something small", "I just need a small step");
-
-    container.appendChild(btn1);
-    container.appendChild(btn2);
-    container.appendChild(btn3);
+    container.appendChild(createSmartReplyButton("I feel overwhelmed", "I feel overwhelmed"));
+    container.appendChild(createSmartReplyButton("My routine is off", "My routine is off"));
+    container.appendChild(createSmartReplyButton("I just need something small", "I just need a small step"));
 
     assistantMessages.appendChild(container);
     scrollSmooth();
@@ -148,18 +144,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // MODAL OPEN/CLOSE
   // --------------------
   function openAssistant() {
-    if (!assistantModalOverlay) return;
     assistantModalOverlay.classList.add("open");
 
     if (!assistantMessages || assistantMessages.children.length === 0) {
       startConversation();
     }
 
-    assistantInput?.focus();
+    assistantInput.focus();
   }
 
   function closeAssistant() {
-    if (!assistantModalOverlay) return;
     assistantModalOverlay.classList.remove("open");
   }
 
@@ -174,11 +168,15 @@ document.addEventListener("DOMContentLoaded", () => {
     clearSmartReplies();
     assistantMessages.innerHTML = "";
 
-    addAssistantMessageWithDelay(
-      "Hi, I’m Peakora. Before we go deeper, what name would you like me to use for you?"
-    );
+    // NEW GREETING (no long dashes)
+    addAssistantMessageWithDelay("Hi I'm Peakora");
+    setTimeout(() => {
+      addAssistantMessageWithDelay("How can I help you today?");
+    }, 700);
+
     showSmartRepliesForName();
   }
+
 
   // NOTE: handleSend, intent detection, stages, emotional flows,
   // redirect block, and event listeners come in Parts 2–4.
