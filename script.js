@@ -89,8 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }, delay);
   }
 
-  // --------------------
-  // SMART REPLIES (iMessage style)
+   // --------------------
+  // SMART REPLIES (clean, delayed, no duplication)
   // --------------------
   function clearSmartReplies() {
     const existing = assistantMessages.querySelectorAll(".assistant-smart-replies");
@@ -103,41 +103,43 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.textContent = label;
 
     btn.addEventListener("click", () => {
-      usedSmartReply = true;
       clearSmartReplies();
-      addUserMessage(value);
-      handleSend(value, true);
+      handleSend(value, true); // Only handleSend — no addUserMessage duplication
     });
 
     return btn;
   }
 
   function showSmartRepliesForName() {
-    clearSmartReplies();
+    setTimeout(() => {
+      clearSmartReplies();
 
-    const container = document.createElement("div");
-    container.classList.add("assistant-smart-replies");
+      const container = document.createElement("div");
+      container.classList.add("assistant-smart-replies");
 
-    container.appendChild(createSmartReplyButton("I prefer not to share my name", "I prefer not to share my name"));
-    container.appendChild(createSmartReplyButton("Call me friend", "Call me friend"));
-    container.appendChild(createSmartReplyButton("I'll share it later", "I'll share it later"));
+      container.appendChild(createSmartReplyButton("I prefer not to share my name", "I prefer not to share my name"));
+      container.appendChild(createSmartReplyButton("Call me friend", "Call me friend"));
+      container.appendChild(createSmartReplyButton("I'll share it later", "I'll share it later"));
 
-    assistantMessages.appendChild(container);
-    scrollSmooth();
+      assistantMessages.appendChild(container);
+      scrollSmooth();
+    }, 600); // Delay to appear after assistant message
   }
 
   function showSmartRepliesForIntent() {
-    clearSmartReplies();
+    setTimeout(() => {
+      clearSmartReplies();
 
-    const container = document.createElement("div");
-    container.classList.add("assistant-smart-replies");
+      const container = document.createElement("div");
+      container.classList.add("assistant-smart-replies");
 
-    container.appendChild(createSmartReplyButton("I feel overwhelmed", "I feel overwhelmed"));
-    container.appendChild(createSmartReplyButton("My routine is off", "My routine is off"));
-    container.appendChild(createSmartReplyButton("I just need something small", "I just need a small step"));
+      container.appendChild(createSmartReplyButton("I feel overwhelmed", "I feel overwhelmed"));
+      container.appendChild(createSmartReplyButton("My routine is off", "My routine is off"));
+      container.appendChild(createSmartReplyButton("I just need something small", "I just need a small step"));
 
-    assistantMessages.appendChild(container);
-    scrollSmooth();
+      assistantMessages.appendChild(container);
+      scrollSmooth();
+    }, 600); // Delay to appear after assistant message
   }
 
   // --------------------
@@ -168,15 +170,12 @@ document.addEventListener("DOMContentLoaded", () => {
     clearSmartReplies();
     assistantMessages.innerHTML = "";
 
-    // NEW GREETING (no long dashes)
     addAssistantMessageWithDelay("Hi I'm Peakora");
     setTimeout(() => {
       addAssistantMessageWithDelay("How can I help you today?");
+      showSmartRepliesForName();
     }, 700);
-
-    showSmartRepliesForName();
   }
-
 
   // NOTE: handleSend, intent detection, stages, emotional flows,
   // redirect block, and event listeners come in Parts 2–4.
