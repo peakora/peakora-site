@@ -18,21 +18,30 @@
 <header class="header">
   <div class="container header-inner">
 
-    <!-- MENU BUTTON (LEFT) -->
+    <!-- Hamburger (LEFT) -->
     <button id="menuToggle" class="menu-toggle" aria-label="Open menu">
       <span></span>
       <span></span>
       <span></span>
     </button>
 
-    <!-- LOGO (CENTER) -->
+    <!-- Logo (CENTER on mobile, normal on desktop) -->
     <a href="#top" class="brand">
       <img src="assets/peakora-logo.png" alt="Peakora logo" class="brand-logo">
     </a>
 
-    <!-- SOCIAL ICONS (RIGHT) -->
-    <div class="header-social">
+    <!-- Desktop Navigation -->
+    <nav class="nav desktop-nav">
+      <a href="#hero" class="nav-link">Start</a>
+      <a href="#why" class="nav-link">Why Peakora</a>
+      <a href="#real-life" class="nav-link">Designed for Real Life</a>
+      <a href="#stories" class="nav-link">Stories</a>
+      <a href="aboutus.html" class="nav-link">About Us</a>
+      <a href="contactus.html" class="nav-link">Contact Us</a>
+    </nav>
 
+    <!-- Social Icons (RIGHT) -->
+    <div class="header-social">
       <!-- Instagram -->
       <a href="https://www.instagram.com/peakora.life/" target="_blank" rel="noopener noreferrer">
         <svg width="20" height="20" viewBox="0 0 24 24">
@@ -71,22 +80,22 @@
                 fill="#3a5cff"/>
         </svg>
       </a>
-
     </div>
-
-    <!-- NAVIGATION (OFF-CANVAS) -->
-    <nav class="nav">
-      <a href="#hero" class="nav-link">Start</a>
-      <a href="#why" class="nav-link">Why Peakora</a>
-      <a href="#real-life" class="nav-link">Designed for Real Life</a>
-      <a href="#stories" class="nav-link">Stories</a>
-      <a href="aboutus.html" class="nav-link">About Us</a>
-      <a href="contactus.html" class="nav-link">Contact Us</a>
-    </nav>
 
   </div>
 </header>
 
+<!-- MOBILE OVERLAY MENU -->
+<div id="mobileNavOverlay" class="mobile-nav-overlay">
+  <nav class="mobile-nav">
+    <a href="#hero">Start</a>
+    <a href="#why">Why Peakora</a>
+    <a href="#real-life">Designed for Real Life</a>
+    <a href="#stories">Stories</a>
+    <a href="aboutus.html">About Us</a>
+    <a href="contactus.html">Contact Us</a>
+  </nav>
+</div>
 
 
 <section class="hero" id="hero">
