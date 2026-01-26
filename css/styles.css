@@ -872,60 +872,28 @@ section {
 }
 
 /* ------------------------------------------------------
-   HEADER — MOBILE/TABLET FIXES (NO LOGO OVERRIDES)
+   HEADER — MOBILE/TABLET FIXES ONLY
+   (Desktop remains untouched)
 ------------------------------------------------------ */
 
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Hamburger button */
-.menu-toggle {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-  width: 32px;
-  height: 32px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  z-index: 1201;
-}
-
-.menu-toggle span {
-  display: block;
-  width: 100%;
-  height: 3px;
-  background: #1a1a1a;
-  border-radius: 2px;
-  transition: 0.25s ease;
-}
-
-/* MOBILE + TABLET */
 @media (max-width: 768px) {
 
-  /* Show hamburger */
+  /* Mobile order: MENU → LOGO → SOCIAL */
   .menu-toggle {
     display: flex !important;
     order: 1;
   }
 
-  /* Logo centered */
   .brand {
     order: 2;
   }
 
-  /* Social icons visible on mobile */
   .header-social {
     order: 3;
     display: flex !important;
   }
 
-  /* Off‑canvas navigation */
+  /* Off‑canvas mobile nav */
   .nav {
     position: fixed;
     top: 0;
