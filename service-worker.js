@@ -1,23 +1,24 @@
-const CACHE_VERSION = "v3"; 
+const CACHE_VERSION = "v1";
 const CACHE_NAME = `peakora-cache-${CACHE_VERSION}`;
 
-const OFFLINE_URL = "/peakora-site/offline.html";
+const OFFLINE_URL = "./offline.html";
 
 const FILES_TO_CACHE = [
-  "/peakora-site/",
-  "/peakora-site/index.html",
-  "/peakora-site/assistant.html",
-  "/peakora-site/assistant.css",
-  "/peakora-site/manifest.json",
-  "/peakora-site/assets/peakora-icon-192.png",
-  "/peakora-site/assets/peakora-icon-512.png",
-  OFFLINE_URL
+  "./",
+  "./index.html",
+  "./assistant.html",
+  "./assistant.css",
+  "./manifest.json",
+  "./offline.html",
+  "./assets/peakora-icon-192.png",
+  "./assets/peakora-icon-512.png"
 ];
 
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
   );
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
@@ -30,6 +31,7 @@ self.addEventListener("activate", event => {
       )
     )
   );
+  self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
