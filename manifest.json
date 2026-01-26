@@ -1,20 +1,21 @@
 {
+  "id": "./",
   "name": "Peakora",
   "short_name": "Peakora",
   "description": "Gentle guidance. Real momentum.",
-  "start_url": "/peakora-site/assistant.html",
-  "scope": "/peakora-site/",
+  "start_url": "./assistant.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#f5b35c",
   "icons": [
     {
-      "src": "/peakora-site/assets/peakora-icon-192.png",
+      "src": "./assets/peakora-icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/peakora-site/assets/peakora-icon-512.png",
+      "src": "./assets/peakora-icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
