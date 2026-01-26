@@ -17,13 +17,12 @@
       <circle cx='32' cy='32' r='28' fill='%23f5b35c'/>
     </svg>">
 
-  <!-- Correct manifest path for GitHub Pages -->
+  <!-- Correct manifest path -->
   <link rel="manifest" href="./manifest.json">
 
-  <!-- Assistant styles -->
+  <!-- Styles -->
   <link rel="stylesheet" href="./assistant.css" />
 </head>
-
 
 <body>
   <div class="assistant-shell">
@@ -52,7 +51,16 @@
     </div>
   </div>
 
-  <script>
+ <script>
+  /* INSTALL EVENT CAPTURE */
+  let deferredPrompt = null;
+  let isInstalled = window.matchMedia('(display-mode: standalone)').matches;
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+
     const steps = [
       "welcome",
       "explanation",
@@ -68,6 +76,7 @@
       "pricing",
       "done",
       "returning",
+      "install_prompt"
       "exit",
       "daily_intro",
       "daily_checkin",
@@ -357,6 +366,11 @@
             <p>You showed up for yourself today. That matters more than you think.</p>
             <p class="soft-note">Come back anytime for a new plan or a gentle check‑in.</p>
           </div>`;
+                setTimeout(() => {
+          if (!isInstalled && deferredPrompt) {
+            goToStepKey("install_prompt");
+          }
+        }, 800);
         return;
       }
 
@@ -368,6 +382,37 @@
             <div class="options vertical">
               <button class="btn ghost" onclick="handleDailyStart()">Daily check‑in</button>
               <button class="btn ghost" onclick="restartOnboarding()">Start a new 7‑day plan</button>
+            </div>
+          </div>`;
+       if (!isInstalled && deferredPrompt) {
+          container.innerHTML += `
+            <div class="actions" style="margin-top: 20px; justify-content: center;">
+              <button class="btn primary" onclick="goToStepKey('install_prompt')">Install Peakora</button>
+            </div>`;
+        }
+        return;
+      }
+
+      if (key === "install_prompt") {
+        container.innerHTML = `
+          <div class="step step-centered">
+            <h2>Make Peakora your space</h2>
+            <p class="soft-note">A calmer, faster, more grounded experience — right from your home screen.</p>
+
+            <ul class="preview-list" style="margin-top: 14px; text-align: left;">
+              <li>One‑tap access to your daily check‑ins</li>
+              <li>Your 7‑day plans available even offline</li>
+              <li>A quiet space without browser tabs or noise</li>
+              <li>Faster loading and smoother transitions</li>
+              <li>New tools coming soon: mood tracker, micro‑journal, breath reset</li>
+            </ul>
+
+            <div class="actions" style="margin-top: 20px; justify-content: center;">
+              <button class="btn primary" onclick="triggerInstall()">Install Peakora</button>
+            </div>
+
+            <div class="actions" style="margin-top: 8px; justify-content: center;">
+              <button class="btn ghost" onclick="goToStepKey('exit')">Maybe later</button>
             </div>
           </div>`;
         return;
@@ -420,6 +465,11 @@
               <button class="btn primary" onclick="goToStepKey('exit')">Close for now</button>
             </div>
           </div>`;
+               setTimeout(() => {
+          if (!isInstalled && deferredPrompt) {
+            goToStepKey("install_prompt");
+          }
+        }, 800);
         return;
       }
     }
@@ -535,6 +585,26 @@
     goToStepKey("returning");
   }
 }
+
+       function triggerInstall() {
+      if (!deferredPrompt) {
+        goToStepKey("exit");
+        return;
+      }
+
+      deferredPrompt.prompt();
+
+      deferredPrompt.userChoice.then((choice) => {
+        deferredPrompt = null;
+
+        if (choice.outcome === "accepted") {
+          isInstalled = true;
+          goToStepKey("exit");
+        } else {
+          goToStepKey("exit");
+        }
+      });
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
       const hasState = loadState();
