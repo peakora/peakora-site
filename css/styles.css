@@ -1,8 +1,8 @@
-/* ------------------------------------------------------
-   PART 1 — RESET, GLOBAL, HEADER, NAVIGATION, MOBILE MENU
------------------------------------------------------- */
+/* ------------------------------------------------------ */
+/* PART 1 — GLOBAL RESET, TYPOGRAPHY, HEADER, MOBILE MENU */
+/* ------------------------------------------------------ */
 
-/* RESET */
+/* GLOBAL RESET */
 * {
   margin: 0;
   padding: 0;
@@ -10,552 +10,293 @@
 }
 
 html, body {
+  width: 100%;
+  height: 100%;
   font-family: "Inter", sans-serif;
-  color: #1a1a1a;
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
+  color: #222;
   background: #ffffff;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* GLOBAL CONTAINER */
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* GLOBAL SECTION SPACING (desktop reduced from 72px → 60px) */
+/* GLOBAL SPACING RHYTHM */
 section {
-  margin-top: 60px;
-  margin-bottom: 60px;
+  padding: 80px 20px;
 }
 
-/* MOBILE SECTION SPACING */
 @media (max-width: 768px) {
   section {
-    margin-top: 48px;
-    margin-bottom: 48px;
+    padding: 60px 16px;
   }
 }
 
-/* ------------------------------------------------------
-   HEADER — PREMIUM, CLEAN, MOBILE-READY
------------------------------------------------------- */
+/* -------------------------------------- */
+/* HEADER — DESKTOP                       */
+/* -------------------------------------- */
 
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-/* Header container */
-.header .container {
-  height: 56px;
+header {
+  width: 100%;
+  padding: 20px 40px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-}
-
-/* Brand */
-.brand {
-  display: flex;
   align-items: center;
-  height: 56px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #ffffff;
+  z-index: 9000; /* BELOW MODAL, ABOVE CONTENT */
+  border-bottom: 1px solid #eee;
 }
 
-.brand img.brand-logo {
-  height: 24px !important;
-  width: auto;
-  object-fit: contain;
+header .logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #222;
 }
 
-/* ------------------------------------------------------
-   NAVIGATION — DESKTOP
------------------------------------------------------- */
-
-.nav {
+/* Desktop Navigation */
+nav {
   display: flex;
-  gap: 24px;
-  align-items: center;
+  gap: 32px;
 }
 
-.nav-link {
+nav a {
   text-decoration: none;
-  color: #1a1a1a;
+  color: #222;
   font-weight: 500;
-  font-size: 15px;
-  transition: 0.2s ease;
-}
-
-.nav-link:hover {
-  color: #3a5cff;
-}
-
-/* Social icons */
-.header-social {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-
-.header-social .social-icon svg {
-  width: 20px;
-  height: 20px;
-  stroke: #3a5cff !important;
-  fill: none !important;
   transition: opacity 0.2s ease;
 }
 
-.header-social .social-icon:hover svg {
-  opacity: 0.7;
+nav a:hover {
+  opacity: 0.6;
 }
 
-/* ------------------------------------------------------
-   MOBILE MENU — PEAKORA CUSTOM ICON + SLIDE PANEL
------------------------------------------------------- */
-
 /* Hide desktop nav on mobile */
-@media (max-width: 768px) {
-  .nav,
-  .header-social {
+@media (max-width: 900px) {
+  nav {
     display: none;
   }
 }
 
-/* Mobile menu icon (Peakora custom soft icon) */
+/* -------------------------------------- */
+/* MOBILE MENU — LEFT SLIDE-IN            */
+/* -------------------------------------- */
+
+/* Mobile menu button (hamburger) */
 .mobile-menu-btn {
   display: none;
+  flex-direction: column;
+  gap: 5px;
   cursor: pointer;
-  padding: 10px;
-  border-radius: 10px;
-  background: rgba(0, 87, 255, 0.08);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition: background 0.2s ease;
 }
 
-.mobile-menu-btn:hover {
-  background: rgba(0, 87, 255, 0.15);
-}
-
-/* Icon lines */
 .mobile-menu-btn span {
-  display: block;
-  width: 22px;
+  width: 26px;
   height: 3px;
-  background: #0057ff;
-  border-radius: 3px;
-  margin: 4px 0;
+  background: #222;
+  border-radius: 2px;
 }
 
-/* Show mobile menu button */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .mobile-menu-btn {
-    display: block;
+    display: flex;
   }
 }
 
-/* Mobile menu panel */
-.mobile-menu-panel {
+/* Slide-in menu container */
+.mobile-menu {
   position: fixed;
   top: 0;
-  right: -100%;
-  width: 78%;
-  max-width: 320px;
+  left: -260px; /* Hidden by default */
+  width: 260px;
   height: 100vh;
   background: #ffffff;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.12);
-  padding: 32px 24px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+  padding: 80px 20px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  transition: right 0.35s ease;
-  z-index: 2000;
+  transition: left 0.3s ease;
+  z-index: 9500; /* BELOW MODAL, ABOVE HEADER */
 }
 
-/* Open state */
-.mobile-menu-panel.open {
-  right: 0;
+/* When menu is open */
+.mobile-menu.open {
+  left: 0;
 }
 
-/* Mobile nav links */
-.mobile-nav-link {
+/* Mobile menu links */
+.mobile-menu a {
+  text-decoration: none;
+  color: #222;
   font-size: 18px;
-  font-weight: 600;
-  color: #0f1f3d;
-  text-decoration: none;
-  padding: 8px 0;
-  transition: color 0.2s ease;
+  font-weight: 500;
 }
 
-.mobile-nav-link:hover {
-  color: #0057ff;
+/* Prevent body scroll when menu is open */
+body.menu-open {
+  overflow: hidden;
 }
+/* -------------------------------------- */
+/* PART 2 — HERO, WHY PEAKORA, REAL-LIFE, STORIES */
+/* -------------------------------------- */
 
-/* Mobile social icons */
-.mobile-menu-social {
-  display: flex;
-  gap: 16px;
-  margin-top: auto;
-}
-
-.mobile-menu-social svg {
-  width: 22px;
-  height: 22px;
-  stroke: #0057ff !important;
-}
-
-/* Safe-area padding for iOS */
-.mobile-menu-panel {
-  padding-bottom: calc(24px + env(safe-area-inset-bottom));
-}
-/* ------------------------------------------------------
-   PART 2 — HERO, WHY, REAL‑LIFE, STORIES
------------------------------------------------------- */
-
-/* ------------------------------------------------------
-   HERO SECTION — PREMIUM, RESPONSIVE, MOBILE‑READY
------------------------------------------------------- */
-
+/* HERO SECTION */
 .hero {
-  position: relative;
-  padding: 80px 0 120px;
+  width: 100%;
+  padding-top: 140px; /* Clears fixed header */
+  padding-bottom: 80px;
+  text-align: center;
+  background: #ffffff;
 }
 
-.hero-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-}
-
-.hero-title {
-  font-size: 36px;
+.hero h1 {
+  font-size: 48px;
   font-weight: 700;
-  line-height: 1.2;
-  color: #0f1f3d;
+  margin-bottom: 20px;
+  color: #222;
 }
 
-.hero-sub {
-  margin-top: 16px;
+.hero p {
   font-size: 20px;
-  color: #3a4a6a;
-  max-width: 480px;
+  max-width: 700px;
+  margin: 0 auto;
+  color: #444;
 }
 
-.hero-ctas {
-  margin-top: 28px;
-  display: flex;
-  gap: 16px;
-}
-
-.btn {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: 0.2s ease;
-}
-
-.btn.outline {
-  background: transparent;
-  color: #0057ff;
-  border: 2px solid #0057ff;
-}
-
-.btn.outline:hover {
-  background: #0057ff;
-  color: white;
-}
-
-.hero-img {
-  width: 760px;
-  max-width: 100%;
-  border-radius: 16px;
-  box-shadow: 0 0 40px rgba(0, 87, 255, 0.25);
-}
-
-/* HERO — MOBILE */
 @media (max-width: 768px) {
   .hero {
-    padding: 60px 0 80px;
+    padding-top: 120px;
+    padding-bottom: 60px;
   }
 
-  .hero-inner {
-    flex-direction: column;
-    text-align: center;
-    gap: 28px;
+  .hero h1 {
+    font-size: 34px;
   }
 
-  .hero-title {
-    font-size: 28px;
-  }
-
-  .hero-sub {
-    font-size: 17px;
-    max-width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .hero-ctas {
-    justify-content: center;
-  }
-
-  .hero-img {
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 0 28px rgba(0, 87, 255, 0.22);
+  .hero p {
+    font-size: 18px;
   }
 }
 
-/* ------------------------------------------------------
-   WHY PEAKORA SECTION
------------------------------------------------------- */
+/* -------------------------------------- */
+/* WHY PEAKORA SECTION                    */
+/* -------------------------------------- */
 
-.why {
-  padding: 80px 0;
-}
-
-.section-title {
+.why-peakora {
+  max-width: 1200px;
+  margin: 0 auto;
   text-align: center;
-  margin-bottom: 32px;
-  font-size: 32px;
+}
+
+.why-peakora h2 {
+  font-size: 36px;
+  margin-bottom: 40px;
   font-weight: 700;
-  color: #0f1f3d;
+  color: #222;
 }
 
-.section-lead {
-  text-align: center;
-  font-size: 20px;
-  line-height: 1.6;
-  color: #3a4a6a;
-  max-width: 640px;
-  margin: 0 auto 48px auto;
-}
-
-.what-grid {
+.why-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
-  margin-top: 48px;
 }
 
-.what-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 32px 24px;
-  text-align: center;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+.why-card {
+  background: #fafafa;
+  padding: 32px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  text-align: left;
 }
 
-.what-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 36px rgba(0, 87, 255, 0.12);
-}
-
-.icon-wrap {
-  margin-bottom: 16px;
-}
-
-.icon-wrap svg {
-  width: 48px;
-  height: 48px;
-  stroke: #0057ff;
-}
-
-.what-card h3 {
-  margin-bottom: 8px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #0f1f3d;
-}
-
-.what-card p {
-  margin: 0;
-  color: #3a4a6a;
-  line-height: 1.6;
-  font-size: 16px;
-}
-
-/* WHY — MOBILE */
-@media (max-width: 768px) {
-  .why {
-    padding: 60px 0;
-  }
-
-  .section-title {
-    font-size: 26px;
-  }
-
-  .section-lead {
-    font-size: 17px;
-    margin-bottom: 36px;
-  }
-
-  .what-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  .what-card {
-    padding: 24px 20px;
-  }
-
-  .icon-wrap svg {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-/* ------------------------------------------------------
-   REAL‑LIFE SECTION
------------------------------------------------------- */
-
-.real-life-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 80px 0;
-}
-
-.real-life-layout {
-  display: flex;
-  gap: 48px;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.real-life-illustration {
-  flex: 1;
-  text-align: center;
-  position: relative;
-}
-
-.real-life-illustration img {
-  width: 100%;
-  max-width: 520px;
-  border-radius: 16px;
-  box-shadow: 0 0 40px rgba(0, 87, 255, 0.25);
-}
-
-.real-life-illustration::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 420px;
-  height: 420px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle,
-    rgba(0, 87, 255, 0.18) 0%,
-    rgba(0, 87, 255, 0.05) 60%,
-    transparent 100%
-  );
-  filter: blur(40px);
-  z-index: -1;
-}
-
-.real-life-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.real-life-point {
+.why-card h3 {
+  font-size: 22px;
   margin-bottom: 12px;
+  font-weight: 600;
+  color: #222;
 }
 
-.real-life-point h3 {
-  margin-bottom: 4px;
-  font-size: 18px;
-  color: #003366;
-}
-
-.real-life-point p {
-  margin: 0;
+.why-card p {
   font-size: 16px;
-  line-height: 1.55;
-  color: #0f1f3d;
+  color: #555;
+  line-height: 1.6;
 }
 
-.real-life-reassurance {
-  margin-top: 24px;
-  font-size: 18px;
-  line-height: 1.5;
-  color: #0f1f3d;
-}
-
-/* REAL‑LIFE — MOBILE */
-@media (max-width: 768px) {
-  .real-life-container {
-    padding: 60px 0;
-  }
-
-  .real-life-layout {
-    flex-direction: column;
-    gap: 32px;
-    text-align: center;
-  }
-
-  .real-life-content {
-    align-items: center;
-  }
-
-  .real-life-illustration img {
-    max-width: 380px;
-    box-shadow: 0 0 28px rgba(0, 87, 255, 0.22);
-  }
-
-  .real-life-illustration::before {
-    width: 300px;
-    height: 300px;
-    filter: blur(30px);
-  }
-
-  .real-life-point h3 {
-    font-size: 17px;
-  }
-
-  .real-life-point p {
-    font-size: 15px;
-  }
-
-  .real-life-reassurance {
-    font-size: 17px;
+/* Why Peakora — Mobile */
+@media (max-width: 900px) {
+  .why-grid {
+    grid-template-columns: 1fr;
   }
 }
 
-/* ------------------------------------------------------
-   STORIES SECTION
------------------------------------------------------- */
+/* -------------------------------------- */
+/* REAL-LIFE SECTION                      */
+/* -------------------------------------- */
+
+.real-life {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.real-life h2 {
+  font-size: 36px;
+  margin-bottom: 40px;
+  font-weight: 700;
+  color: #222;
+}
+
+.real-life-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.real-life-card {
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  text-align: left;
+}
+
+.real-life-card h3 {
+  font-size: 22px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #222;
+}
+
+.real-life-card p {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Real-Life — Mobile */
+@media (max-width: 900px) {
+  .real-life-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------------------------------------- */
+/* STORIES SECTION                        */
+/* -------------------------------------- */
 
 .stories {
-  padding: 100px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
 }
 
-.stories-title {
-  text-align: center;
-  font-size: 32px;
+.stories h2 {
+  font-size: 36px;
+  margin-bottom: 40px;
   font-weight: 700;
-  color: #0f1f3d;
-  margin-bottom: 16px;
-}
-
-.stories-lead {
-  text-align: center;
-  font-size: 20px;
-  line-height: 1.6;
-  color: #3a4a6a;
-  max-width: 640px;
-  margin: 0 auto 60px auto;
+  color: #222;
 }
 
 .stories-grid {
@@ -566,384 +307,321 @@ section {
 
 .story-card {
   background: #ffffff;
-  border-radius: 16px;
   padding: 32px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  text-align: left;
 }
 
-.story-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 36px rgba(0, 87, 255, 0.12);
-}
-
-.story-accent {
-  width: 48px;
-  height: 4px;
-  background: #0057ff;
-  border-radius: 4px;
-  margin-bottom: 20px;
-}
-
-.story-text {
-  font-size: 18px;
-  line-height: 1.7;
-  color: #0f1f3d;
-  margin-bottom: 20px;
-}
-
-.story-author {
-  font-size: 16px;
-  color: #3a4a6a;
+.story-card h3 {
+  font-size: 22px;
+  margin-bottom: 12px;
   font-weight: 600;
+  color: #222;
 }
 
-/* STORIES — MOBILE */
-@media (max-width: 768px) {
-  .stories {
-    padding: 70px 0;
-  }
+.story-card p {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
 
-  .stories-title {
-    font-size: 26px;
-  }
-
-  .stories-lead {
-    font-size: 17px;
-    margin-bottom: 40px;
-  }
-
+/* Stories — Mobile */
+@media (max-width: 900px) {
   .stories-grid {
     grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  .story-card {
-    padding: 24px;
-  }
-
-  .story-text {
-    font-size: 16px;
-  }
-
-  .story-author {
-    font-size: 15px;
   }
 }
-/* ------------------------------------------------------
-   PART 3 — CTA CROWN, FOOTER, SOCIAL ICONS, GLOBAL SPACING
------------------------------------------------------- */
+/* -------------------------------------- */
+/* PART 3 — CTA CROWN, FOOTER, SOCIAL ICONS, GLOBAL SPACING */
+/* -------------------------------------- */
 
-/* ------------------------------------------------------
-   PEAKORA CROWN CTA — CENTERED, PREMIUM, RESPONSIVE
------------------------------------------------------- */
-
-.peakora-crown-cta {
+/* CTA CROWN SECTION */
+.cta-crown {
   width: 100%;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: #f7f7f7;
+  padding: 80px 20px;
   text-align: center;
-  position: relative;
-  z-index: 10;
 }
 
-.peakora-crown-cta *,
-.peakora-crown-cta *::before,
-.peakora-crown-cta *::after {
-  box-sizing: border-box;
-}
-
-.peakora-crown-button {
-  display: inline-block;
-  background: linear-gradient(to right, #0057FF, #3A88FF);
-  color: #fff;
-  font-size: 28px;
+.cta-crown h2 {
+  font-size: 36px;
   font-weight: 700;
-  padding: 32px 72px;
-  border-radius: 18px;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.cta-crown p {
+  font-size: 18px;
+  max-width: 700px;
+  margin: 0 auto 30px auto;
+  color: #555;
+}
+
+.cta-crown .cta-btn {
+  display: inline-block;
+  padding: 14px 32px;
+  background: #222;
+  color: #fff;
+  border-radius: 8px;
   text-decoration: none;
-  text-align: center;
-  box-shadow: 0 16px 44px rgba(0, 87, 255, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  z-index: 2;
-}
-
-.peakora-crown-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 20px 52px rgba(0, 87, 255, 0.45);
-}
-
-.peakora-crown-cta::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 420px;
-  height: 420px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle,
-    rgba(0, 87, 255, 0.25) 0%,
-    rgba(0, 87, 255, 0.10) 60%,
-    transparent 100%
-  );
-  filter: blur(60px);
-  z-index: 1;
-}
-
-/* CTA CROWN — MOBILE */
-@media (max-width: 768px) {
-  .peakora-crown-button {
-    font-size: 22px;
-    padding: 26px 52px;
-  }
-
-  .peakora-crown-cta::before {
-    width: 300px;
-    height: 300px;
-    filter: blur(40px);
-  }
-}
-
-/* ------------------------------------------------------
-   FOOTER — CLEAN, RESPONSIVE, SAFE‑AREA READY
------------------------------------------------------- */
-
-.footer {
-  background-color: #0f1f3d;
-  padding: 40px 0;
-  text-align: center;
-  padding-bottom: calc(40px + env(safe-area-inset-bottom));
-}
-
-.footer-brand {
-  color: white;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
-  margin-bottom: 12px;
-}
-
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-}
-
-.footer-links a {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.footer-social {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 12px;
-}
-
-.footer-social .social-icon svg {
-  stroke: white !important;
-  fill: none !important;
-  width: 20px;
-  height: 20px;
   transition: opacity 0.2s ease;
 }
 
-.footer-social .social-icon:hover svg {
-  opacity: 0.7;
+.cta-crown .cta-btn:hover {
+  opacity: 0.8;
 }
 
-/* FOOTER — MOBILE */
 @media (max-width: 768px) {
-  .footer {
-    padding: 32px 0;
-    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  .cta-crown {
+    padding: 60px 16px;
   }
 
-  .footer-brand {
-    font-size: 15px;
+  .cta-crown h2 {
+    font-size: 30px;
   }
 
-  .footer-links {
-    gap: 18px;
-  }
-
-  .footer-links a {
-    font-size: 13px;
-  }
-
-  .footer-social svg {
-    width: 18px;
-    height: 18px;
+  .cta-crown p {
+    font-size: 17px;
   }
 }
 
-/* ------------------------------------------------------
-   SOCIAL ICONS — GLOBAL CLEANUP
------------------------------------------------------- */
+/* -------------------------------------- */
+/* FOOTER                                 */
+/* -------------------------------------- */
 
-.header-social,
-.footer-social {
+footer {
+  width: 100%;
+  background: #ffffff;
+  padding: 60px 20px;
+  text-align: center;
+  border-top: 1px solid #eee;
+  position: relative;
+  z-index: 1000; /* BELOW MODAL, ABOVE CONTENT */
+}
+
+footer p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Footer links */
+footer a {
+  color: #222;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+footer a:hover {
+  opacity: 0.6;
+}
+
+/* -------------------------------------- */
+/* SOCIAL ICONS                           */
+/* -------------------------------------- */
+
+.social-icons {
   display: flex;
+  justify-content: center;
   gap: 20px;
-  align-items: center;
+  margin-bottom: 20px;
 }
 
-.header-social a svg,
-.footer-social a svg {
-  display: block;
+.social-icons a {
+  font-size: 22px;
+  color: #222;
+  transition: opacity 0.2s ease;
 }
 
-/* ------------------------------------------------------
-   GLOBAL TYPOGRAPHY + SPACING CLEANUP
------------------------------------------------------- */
+.social-icons a:hover {
+  opacity: 0.6;
+}
 
-/* Soft mobile typography scale */
+/* -------------------------------------- */
+/* GLOBAL SPACING REFINEMENTS             */
+/* -------------------------------------- */
+
+.section-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #222;
+}
+
 @media (max-width: 768px) {
-  h1, .hero-title, .stories-title, .section-title {
-    font-size: 26px;
-  }
-
-  h2 {
-    font-size: 22px;
-  }
-
-  h3 {
-    font-size: 18px;
-  }
-
-  p, li, .story-text, .real-life-point p {
-    font-size: 15px;
-    line-height: 1.55;
+  .section-title {
+    font-size: 30px;
+    margin-bottom: 32px;
   }
 }
 
-/* Global spacing rhythm */
+/* Consistent spacing between sections */
+section + section {
+  margin-top: 40px;
+}
+
 @media (max-width: 768px) {
-  .container {
-    width: 92%;
+  section + section {
+    margin-top: 30px;
   }
 }
-/* ------------------------------------------------------
-   PART 4 — FLOATING CTA, SAFE‑AREA, MOBILE BREAKPOINTS, CLEANUP
------------------------------------------------------- */
+/* -------------------------------------- */
+/* PART 4 — ASK PEAKORA BUTTON, MODAL PROTECTION, SAFE-AREA, CLEANUP */
+/* -------------------------------------- */
 
-/* ------------------------------------------------------
-   FLOATING ASK PEAKORA BUTTON — PREMIUM, RESPONSIVE
------------------------------------------------------- */
-
+/* FLOATING ASK PEAKORA BUTTON */
 .peakora-btn {
   position: fixed;
-  bottom: calc(24px + env(safe-area-inset-bottom));
+  bottom: 24px;
   right: 24px;
-  padding: 10px 18px;
-  background: rgba(255, 255, 255, 0.0);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 12px;
-  color: #0057ff;
-  font-size: 15px;
+  padding: 14px 22px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  z-index: 9999;
-  backdrop-filter: blur(8px);
-  transition: background 0.25s ease, transform 0.25s ease;
-  animation: peakoraGlow 4s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9600; /* BELOW MODAL, ABOVE EVERYTHING ELSE */
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .peakora-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  opacity: 0.85;
   transform: translateY(-2px);
 }
 
-@keyframes peakoraGlow {
-  0%   { box-shadow: 0 0 8px rgba(0, 87, 255, 0.25); }
-  50%  { box-shadow: 0 0 16px rgba(0, 87, 255, 0.45); }
-  100% { box-shadow: 0 0 8px rgba(0, 87, 255, 0.25); }
-}
-
-/* FLOATING CTA — MOBILE */
-@media (max-width: 768px) {
+/* Safe-area for iPhone */
+@supports (padding: max(0px)) {
   .peakora-btn {
-    bottom: calc(18px + env(safe-area-inset-bottom));
-    right: 18px;
-    padding: 8px 14px;
-    font-size: 14px;
-    border-radius: 10px;
-    box-shadow: 0 6px 18px rgba(0, 87, 255, 0.25);
+    bottom: max(24px, env(safe-area-inset-bottom));
+    right: max(24px, env(safe-area-inset-right));
   }
 }
 
-/* ------------------------------------------------------
-   SAFE‑AREA FIXES — iOS NOTCH + HOME INDICATOR
------------------------------------------------------- */
+/* -------------------------------------- */
+/* MODAL OVERLAY — ALWAYS ON TOP          */
+/* -------------------------------------- */
 
-body {
-  padding-bottom: env(safe-area-inset-bottom);
+.assistant-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.55);
+  display: none; /* Shown via JS */
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* TOP OF THE ENTIRE STACK */
+  padding: 20px;
 }
 
-.header {
-  padding-top: env(safe-area-inset-top);
+/* -------------------------------------- */
+/* MODAL CONTAINER                        */
+/* -------------------------------------- */
+
+.assistant-modal {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalFadeIn 0.25s ease;
 }
 
-/* ------------------------------------------------------
-   GLOBAL MOBILE BREAKPOINTS — FINAL PASS
------------------------------------------------------- */
-
-@media (max-width: 768px) {
-
-  /* Reduce container width slightly */
-  .container {
-    width: 92%;
-  }
-
-  /* Reduce global spacing */
-  section {
-    margin-top: 48px;
-    margin-bottom: 48px;
-  }
-
-  /* Soft typography */
-  h1, .hero-title, .stories-title, .section-title {
-    font-size: 26px;
-  }
-
-  h2 {
-    font-size: 22px;
-  }
-
-  h3 {
-    font-size: 18px;
-  }
-
-  p, li {
-    font-size: 15px;
-    line-height: 1.55;
-  }
+/* Modal animation */
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ------------------------------------------------------
-   CLEANUP — REMOVE DUPLICATE LOGO RULES
------------------------------------------------------- */
+/* -------------------------------------- */
+/* MODAL INTERNAL ELEMENTS                */
+/* -------------------------------------- */
 
-.brand-logo {
-  height: 24px !important;
-  width: auto;
-  object-fit: contain;
+.assistant-header {
+  padding: 16px 20px;
+  background: #222;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* ------------------------------------------------------
-   FINAL TOUCH — SMOOTH SCROLL OFFSET
------------------------------------------------------- */
+.assistant-title {
+  font-size: 20px;
+  font-weight: 600;
+}
 
-[id] {
-  scroll-margin-top: 80px;
+.assistant-close {
+  background: none;
+  border: none;
+  font-size: 26px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.assistant-messages {
+  padding: 20px;
+  height: 320px;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+.assistant-input-area {
+  display: flex;
+  padding: 14px;
+  gap: 10px;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+
+.assistant-input-area input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.assistant-send {
+  padding: 12px 18px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* -------------------------------------- */
+/* CLEANUP — STACKING CONTEXT SAFETY      */
+/* -------------------------------------- */
+
+/* Ensure nothing ever rises above the modal */
+header,
+.mobile-menu,
+footer,
+section,
+.hero,
+.why-peakora,
+.real-life,
+.stories,
+.cta-crown {
+  position: relative;
+  z-index: 1;
+}
+
+/* Floating button stays above all content but below modal */
+.peakora-btn {
+  z-index: 9600;
 }
