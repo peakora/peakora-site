@@ -3,7 +3,7 @@
 // ------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  // MOBILE MENU TOGGLE
+ // MOBILE MENU TOGGLE
 const menuToggle = document.getElementById("menuToggle");
 const nav = document.querySelector(".nav");
 
