@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <title>Peakora Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- iOS PWA support -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Peakora">
-<link rel="apple-touch-icon" href="/peakora-site/assets/peakora-icon-192.png">
+
+  <!-- iOS PWA support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Peakora">
+  <link rel="apple-touch-icon" href="./assets/peakora-icon-192.png">
 
   <!-- Neutral premium Peakora dot favicon -->
   <link rel="icon" href="data:image/svg+xml,
@@ -16,9 +17,13 @@
       <circle cx='32' cy='32' r='28' fill='%23f5b35c'/>
     </svg>">
 
-  <link rel="stylesheet" href="assistant.css" />
-  <link rel="manifest" href="/peakora-site/manifest.json">
+  <!-- Correct manifest path for GitHub Pages -->
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Assistant styles -->
+  <link rel="stylesheet" href="./assistant.css" />
 </head>
+
 
 <body>
   <div class="assistant-shell">
@@ -545,9 +550,9 @@
     });
   </script>
 
-  <script>
+<script>
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/peakora-site/service-worker.js");
+    navigator.serviceWorker.register("./service-worker.js");
   }
 </script>
 
