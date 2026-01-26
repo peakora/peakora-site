@@ -3,14 +3,16 @@
 // ------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
- // MOBILE MENU TOGGLE
+// MOBILE MENU OVERLAY
 const menuToggle = document.getElementById("menuToggle");
-const nav = document.querySelector(".nav");
+const mobileNavOverlay = document.getElementById("mobileNavOverlay");
 
 menuToggle?.addEventListener("click", () => {
-  nav.classList.toggle("nav-open");
+  menuToggle.classList.toggle("open");
+  mobileNavOverlay.classList.toggle("open");
+  document.body.classList.toggle("menu-open");
 });
-
+ 
   // --------------------
   // DOM ELEMENTS
   // --------------------
