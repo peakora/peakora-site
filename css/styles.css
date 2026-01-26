@@ -159,11 +159,8 @@ section {
 
 /* Soft animated gradient */
 .hero-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #dbe8ff, #eaf1ff, #f7faff);
-  animation: gradientShift 12s ease infinite;
-  z-index: -1;
+  background: none !important;
+  animation: none !important;
 }
 
 @keyframes gradientShift {
