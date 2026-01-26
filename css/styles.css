@@ -65,13 +65,13 @@ body {
 .brand {
   display: flex;
   align-items: center;
-  height: 64px;          /* MATCHES the logo height */
+  height: 48px;          /* MATCHES the logo height */
   overflow: hidden;
 }
 
 /* FINAL OVERRIDE — LOGO SIZE */
 header .brand img.brand-logo {
-  height: 64px !important;     /* Desktop size */
+  height: 48px !important;     /* Desktop size */
   width: auto !important;
   max-height: 100% !important;
   display: block !important;
