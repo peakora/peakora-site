@@ -42,8 +42,7 @@
         </div>
       </div>
 
-      <main id="step-container" class="assistant-body fade">
-      </main>
+      <main id="step-container" class="assistant-body fade"></main>
 
       <footer class="assistant-footer">
         <span>Peakora Assistant · This is not medical advice.</span>
@@ -357,7 +356,6 @@
           </div>`;
         return;
       }
-
       if (key === "done") {
         state.completed = true;
         saveState();
@@ -470,6 +468,8 @@
       }
     }
 
+    /* HANDLERS */
+
     function handleGoal() {
       const el = document.getElementById("goal-input");
       const value = (el.value || "").trim();
@@ -581,13 +581,23 @@
         goToStepKey("returning");
       }
     }
-
     function triggerInstall() {
+      // Desktop / unsupported: no beforeinstallprompt fired
       if (!deferredPrompt) {
-        goToStepKey("exit");
+        const container = document.getElementById("step-container");
+        container.innerHTML = `
+          <div class="step step-centered">
+            <h2>Install Peakora on your phone or tablet</h2>
+            <p class="soft-note">Install Peakora on your phone or tablet for the best experience.</p>
+            <p>Open this page on your mobile device to add it to your home screen.</p>
+            <div class="actions" style="margin-top: 20px; justify-content: center;">
+              <button class="btn primary" onclick="goToStepKey('returning')">Back</button>
+            </div>
+          </div>`;
         return;
       }
 
+      // Mobile / tablet: real install flow
       deferredPrompt.prompt();
 
       deferredPrompt.userChoice.then((choice) => {
@@ -597,7 +607,7 @@
           isInstalled = true;
           goToStepKey("exit");
         } else {
-          goToStepKey("exit");
+          goToStepKey("returning");
         }
       });
     }
