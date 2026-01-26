@@ -901,3 +901,40 @@ section {
     display: none;
   }
 }
+/* ------------------------------------------------------
+   MOBILE HAMBURGER BUTTON
+------------------------------------------------------ */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1201; /* above nav, below floating button */
+}
+
+.menu-toggle span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  transition: 0.25s ease;
+}
+
+/* Mobile only */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  /* Hide desktop nav until opened */
+  .nav {
+    display: flex;
+  }
+}
