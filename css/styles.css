@@ -872,38 +872,16 @@ section {
 }
 
 /* ------------------------------------------------------
-   MOBILE NAV — SLIDE FROM LEFT
-   (assumes JS toggles .nav-open on .nav)
+   HEADER — MOBILE/TABLET FIXES (NO LOGO OVERRIDES)
 ------------------------------------------------------ */
 
-@media (max-width: 768px) {
-  .nav {
-    position: fixed;
-    top: 48px;
-    left: 0;
-    height: calc(100vh - 48px);
-    width: 260px;
-    background: #ffffff;
-    flex-direction: column;
-    padding: 24px 16px;
-    gap: 16px;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-    z-index: 1050;
-  }
-
-  .nav.nav-open {
-    transform: translateX(0);
-  }
-
-  .header-social {
-    display: none;
-  }
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-/* ------------------------------------------------------
-   MOBILE HAMBURGER BUTTON
------------------------------------------------------- */
+
+/* Hamburger button */
 .menu-toggle {
   display: none;
   flex-direction: column;
@@ -915,7 +893,7 @@ section {
   border: none;
   cursor: pointer;
   padding: 0;
-  z-index: 1201; /* above nav, below floating button */
+  z-index: 1201;
 }
 
 .menu-toggle span {
@@ -927,14 +905,43 @@ section {
   transition: 0.25s ease;
 }
 
-/* Mobile only */
+/* MOBILE + TABLET */
 @media (max-width: 768px) {
+
+  /* Show hamburger */
   .menu-toggle {
-    display: flex;
+    display: flex !important;
+    order: 1;
   }
 
-  /* Hide desktop nav until opened */
+  /* Logo centered */
+  .brand {
+    order: 2;
+  }
+
+  /* Social icons visible on mobile */
+  .header-social {
+    order: 3;
+    display: flex !important;
+  }
+
+  /* Off‑canvas navigation */
   .nav {
-    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: #ffffff;
+    padding: 40px 20px;
+    flex-direction: column;
+    gap: 20px;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 2000;
+  }
+
+  .nav.nav-open {
+    transform: translateX(0);
   }
 }
