@@ -176,26 +176,77 @@ body {
 
 .card {
   background: #ffffff;
+  border: 1px solid #f3eae2;
   border-radius: 14px;
-  padding: 16px 16px 14px;
-  margin-bottom: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .card h2 {
+  font-size: 18px;
+  font-weight: 600;
   margin-top: 0;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card h2::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f5b35c, #f58b5c);
+  display: inline-block;
 }
 
 .soft-note {
   color: #666;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+  font-size: 14px;
 }
 
 .tiny-note {
   font-size: 12px;
   color: #888;
-  margin-top: 6px;
+  margin-top: 8px;
+}
+
+/* Mood bubble canvas */
+
+.mood-bubble-canvas {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  margin-top: 8px;
+  overflow: visible;
+}
+
+.mood-bubble {
+  position: absolute;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  opacity: 0.85;
+  animation: floatBubble 7s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.mood-bubble:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  opacity: 1;
+}
+
+/* Weekly summary bubble */
+
+.week-summary-bubble {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  margin: 10px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 /* Breath circle */
@@ -253,6 +304,33 @@ body {
   0% { transform: scale(0.9); opacity: 0.9; }
   50% { transform: scale(1.1); opacity: 1; }
   100% { transform: scale(0.9); opacity: 0.9; }
+}
+
+@keyframes floatBubble {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+/* Desktop-optimized layout */
+
+@media (min-width: 900px) {
+  .assistant-shell {
+    padding: 32px;
+  }
+
+  .assistant-card {
+    max-width: 720px;
+    padding: 24px 24px 18px;
+  }
+
+  .assistant-body {
+    min-height: 320px;
+  }
+
+  .card {
+    margin-bottom: 28px;
+  }
 }
 
 /* Small screens */
