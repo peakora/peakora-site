@@ -35,14 +35,14 @@
       </main>
 
       <footer class="assistant-footer">
-        Peakora Assistant · This is not medical advice.
+        © 2026 Peakora™ — For a Better You.
       </footer>
     </div>
   </div>
 
   <script>
     // TEMPORARY: force reset for testing
-localStorage.removeItem("peakora_assistant_state_v1");
+    localStorage.removeItem("peakora_assistant_state_v1");
 
     /* INSTALL + DEVICE DETECTION */
     let deferredPrompt = null;
@@ -78,6 +78,7 @@ localStorage.removeItem("peakora_assistant_state_v1");
       "daily_summary",
       "breathing",
       "journal",
+      "reset_focus",
       "install_prompt",
       "home",
       "exit"
@@ -346,7 +347,16 @@ localStorage.removeItem("peakora_assistant_state_v1");
       const key = steps[state.stepIndex];
       const bar = document.querySelector(".progress-fill");
       const label = document.querySelector(".progress-label");
-      if (!bar || !label) return;
+      const progressContainer = document.querySelector(".assistant-progress");
+      if (!bar || !label || !progressContainer) return;
+
+      // Hide progress on home
+      if (key === "home") {
+        progressContainer.style.display = "none";
+        return;
+      } else {
+        progressContainer.style.display = "";
+      }
 
       const onboardingIndex = onboardingSteps.indexOf(key);
       if (onboardingIndex === -1) {
@@ -654,6 +664,20 @@ localStorage.removeItem("peakora_assistant_state_v1");
         return;
       }
 
+      if (key === "reset_focus") {
+        container.innerHTML =
+          '<div class="step step-centered">' +
+          "<h2>Reset your focus</h2>" +
+          '<p class="soft-note">Let’s pick one small thing that matters in the next hour.</p>' +
+          '<textarea class="input" id="reset-focus-input" placeholder="What would feel good to move forward, just a little?"></textarea>' +
+          '<div class="actions">' +
+          '<button class="btn secondary" onclick="goToStepKey(\'home\')">Skip</button>' +
+          '<button class="btn primary" onclick="handleResetFocus()">Save</button>' +
+          "</div>" +
+          "</div>";
+        return;
+      }
+
       if (key === "install_prompt") {
         var deviceMessage = isDesktop
           ? "You can install Peakora right from your browser — just tap the install icon above. And if you ever want it on your phone or tablet, that’s available too."
@@ -685,9 +709,14 @@ localStorage.removeItem("peakora_assistant_state_v1");
       if (key === "home") {
         container.innerHTML =
           '<div class="step">' +
-          "<h2>Today’s space</h2>" +
 
-          // Plan card
+          // 1) Anchor card
+          '<div class="card">' +
+          "<h2>Today’s anchor</h2>" +
+          '<p class="soft-note">A gentle place to land, not a list to conquer.</p>' +
+          "</div>" +
+
+          // 2) Plan card
           '<div class="card">' +
           "<h2>Your plan</h2>" +
           '<p class="soft-note">This is your anchor for the week. You chose it. You can return to it anytime.</p>' +
@@ -702,23 +731,25 @@ localStorage.removeItem("peakora_assistant_state_v1");
           "</ul>" +
           "</div>" +
 
-          // Mood card
-          '<div class="card">' +
-          "<h2>Your week at a glance</h2>" +
-          '<div id="mood-bubble-canvas" class="mood-bubble-canvas"></div>' +
-          '<p id="mood-summary-text" class="tiny-note"></p>' +
-          "</div>" +
-
-          // Tools card
+          // 3) Tools card
           '<div class="card">' +
           "<h2>Tools</h2>" +
           '<div class="options vertical">' +
           '<button class="btn ghost" onclick="handleDailyStart()">Daily check-in</button>' +
           '<button class="btn ghost" onclick="goToStepKey(\'breathing\')">Breathing reset</button>' +
           '<button class="btn ghost" onclick="goToStepKey(\'journal\')">Micro-journal</button>' +
+          '<button class="btn ghost" onclick="goToStepKey(\'reset_focus\')">Reset focus</button>' +
           '<button class="btn ghost" onclick="restartOnboarding()">Start a new 7-day plan</button>' +
           "</div>" +
           "</div>" +
+
+          // 4) Mood card
+          '<div class="card">' +
+          "<h2>Your week at a glance</h2>" +
+          '<div id="mood-bubble-canvas" class="mood-bubble-canvas"></div>' +
+          '<p id="mood-summary-text" class="tiny-note"></p>' +
+          "</div>" +
+
           "</div>";
         renderMoodBubbles();
         return;
@@ -803,6 +834,14 @@ localStorage.removeItem("peakora_assistant_state_v1");
 
     function handleJournal() {
       const el = document.getElementById("journal-input");
+      const value = (el && el.value.trim()) || "";
+      // Placeholder: could store later
+      saveState();
+      goToStepKey("home");
+    }
+
+    function handleResetFocus() {
+      const el = document.getElementById("reset-focus-input");
       const value = (el && el.value.trim()) || "";
       // Placeholder: could store later
       saveState();
