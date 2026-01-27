@@ -159,55 +159,6 @@
       localStorage.setItem(CHECKINS_KEY, JSON.stringify(list.slice(-30)));
     }
 
-    function setProgress() {
-      const label = document.getElementById("progress-label");
-      const fill = document.getElementById("progress-fill");
-      const key = steps[state.stepIndex];
-      const idx = onboardingSteps.indexOf(key);
-
-      if (idx === -1) {
-        label.textContent = "Peakora Assistant";
-        fill.style.width = "0%";
-        return;
-      }
-
-      const stepNum = idx + 1;
-      const total = onboardingSteps.length;
-      label.textContent = `Step ${stepNum} of ${total}`;
-      fill.style.width = `${(stepNum / total) * 100}%`;
-    }
-
-    function goToStepKey(key) {
-      const idx = steps.indexOf(key);
-      if (idx === -1) return;
-      state.stepIndex = idx;
-      saveState();
-      renderStep();
-    }
-
-    function goToNext() {
-      state.stepIndex += 1;
-      saveState();
-      renderStep();
-    }
-
-    function goToPrevious() {
-      if (state.stepIndex === 0) return;
-      state.stepIndex -= 1;
-      saveState();
-      renderStep();
-    }
-
-    function fadeIn() {
-      const card = document.querySelector(".assistant-card");
-      const body = document.querySelector(".assistant-body");
-      card.classList.remove("fade");
-      body.classList.remove("fade");
-      void card.offsetWidth;
-      card.classList.add("fade");
-      body.classList.add("fade");
-    }
-
     /* Mood bubbles helpers + placeholder */
 
     const PLACEHOLDER_WEEK = [
@@ -275,7 +226,6 @@
       }
       return PLACEHOLDER_WEEK;
     }
-
     function renderMoodBubbles() {
       const canvas = document.getElementById("mood-bubble-canvas");
       const summaryEl = document.getElementById("mood-summary-text");
@@ -290,7 +240,7 @@
       }
 
       const width = canvas.clientWidth || 320;
-      const height = canvas.clientHeight || 160;
+      const height = canvas.clientHeight || 200; /* increased height */
       const count = data.length;
 
       const xStep = count > 1 ? (width - 40) / (count - 1) : 0;
@@ -303,13 +253,13 @@
         const feeling = item.feeling || item.mood || "";
         const family = getMoodFamily(feeling);
         const color = getMoodColor(family);
-        const size = getMoodSize(feeling);
+        const size = getMoodSize(feeling) * 1.3; /* 30% larger bubbles */
 
         families.push(family);
         feelingsSequence.push((feeling || "").toLowerCase() || "…");
 
         const x = 20 + xStep * index;
-        const drift = ((index % 2 === 0) ? -1 : 1) * (4 + (index % 3));
+        const drift = ((index % 2 === 0) ? -1 : 1) * (6 + (index % 3));
         const y = yBase + drift;
 
         const bubble = document.createElement("div");
@@ -318,15 +268,17 @@
         bubble.style.height = size + "px";
         bubble.style.left = (x - size / 2) + "px";
         bubble.style.top = (y - size / 2) + "px";
-        bubble.style.background = color;
+
+        /* gradient bubble fill */
+        bubble.style.background = `radial-gradient(circle at 30% 30%, ${color}, #f58b5c)`;
 
         bubble.style.animationDelay = (index * 0.6) + "s";
-
         bubble.title = feeling || "No label";
 
         canvas.appendChild(bubble);
       });
 
+      /* Weekly summary bubble */
       const familyCounts = families.reduce((acc, f) => {
         acc[f] = (acc[f] || 0) + 1;
         return acc;
@@ -343,12 +295,12 @@
       const summaryColor = getMoodColor(dominantFamily);
       const summaryBubble = document.createElement("div");
       summaryBubble.className = "week-summary-bubble";
-      summaryBubble.style.background = summaryColor;
+      summaryBubble.style.background = `radial-gradient(circle at 30% 30%, ${summaryColor}, #f58b5c)`;
 
       canvas.appendChild(summaryBubble);
       summaryBubble.style.position = "absolute";
-      summaryBubble.style.left = (width - 48) + "px";
-      summaryBubble.style.top = "8px";
+      summaryBubble.style.left = (width - 60) + "px";
+      summaryBubble.style.top = "10px";
 
       const sequenceText = feelingsSequence.join(" → ");
       summaryEl.textContent = `This week leaned toward: ${sequenceText}.`;
@@ -510,7 +462,6 @@
           </div>`;
         return;
       }
-
       if (key === "pricing") {
         container.innerHTML = `
           <div class="step">
@@ -639,327 +590,6 @@
           </div>`;
         return;
       }
-
-      if (key === "home") {
-        container.innerHTML = `
-          <div class="step">
-
-            <div class="card">
-              <h2>Today’s Anchor</h2>
-              <p class="soft-note" id="anchor-line">
-                Take one slow breath before you open your next app.
-              </p>
-              <div class="actions">
-                <button class="btn ghost" onclick="openHeavyDay()">More like this</button>
-              </div>
-            </div>
-
-            <div class="card">
-              <h2>Your Plan</h2>
-              <p><strong>You’re focusing on:</strong> ${state.answers.goal || "—"}</p>
-              <p><strong>Your gentle win:</strong> ${state.answers.extended1 || "—"}</p>
-              <p><strong>Your anchor habit:</strong> ${state.answers.extended2 || "—"}</p>
-              <p><strong>Your pace:</strong> ${state.answers.time || "—"}</p>
-              <div class="actions">
-                <button class="btn ghost" onclick="viewFullPlan()">View full plan</button>
-              </div>
-            </div>
-
-            <div class="card">
-              <h2>How are you feeling today?</h2>
-              <p class="soft-note">A soft moment to notice where you’re at.</p>
-              <div class="actions">
-                <button class="btn primary" onclick="goToStepKey('daily_intro')">Start check‑in</button>
-              </div>
-              <p class="tiny-note">Takes less than 30 seconds.</p>
-            </div>
-
-            <div class="card">
-              <h2>Tools for right now</h2>
-              <div class="actions vertical">
-                <button class="btn ghost" onclick="openBreathReset()">Breath Reset (10 sec)</button>
-                <button class="btn ghost" onclick="openMicroJournal()">Micro‑Journal (3 lines)</button>
-                <button class="btn ghost" onclick="openHeavyDay()">Today Feels Heavy</button>
-              </div>
-              <p class="tiny-note">Tiny tools to steady your day.</p>
-            </div>
-
-            <div class="card">
-              <h2>Your week at a glance</h2>
-              <div id="mood-bubble-canvas" class="mood-bubble-canvas"></div>
-              <p class="tiny-note" id="mood-summary-text"></p>
-            </div>
-
-          </div>
-
-          <footer class="assistant-footer" style="margin-top: 40px;">
-            © 2026 Peakora™ — For a Better You.
-          </footer>
-        `;
-        renderMoodBubbles();
-        return;
-      }
-
-      if (key === "exit") {
-        container.innerHTML = `
-          <div class="step step-centered">
-            <h2>We’re done for now</h2>
-            <p>You can close this tab whenever you’re ready.</p>
-            <p class="soft-note">When you’re back, I’ll be right where you left me.</p>
-          </div>`;
-        return;
-      }
-    }
-
-    /* HANDLERS */
-
-    function handleGoal() {
-      const el = document.getElementById("goal-input");
-      const value = (el.value || "").trim();
-      if (!value) {
-        el.classList.add("input-error");
-        return;
-      }
-      el.classList.remove("input-error");
-      state.answers.goal = value;
-      saveState();
-      goToStepKey("challenge");
-    }
-
-    function handleChallenge() {
-      const el = document.getElementById("challenge-input");
-      const value = (el.value || "").trim();
-      if (!value) {
-        el.classList.add("input-error");
-        return;
-      }
-      el.classList.remove("input-error");
-      state.answers.challenge = value;
-      saveState();
-      goToStepKey("time");
-    }
-
-    function handleTime(choice) {
-      state.answers.time = choice;
-      saveState();
-      goToStepKey("insight");
-    }
-
-    function handleInsight() {
-      const el = document.getElementById("insight-input");
-      const value = (el.value || "").trim();
-      if (value) {
-        state.answers.insight = value;
-        saveState();
-      }
-      goToStepKey("extended1");
-    }
-
-    function handleExtended1() {
-      const el = document.getElementById("extended1-input");
-      const value = (el.value || "").trim();
-      if (!value) {
-        el.classList.add("input-error");
-        return;
-      }
-      el.classList.remove("input-error");
-      state.answers.extended1 = value;
-      saveState();
-      goToStepKey("extended2");
-    }
-
-    function handleExtended2() {
-      const el = document.getElementById("extended2-input");
-      const value = (el.value || "").trim();
-      if (!value) {
-        el.classList.add("input-error");
-        return;
-      }
-      el.classList.remove("input-error");
-      state.answers.extended2 = value;
-      saveState();
-      goToStepKey("email");
-    }
-
-    function handleEmail() {
-      const el = document.getElementById("email-input");
-      const value = (el.value || "").trim();
-      if (!value || !value.includes("@")) {
-        el.classList.add("input-error");
-        return;
-      }
-      el.classList.remove("input-error");
-      state.email = value;
-      saveState();
-      goToStepKey("processing");
-    }
-
-    function handleDailyStart() {
-      goToStepKey("daily_intro");
-    }
-
-    function handleDailyCheckin() {
-      const el = document.getElementById("daily-checkin-input");
-      const value = (el.value || "").trim();
-      if (!value) {
-        el.classList.add("input-error");
-        return;
-      }
-      el.classList.remove("input-error");
-      state.answers.daily_checkin = value;
-      addCheckin(value);
-      saveState();
-      goToStepKey("daily_summary");
-    }
-
-    function restartOnboarding() {
-      clearState();
-      goToStepKey("welcome");
-    }
-
-    function handleBackToHome() {
-      const ref = document.referrer || "";
-      if (ref.includes("index.html")) {
-        window.location.href = "index.html";
-      } else if (state.completed) {
-        goToStepKey("home");
-      } else {
-        goToStepKey("welcome");
-      }
-    }
-
-    function triggerInstall() {
-      const container = document.getElementById("step-container");
-
-      if (isInstalled) {
-        goToStepKey("home");
-        return;
-      }
-
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choice) => {
-          deferredPrompt = null;
-
-          if (choice.outcome === "accepted") {
-            isInstalled = true;
-            goToStepKey("home");
-          } else {
-            goToStepKey("home");
-          }
-        });
-        return;
-      }
-
-      if (isDesktop) {
-        container.innerHTML = `
-          <div class="step step-centered">
-            <h2>Install Peakora on your desktop</h2>
-            <p class="soft-note">Install Peakora on your phone or tablet for the best experience — and it works beautifully on desktop too.</p>
-            <p>On your laptop, look for the install icon in your browser’s address bar to add Peakora as an app.</p>
-            <div class="actions" style="margin-top: 20px; justify-content: center;">
-              <button class="btn secondary" onclick="goToStepKey('install_prompt')">Back</button>
-              <button class="btn primary" onclick="goToStepKey('home')">Close</button>
-            </div>
-          </div>`;
-      } else {
-        container.innerHTML = `
-          <div class="step step-centered">
-            <h2>Add Peakora to your home screen</h2>
-            <p class="soft-note">Install Peakora on your phone or tablet for the best experience. And if you ever want it on your laptop, that’s available too.</p>
-            <p>From your browser menu, choose “Add to Home Screen” or “Install app” to keep Peakora close.</p>
-            <div class="actions" style="margin-top: 20px; justify-content: center;">
-              <button class="btn secondary" onclick="goToStepKey('install_prompt')">Back</button>
-              <button class="btn primary" onclick="goToStepKey('home')">Close</button>
-            </div>
-          </div>`;
-      }
-    }
-
-    /* MICRO-TOOLS */
-
-    function openBreathReset() {
-      const container = document.getElementById("step-container");
-      container.innerHTML = `
-        <div class="step step-centered">
-          <h2>Breath Reset</h2>
-          <p class="soft-note">For the next 10 seconds, let everything else wait.</p>
-          <div class="breath-circle"></div>
-          <p class="tiny-note">In through your nose as the circle grows. Out through your mouth as it softens.</p>
-          <div class="actions" style="margin-top: 20px; justify-content: center;">
-            <button class="btn secondary" onclick="goToStepKey('home')">Back to home</button>
-          </div>
-        </div>`;
-    }
-
-    function openMicroJournal() {
-      const container = document.getElementById("step-container");
-      container.innerHTML = `
-        <div class="step">
-          <h2>Micro‑Journal</h2>
-          <p class="soft-note">Write one sentence about today. It doesn’t need to be profound. Just honest.</p>
-          <textarea class="input" id="journal-input" placeholder="Today feels…"></textarea>
-          <div class="actions">
-            <button class="btn secondary" onclick="goToStepKey('home')">Back</button>
-            <button class="btn primary" onclick="saveJournal()">Save</button>
-          </div>
-        </div>`;
-    }
-
-    function saveJournal() {
-      const el = document.getElementById("journal-input");
-      const value = (el.value || "").trim();
-      if (!value) {
-        el.classList.add("input-error");
-        return;
-      }
-      el.classList.remove("input-error");
-      const today = new Date().toISOString().slice(0, 10);
-      const key = "peakora_journal_v1";
-      const raw = localStorage.getItem(key);
-      let list = [];
-      try {
-        list = raw ? JSON.parse(raw) : [];
-      } catch {
-        list = [];
-      }
-      list.push({ date: today, entry: value });
-      localStorage.setItem(key, JSON.stringify(list.slice(-100)));
-      goToStepKey("home");
-    }
-
-    function openHeavyDay() {
-      const container = document.getElementById("step-container");
-      container.innerHTML = `
-        <div class="step">
-          <h2>Today feels heavy</h2>
-          <p class="soft-note">
-            Pause. Drop your shoulders. Unclench your jaw.  
-            You don’t have to fix anything in this moment.  
-            Just soften the next minute.
-          </p>
-          <p>
-            If all you do today is breathe a little slower and speak to yourself a little kinder, that is enough.
-          </p>
-          <div class="actions" style="margin-top: 20px; justify-content: center;">
-            <button class="btn primary" onclick="goToStepKey('home')">Back to home</button>
-          </div>
-        </div>`;
-    }
-
-    function viewFullPlan() {
-      const container = document.getElementById("step-container");
-      const goal = state.answers.goal || "—";
-      const win = state.answers.extended1 || "—";
-      const habit = state.answers.extended2 || "—";
-      const pace = state.answers.time || "—";
-
-      container.innerHTML = `
-        <div class="step">
-          <h2>Your 7‑day plan snapshot</h2>
-          <p><strong>Focus:</strong> ${goal}</p>
-          <p><strong>Gentle win:</strong> ${win}</p>
-          <p><strong>Anchor habit:</strong> ${habit}</p>
           <p><strong>Pace:</strong> ${pace}</p>
           <p class="soft-note">The full plan is in your inbox. This snapshot is here to remind you what you chose for yourself.</p>
           <div class="actions">
@@ -970,14 +600,17 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       const hasState = loadState();
+
       if (!hasState) {
         goToStepKey("welcome");
         return;
       }
+
       if (state.completed) {
         goToStepKey("home");
         return;
       }
+
       goToStepKey(steps[state.stepIndex] || "welcome");
     });
   </script>
