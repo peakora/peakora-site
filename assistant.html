@@ -82,6 +82,7 @@
       "daily_checkin",
       "daily_summary",
       "install_prompt",
+      "home",
       "exit"
     ];
 
@@ -101,14 +102,15 @@
       "done"
     ];
 
+    const STORAGE_KEY = "peakora_assistant_state_v1";
+    const CHECKINS_KEY = "peakora_checkins_v1";
+
     const state = {
       stepIndex: 0,
       answers: {},
       email: "",
       completed: false,
     };
-
-    const STORAGE_KEY = "peakora_assistant_state_v1";
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -135,6 +137,31 @@
       state.answers = {};
       state.email = "";
       state.completed = false;
+    }
+
+    function getCheckins() {
+      const raw = localStorage.getItem(CHECKINS_KEY);
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function addCheckin(feeling) {
+      const list = getCheckins();
+      const today = new Date().toISOString().slice(0, 10);
+      list.push({ date: today, feeling });
+      localStorage.setItem(CHECKINS_KEY, JSON.stringify(list.slice(-30)));
+    }
+
+    function getEnergyPatternText() {
+      const list = getCheckins();
+      if (!list.length) return "You haven’t checked in yet this week.";
+      const last7 = list.slice(-7);
+      const feelings = last7.map(c => c.feeling.toLowerCase());
+      return `This week, your days have leaned toward: ${feelings.join(" → ")}.`;
     }
 
     function setProgress() {
@@ -361,6 +388,7 @@
           </div>`;
         return;
       }
+
       if (key === "done") {
         state.completed = true;
         saveState();
@@ -373,6 +401,8 @@
         setTimeout(() => {
           if (!isInstalled) {
             goToStepKey("install_prompt");
+          } else {
+            goToStepKey("home");
           }
         }, 800);
         return;
@@ -403,7 +433,7 @@
             <h2>Let’s do a quick check‑in</h2>
             <p>Just a few gentle questions to see where you’re at today.</p>
             <div class="actions">
-              <button class="btn secondary" onclick="goToStepKey('returning')">Back</button>
+              <button class="btn secondary" onclick="goToStepKey('home')">Back</button>
               <button class="btn primary" onclick="goToStepKey('daily_checkin')">Begin</button>
             </div>
           </div>`;
@@ -432,7 +462,7 @@
             <p class="soft-note">Small moments of honesty like this are what slowly shift things.</p>
             <div class="actions">
               <button class="btn secondary" onclick="goToStepKey('daily_checkin')">Back</button>
-              <button class="btn primary" onclick="goToStepKey('install_prompt')">Continue</button>
+              <button class="btn primary" onclick="goToStepKey('home')">Done</button>
             </div>
           </div>`;
         return;
@@ -461,13 +491,68 @@
             </div>
 
             <div class="actions" style="margin-top: 8px; justify-content: center;">
-              <button class="btn ghost" onclick="goToStepKey('exit')">Maybe later</button>
-            </div>
-
-            <div class="actions" style="margin-top: 8px; justify-content: center;">
-              <button class="btn secondary" onclick="goToStepKey('returning')">Back</button>
+              <button class="btn ghost" onclick="goToStepKey('home')">Maybe later</button>
             </div>
           </div>`;
+        return;
+      }
+
+      if (key === "home") {
+        const energyText = getEnergyPatternText();
+        container.innerHTML = `
+          <div class="step">
+
+            <div class="card">
+              <h2>Today’s Anchor</h2>
+              <p class="soft-note" id="anchor-line">
+                Take one slow breath before you open your next app.
+              </p>
+              <div class="actions">
+                <button class="btn ghost" onclick="openHeavyDay()">More like this</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>Your Plan</h2>
+              <p><strong>You’re focusing on:</strong> ${state.answers.goal || "—"}</p>
+              <p><strong>Your gentle win:</strong> ${state.answers.extended1 || "—"}</p>
+              <p><strong>Your anchor habit:</strong> ${state.answers.extended2 || "—"}</p>
+              <p><strong>Your pace:</strong> ${state.answers.time || "—"}</p>
+              <div class="actions">
+                <button class="btn ghost" onclick="viewFullPlan()">View full plan</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>How are you feeling today?</h2>
+              <p class="soft-note">A soft moment to notice where you’re at.</p>
+              <div class="actions">
+                <button class="btn primary" onclick="goToStepKey('daily_intro')">Start check‑in</button>
+              </div>
+              <p class="tiny-note">Takes less than 30 seconds.</p>
+            </div>
+
+            <div class="card">
+              <h2>Tools for right now</h2>
+              <div class="actions vertical">
+                <button class="btn ghost" onclick="openBreathReset()">Breath Reset (10 sec)</button>
+                <button class="btn ghost" onclick="openMicroJournal()">Micro‑Journal (3 lines)</button>
+                <button class="btn ghost" onclick="openHeavyDay()">Today Feels Heavy</button>
+              </div>
+              <p class="tiny-note">Tiny tools to steady your day.</p>
+            </div>
+
+            <div class="card">
+              <h2>Your week at a glance</h2>
+              <p class="soft-note">${energyText}</p>
+            </div>
+
+          </div>
+
+          <footer class="assistant-footer" style="margin-top: 40px;">
+            © 2026 Peakora™ — For a Better You.
+          </footer>
+        `;
         return;
       }
 
@@ -578,6 +663,7 @@
       }
       el.classList.remove("input-error");
       state.answers.daily_checkin = value;
+      addCheckin(value);
       saveState();
       goToStepKey("daily_summary");
     }
@@ -591,20 +677,21 @@
       const ref = document.referrer || "";
       if (ref.includes("index.html")) {
         window.location.href = "index.html";
+      } else if (state.completed) {
+        goToStepKey("home");
       } else {
-        goToStepKey("returning");
+        goToStepKey("welcome");
       }
     }
+
     function triggerInstall() {
       const container = document.getElementById("step-container");
 
-      // If already installed, just close out gracefully
       if (isInstalled) {
-        goToStepKey("exit");
+        goToStepKey("home");
         return;
       }
 
-      // If we have a captured prompt (Android Chrome, desktop Chrome when it fires)
       if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choice) => {
@@ -612,16 +699,14 @@
 
           if (choice.outcome === "accepted") {
             isInstalled = true;
-            goToStepKey("exit");
+            goToStepKey("home");
           } else {
-            // User dismissed the prompt; send them back gently
-            goToStepKey("returning");
+            goToStepKey("home");
           }
         });
         return;
       }
 
-      // No prompt available: show gentle instructions based on device
       if (isDesktop) {
         container.innerHTML = `
           <div class="step step-centered">
@@ -630,7 +715,7 @@
             <p>On your laptop, look for the install icon in your browser’s address bar to add Peakora as an app.</p>
             <div class="actions" style="margin-top: 20px; justify-content: center;">
               <button class="btn secondary" onclick="goToStepKey('install_prompt')">Back</button>
-              <button class="btn primary" onclick="goToStepKey('exit')">Close</button>
+              <button class="btn primary" onclick="goToStepKey('home')">Close</button>
             </div>
           </div>`;
       } else {
@@ -641,10 +726,102 @@
             <p>From your browser menu, choose “Add to Home Screen” or “Install app” to keep Peakora close.</p>
             <div class="actions" style="margin-top: 20px; justify-content: center;">
               <button class="btn secondary" onclick="goToStepKey('install_prompt')">Back</button>
-              <button class="btn primary" onclick="goToStepKey('exit')">Close</button>
+              <button class="btn primary" onclick="goToStepKey('home')">Close</button>
             </div>
           </div>`;
       }
+    }
+
+    /* MICRO-TOOLS PLACEHOLDERS */
+
+    function openBreathReset() {
+      const container = document.getElementById("step-container");
+      container.innerHTML = `
+        <div class="step step-centered">
+          <h2>Breath Reset</h2>
+          <p class="soft-note">For the next 10 seconds, let everything else wait.</p>
+          <div class="breath-circle"></div>
+          <p class="tiny-note">In through your nose as the circle grows. Out through your mouth as it softens.</p>
+          <div class="actions" style="margin-top: 20px; justify-content: center;">
+            <button class="btn secondary" onclick="goToStepKey('home')">Back to home</button>
+          </div>
+        </div>`;
+    }
+
+    function openMicroJournal() {
+      const container = document.getElementById("step-container");
+      container.innerHTML = `
+        <div class="step">
+          <h2>Micro‑Journal</h2>
+          <p class="soft-note">Write one sentence about today. It doesn’t need to be profound. Just honest.</p>
+          <textarea class="input" id="journal-input" placeholder="Today feels…"></textarea>
+          <div class="actions">
+            <button class="btn secondary" onclick="goToStepKey('home')">Back</button>
+            <button class="btn primary" onclick="saveJournal()">Save</button>
+          </div>
+        </div>`;
+    }
+
+    function saveJournal() {
+      const el = document.getElementById("journal-input");
+      const value = (el.value || "").trim();
+      if (!value) {
+        el.classList.add("input-error");
+        return;
+      }
+      el.classList.remove("input-error");
+      const today = new Date().toISOString().slice(0, 10);
+      const key = "peakora_journal_v1";
+      const raw = localStorage.getItem(key);
+      let list = [];
+      try {
+        list = raw ? JSON.parse(raw) : [];
+      } catch {
+        list = [];
+      }
+      list.push({ date: today, entry: value });
+      localStorage.setItem(key, JSON.stringify(list.slice(-100)));
+      goToStepKey("home");
+    }
+
+    function openHeavyDay() {
+      const container = document.getElementById("step-container");
+      container.innerHTML = `
+        <div class="step">
+          <h2>Today feels heavy</h2>
+          <p class="soft-note">
+            Pause. Drop your shoulders. Unclench your jaw.  
+            You don’t have to fix anything in this moment.  
+            Just soften the next minute.
+          </p>
+          <p>
+            If all you do today is breathe a little slower and speak to yourself a little kinder, that is enough.
+          </p>
+          <div class="actions" style="margin-top: 20px; justify-content: center;">
+            <button class="btn primary" onclick="goToStepKey('home')">Back to home</button>
+          </div>
+        </div>`;
+    }
+
+    function viewFullPlan() {
+      const container = document.getElementById("step-container");
+      const goal = state.answers.goal || "—";
+      const win = state.answers.extended1 || "—";
+      const habit = state.answers.extended2 || "—";
+      const pace = state.answers.time || "—";
+
+      container.innerHTML = `
+        <div class="step">
+          <h2>Your 7‑day plan snapshot</h2>
+          <p><strong>Focus:</strong> ${goal}</p>
+          <p><strong>Gentle win:</strong> ${win}</p>
+          <p><strong>Anchor habit:</strong> ${habit}</p>
+          <p><strong>Pace:</strong> ${pace}</p>
+          <p class="soft-note">The full plan is in your inbox. This snapshot is here to remind you what you chose for yourself.</p>
+          <div class="actions">
+            <button class="btn primary" onclick="goToStepKey('home')">Back to home</button>
+          </div>
+        </div>`;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -654,7 +831,7 @@
         return;
       }
       if (state.completed) {
-        goToStepKey("returning");
+        goToStepKey("home");
         return;
       }
       goToStepKey(steps[state.stepIndex] || "welcome");
