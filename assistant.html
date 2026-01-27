@@ -110,6 +110,7 @@
       answers: {},
       email: "",
       completed: false,
+      installPromptShown: false
     };
 
     function saveState() {
@@ -125,6 +126,7 @@
         state.answers = parsed.answers || {};
         state.email = parsed.email || "";
         state.completed = !!parsed.completed;
+        state.installPromptShown = !!parsed.installPromptShown;
         return true;
       } catch {
         return false;
@@ -137,6 +139,7 @@
       state.answers = {};
       state.email = "";
       state.completed = false;
+      state.installPromptShown = false;
     }
 
     function getCheckins() {
@@ -154,14 +157,6 @@
       const today = new Date().toISOString().slice(0, 10);
       list.push({ date: today, feeling });
       localStorage.setItem(CHECKINS_KEY, JSON.stringify(list.slice(-30)));
-    }
-
-    function getEnergyPatternText() {
-      const list = getCheckins();
-      if (!list.length) return "You haven’t checked in yet this week.";
-      const last7 = list.slice(-7);
-      const feelings = last7.map(c => c.feeling.toLowerCase());
-      return `This week, your days have leaned toward: ${feelings.join(" → ")}.`;
     }
 
     function setProgress() {
@@ -211,6 +206,152 @@
       void card.offsetWidth;
       card.classList.add("fade");
       body.classList.add("fade");
+    }
+
+    /* Mood bubbles helpers + placeholder */
+
+    const PLACEHOLDER_WEEK = [
+      { date: "2026-01-21", feeling: "tired" },
+      { date: "2026-01-22", feeling: "steady" },
+      { date: "2026-01-23", feeling: "wired" },
+      { date: "2026-01-24", feeling: "flat" },
+      { date: "2026-01-25", feeling: "hopeful" },
+      { date: "2026-01-26", feeling: "better" },
+      { date: "2026-01-27", feeling: "light" }
+    ];
+
+    function getMoodFamily(feeling) {
+      const f = (feeling || "").toLowerCase();
+      if (!f) return "neutral";
+
+      if (f.includes("tired") || f.includes("drained") || f.includes("sad") || f.includes("heavy")) {
+        return "heavy";
+      }
+      if (f.includes("wired") || f.includes("overwhelm") || f.includes("anxious")) {
+        return "anxious";
+      }
+      if (f.includes("hopeful") || f.includes("better") || f.includes("light") || f.includes("uplift")) {
+        return "hopeful";
+      }
+      if (f.includes("ready") || f.includes("strong") || f.includes("energ")) {
+        return "energized";
+      }
+      if (f.includes("flat")) {
+        return "neutral";
+      }
+      if (f.includes("steady") || f.includes("okay") || f.includes("ok")) {
+        return "neutral";
+      }
+      return "neutral";
+    }
+
+    function getMoodColor(family) {
+      switch (family) {
+        case "heavy": return "#E8A0A0";
+        case "anxious": return "#F5C26B";
+        case "hopeful": return "#AEE6C5";
+        case "energized": return "#6EC8C8";
+        case "neutral":
+        default: return "#F5B35C";
+      }
+    }
+
+    function getMoodSize(feeling) {
+      const f = (feeling || "").toLowerCase();
+      if (f.includes("tired")) return 26;
+      if (f.includes("steady")) return 32;
+      if (f.includes("wired")) return 28;
+      if (f.includes("flat")) return 30;
+      if (f.includes("hopeful")) return 36;
+      if (f.includes("better")) return 38;
+      if (f.includes("light")) return 40;
+      return 30;
+    }
+
+    function getLast7CheckinsOrPlaceholder() {
+      const real = getCheckins();
+      if (real && real.length >= 1) {
+        return real.slice(-7);
+      }
+      return PLACEHOLDER_WEEK;
+    }
+
+    function renderMoodBubbles() {
+      const canvas = document.getElementById("mood-bubble-canvas");
+      const summaryEl = document.getElementById("mood-summary-text");
+      if (!canvas || !summaryEl) return;
+
+      const data = getLast7CheckinsOrPlaceholder();
+      canvas.innerHTML = "";
+
+      if (!data.length) {
+        summaryEl.textContent = "You haven’t checked in yet this week.";
+        return;
+      }
+
+      const width = canvas.clientWidth || 320;
+      const height = canvas.clientHeight || 160;
+      const count = data.length;
+
+      const xStep = count > 1 ? (width - 40) / (count - 1) : 0;
+      const yBase = height / 2;
+
+      const families = [];
+      const feelingsSequence = [];
+
+      data.forEach((item, index) => {
+        const feeling = item.feeling || item.mood || "";
+        const family = getMoodFamily(feeling);
+        const color = getMoodColor(family);
+        const size = getMoodSize(feeling);
+
+        families.push(family);
+        feelingsSequence.push((feeling || "").toLowerCase() || "…");
+
+        const x = 20 + xStep * index;
+        const drift = ((index % 2 === 0) ? -1 : 1) * (4 + (index % 3));
+        const y = yBase + drift;
+
+        const bubble = document.createElement("div");
+        bubble.className = "mood-bubble";
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
+        bubble.style.left = (x - size / 2) + "px";
+        bubble.style.top = (y - size / 2) + "px";
+        bubble.style.background = color;
+
+        bubble.style.animationDelay = (index * 0.6) + "s";
+
+        bubble.title = feeling || "No label";
+
+        canvas.appendChild(bubble);
+      });
+
+      const familyCounts = families.reduce((acc, f) => {
+        acc[f] = (acc[f] || 0) + 1;
+        return acc;
+      }, {});
+      let dominantFamily = "neutral";
+      let maxCount = 0;
+      Object.keys(familyCounts).forEach(f => {
+        if (familyCounts[f] > maxCount) {
+          maxCount = familyCounts[f];
+          dominantFamily = f;
+        }
+      });
+
+      const summaryColor = getMoodColor(dominantFamily);
+      const summaryBubble = document.createElement("div");
+      summaryBubble.className = "week-summary-bubble";
+      summaryBubble.style.background = summaryColor;
+
+      canvas.appendChild(summaryBubble);
+      summaryBubble.style.position = "absolute";
+      summaryBubble.style.left = (width - 48) + "px";
+      summaryBubble.style.top = "8px";
+
+      const sequenceText = feelingsSequence.join(" → ");
+      summaryEl.textContent = `This week leaned toward: ${sequenceText}.`;
     }
 
     function renderStep() {
@@ -399,7 +540,9 @@
             <p class="soft-note">Come back anytime for a new plan or a gentle check‑in.</p>
           </div>`;
         setTimeout(() => {
-          if (!isInstalled) {
+          if (!isInstalled && !state.installPromptShown) {
+            state.installPromptShown = true;
+            saveState();
             goToStepKey("install_prompt");
           } else {
             goToStepKey("home");
@@ -498,7 +641,6 @@
       }
 
       if (key === "home") {
-        const energyText = getEnergyPatternText();
         container.innerHTML = `
           <div class="step">
 
@@ -544,7 +686,8 @@
 
             <div class="card">
               <h2>Your week at a glance</h2>
-              <p class="soft-note">${energyText}</p>
+              <div id="mood-bubble-canvas" class="mood-bubble-canvas"></div>
+              <p class="tiny-note" id="mood-summary-text"></p>
             </div>
 
           </div>
@@ -553,6 +696,7 @@
             © 2026 Peakora™ — For a Better You.
           </footer>
         `;
+        renderMoodBubbles();
         return;
       }
 
@@ -732,7 +876,7 @@
       }
     }
 
-    /* MICRO-TOOLS PLACEHOLDERS */
+    /* MICRO-TOOLS */
 
     function openBreathReset() {
       const container = document.getElementById("step-container");
