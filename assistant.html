@@ -11,6 +11,18 @@
   <meta name="mobile-web-app-capable" content="yes">
 </head>
 <body>
+  <!-- Mid-onboarding modal (unstyled for now) -->
+  <div id="onboarding-modal" class="hidden">
+    <div class="modal-content">
+      <h2>Welcome back</h2>
+      <p class="soft-note">Would you like to continue where you left off, or start fresh?</p>
+      <div class="actions">
+        <button class="btn secondary" id="modal-startover">Start fresh</button>
+        <button class="btn primary" id="modal-continue">Continue</button>
+      </div>
+    </div>
+  </div>
+
   <div class="assistant-shell">
     <div class="assistant-card">
       <header class="assistant-header">
@@ -41,9 +53,6 @@
   </div>
 
   <script>
-    // TEMPORARY: force reset for testing
-    localStorage.removeItem("peakora_assistant_state_v1");
-
     /* INSTALL + DEVICE DETECTION */
     let deferredPrompt = null;
     let isInstalled =
@@ -72,7 +81,6 @@
       "recommendations",
       "pricing",
       "done",
-      "returning",
       "daily_intro",
       "daily_checkin",
       "daily_summary",
@@ -110,6 +118,8 @@
       completed: false,
       installPromptShown: false
     };
+
+    let focusTools = false;
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -372,6 +382,11 @@
         "Step " + (onboardingIndex + 1) + " of " + onboardingSteps.length;
     }
 
+    function goHomeAndFocusTools() {
+      focusTools = true;
+      goToStepKey("home");
+    }
+
     function renderStep() {
       fadeIn();
       const container = document.getElementById("step-container");
@@ -575,32 +590,13 @@
         return;
       }
 
-      if (key === "returning") {
-        container.innerHTML =
-          '<div class="step">' +
-          "<h2>Welcome back</h2>" +
-          "<p>Do you want to start a fresh plan or check in with how you’re feeling today?</p>" +
-          '<div class="options vertical">' +
-          '<button class="btn ghost" onclick="handleDailyStart()">Daily check-in</button>' +
-          '<button class="btn ghost" onclick="restartOnboarding()">Start a new 7-day plan</button>' +
-          "</div>" +
-          "</div>";
-        if (!isInstalled) {
-          container.innerHTML +=
-            '<div class="actions" style="margin-top: 20px; justify-content: center;">' +
-            '<button class="btn primary" onclick="goToStepKey(\'install_prompt\')">Install Peakora</button>' +
-            "</div>";
-        }
-        return;
-      }
-
       if (key === "daily_intro") {
         container.innerHTML =
           '<div class="step">' +
           "<h2>Let’s do a quick check-in</h2>" +
           "<p>Just a few gentle questions to see where you’re at today.</p>" +
           '<div class="actions">' +
-          '<button class="btn secondary" onclick="goToStepKey(\'home\')">Back</button>' +
+          '<button class="btn secondary" onclick="goHomeAndFocusTools()">Back</button>' +
           '<button class="btn primary" onclick="goToStepKey(\'daily_checkin\')">Begin</button>' +
           "</div>" +
           "</div>";
@@ -644,7 +640,7 @@
           '<p class="soft-note">A slow inhale, a softer exhale. Let’s do this together.</p>' +
           '<div class="breathing-circle"></div>' +
           '<div class="actions">' +
-          '<button class="btn primary" onclick="goToStepKey(\'home\')">Back to home</button>' +
+          '<button class="btn primary" onclick="goHomeAndFocusTools()">Back to tools</button>' +
           "</div>" +
           "</div>";
         return;
@@ -657,7 +653,7 @@
           '<p class="soft-note">One sentence. Whatever is true right now.</p>' +
           '<textarea class="input" id="journal-input" placeholder="Write one sentence…"></textarea>' +
           '<div class="actions">' +
-          '<button class="btn secondary" onclick="goToStepKey(\'home\')">Cancel</button>' +
+          '<button class="btn secondary" onclick="goHomeAndFocusTools()">Cancel</button>' +
           '<button class="btn primary" onclick="handleJournal()">Save</button>' +
           "</div>" +
           "</div>";
@@ -671,7 +667,7 @@
           '<p class="soft-note">Let’s pick one small thing that matters in the next hour.</p>' +
           '<textarea class="input" id="reset-focus-input" placeholder="What would feel good to move forward, just a little?"></textarea>' +
           '<div class="actions">' +
-          '<button class="btn secondary" onclick="goToStepKey(\'home\')">Skip</button>' +
+          '<button class="btn secondary" onclick="goHomeAndFocusTools()">Skip</button>' +
           '<button class="btn primary" onclick="handleResetFocus()">Save</button>' +
           "</div>" +
           "</div>";
@@ -709,6 +705,7 @@
       if (key === "home") {
         container.innerHTML =
           '<div class="step">' +
+          '<div class="home-grid">' +
 
           // 1) Anchor card
           '<div class="card">' +
@@ -727,12 +724,14 @@
           "<li>Gentle win: " +
           (state.answers.extended1 || "—") +
           "</li>" +
-          "<li>Forgiveness: Built-in for off days</li>" +
+          "<li>Time you chose: " +
+          (state.answers.time || "—") +
+          "</li>" +
           "</ul>" +
           "</div>" +
 
           // 3) Tools card
-          '<div class="card">' +
+          '<div class="card" id="tools-card">' +
           "<h2>Tools</h2>" +
           '<div class="options vertical">' +
           '<button class="btn ghost" onclick="handleDailyStart()">Daily check-in</button>' +
@@ -743,17 +742,29 @@
           "</div>" +
           "</div>" +
 
-         // 4) Mood card
-'<div class="card">' +
-  "<h2>Your week at a glance</h2>" +
-  '<p class="tiny-note">Each bubble reflects one day from your past week.</p>' +
-  '<div id="mood-bubble-canvas" class="mood-bubble-canvas"></div>' +
-  '<p id="mood-summary-text" class="tiny-note"></p>' +
-'</div>' +
+          // 4) Mood card
+          '<div class="card">' +
+          "<h2>Your week at a glance</h2>" +
+          '<p class="tiny-note">Each bubble reflects one day from your past week.</p>' +
+          '<div id="mood-bubble-canvas" class="mood-bubble-canvas"></div>' +
+          '<p id="mood-summary-text" class="tiny-note"></p>' +
+          "</div>" +
 
-
+          "</div>" +
           "</div>";
+
         renderMoodBubbles();
+
+        if (focusTools) {
+          setTimeout(function () {
+            const toolsCard = document.getElementById("tools-card");
+            if (toolsCard) {
+              toolsCard.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+            focusTools = false;
+          }, 0);
+        }
+
         return;
       }
 
@@ -869,33 +880,57 @@
         });
       }
     }
+
+    function showOnboardingModal() {
+      const modal = document.getElementById("onboarding-modal");
+      if (!modal) {
+        // Fallback: if modal is missing, just continue to current step
+        const currentKey = steps[state.stepIndex] || "welcome";
+        goToStepKey(currentKey);
+        return;
+      }
+
+      modal.classList.remove("hidden");
+
+      const startOverBtn = document.getElementById("modal-startover");
+      const continueBtn = document.getElementById("modal-continue");
+
+      if (startOverBtn) {
+        startOverBtn.onclick = function () {
+          clearState();
+          modal.classList.add("hidden");
+          goToStepKey("welcome");
+        };
+      }
+
+      if (continueBtn) {
+        continueBtn.onclick = function () {
+          modal.classList.add("hidden");
+          const currentKey = steps[state.stepIndex] || "welcome";
+          goToStepKey(currentKey);
+        };
+      }
+    }
   </script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const hasState = loadState();
 
+      // New user
       if (!hasState) {
         goToStepKey("welcome");
         return;
       }
 
+      // Completed user
       if (state.completed) {
-        state.stepIndex = steps.indexOf("home");
-        saveState();
         goToStepKey("home");
         return;
       }
 
-      const currentKey = steps[state.stepIndex] || "welcome";
-      if (currentKey === "returning") {
-        state.stepIndex = steps.indexOf("home");
-        saveState();
-        goToStepKey("home");
-        return;
-      }
-
-      goToStepKey(currentKey);
+      // Mid-onboarding user → show modal choice
+      showOnboardingModal();
     });
   </script>
 
