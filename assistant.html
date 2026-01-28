@@ -5,14 +5,14 @@
   <title>Peakora Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Assistant theme (warm gradient, cards, etc.) -->
+  <!-- Assistant theme -->
   <link rel="stylesheet" href="assistant.css">
 
   <meta name="mobile-web-app-capable" content="yes">
 </head>
 <body>
   <!-- Mid-onboarding modal (unstyled for now) -->
-  <div id="onboarding-modal" class="hidden">
+  <div id="onboarding-modal" style="display:none;">
     <div class="modal-content">
       <h2>Welcome back</h2>
       <p class="soft-note">Would you like to continue where you left off, or start fresh?</p>
@@ -88,6 +88,7 @@
       "journal",
       "reset_focus",
       "install_prompt",
+      "plan_full",
       "home",
       "exit"
     ];
@@ -116,7 +117,9 @@
       answers: {},
       email: "",
       completed: false,
-      installPromptShown: false
+      installPromptShown: false,
+      plan: null,
+      planStartDate: null
     };
 
     let focusTools = false;
@@ -135,6 +138,8 @@
         state.email = parsed.email || "";
         state.completed = !!parsed.completed;
         state.installPromptShown = !!parsed.installPromptShown;
+        state.plan = parsed.plan || null;
+        state.planStartDate = parsed.planStartDate || null;
         return true;
       } catch {
         return false;
@@ -148,6 +153,8 @@
       state.email = "";
       state.completed = false;
       state.installPromptShown = false;
+      state.plan = null;
+      state.planStartDate = null;
     }
 
     function getCheckins() {
@@ -360,8 +367,8 @@
       const progressContainer = document.querySelector(".assistant-progress");
       if (!bar || !label || !progressContainer) return;
 
-      // Hide progress on home
-      if (key === "home") {
+      // Hide progress on home and full plan
+      if (key === "home" || key === "plan_full") {
         progressContainer.style.display = "none";
         return;
       } else {
@@ -387,6 +394,128 @@
       goToStepKey("home");
     }
 
+    function getTodayPlanIndex() {
+      if (!state.plan || !state.planStartDate) return 0;
+      const start = new Date(state.planStartDate);
+      const today = new Date();
+      const diffMs = today.setHours(0,0,0,0) - start.setHours(0,0,0,0);
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return 0;
+      if (diffDays > 6) return 6;
+      return diffDays;
+    }
+
+    function generatePlanFromAnswers(answers) {
+      const goal = (answers.goal || "feeling a bit more steady").toLowerCase();
+      const challenge = (answers.challenge || "what’s been weighing on you").toLowerCase();
+      const time = answers.time || "5–10 minutes";
+      const gentleWin = answers.extended1 || "one small thing that feels kind";
+      const obstacles = answers.extended2 || "the usual things that get in the way";
+      const insight = answers.insight || "";
+
+      const timePhrase =
+        time.indexOf("5") !== -1 ? "just a few minutes" :
+        time.indexOf("15") !== -1 ? "about a quarter of an hour" :
+        "a bit more focused time";
+
+      const baseForgiveness =
+        "If today feels heavier than you expected, do the smallest version of this and call it a win.";
+
+      const days = [];
+
+      days.push({
+        title: "Day 1 — Grounding",
+        focus: "Start gently, not perfectly.",
+        action:
+          "Take " + timePhrase + " to do one tiny action toward your goal around " + goal + ". " +
+          "Keep it so small it almost feels too easy.",
+        reflection:
+          "At the end of the day, notice one moment where you chose care over pressure.",
+        forgiveness: baseForgiveness
+      });
+
+      days.push({
+        title: "Day 2 — Light momentum",
+        focus: "Build a little movement without forcing it.",
+        action:
+          "Repeat yesterday’s tiny action, then add one more small step that supports it. " +
+          "Think of it as stacking kindness, not effort.",
+        reflection:
+          "Ask yourself: “What made this feel easier or harder today?”",
+        forgiveness:
+          "If you didn’t get to it, imagine how you’d speak to a friend in your exact situation—and offer yourself the same tone."
+      });
+
+      days.push({
+        title: "Day 3 — Reset and soften",
+        focus: "Make space for how you actually feel.",
+        action:
+          "Take a short pause—one slow breath in, one softer breath out, repeated a few times. " +
+          "Then name, in a sentence, how " + challenge + " has been showing up.",
+        reflection:
+          "You can jot down one sentence about what you’re carrying. That’s enough.",
+        forgiveness:
+          "If this feels like too much today, just do the breathing part and skip the rest."
+      });
+
+      days.push({
+        title: "Day 4 — Gentle win",
+        focus: "Give yourself a clear, kind win.",
+        action:
+          "Choose the gentle win you named earlier: “" + gentleWin + "”. " +
+          "Do the smallest version of it today, even if it’s imperfect.",
+        reflection:
+          "Notice how it feels in your body to follow through on something small you chose for yourself.",
+        forgiveness:
+          "If you don’t get to it, that doesn’t erase your progress. You’re still in the week, not out of it."
+      });
+
+      days.push({
+        title: "Day 5 — Navigating obstacles",
+        focus: "Work with your patterns, not against them.",
+        action:
+          "Look at what usually throws you off: “" + obstacles + "”. " +
+          "Pick one tiny way to soften or sidestep that pattern just for today.",
+        reflection:
+          "Ask: “What would make this 10% easier next time?” and capture one idea.",
+        forgiveness:
+          "If the pattern wins today, that’s data, not failure. You’re learning how your life actually works."
+      });
+
+      days.push({
+        title: "Day 6 — Check-in and adjust",
+        focus: "Listen to your energy honestly.",
+        action:
+          "Do a quick check-in: how does your energy feel today in one sentence? " +
+          (insight ? "You mentioned before: “" + insight + "”. See if that still feels true." : "Just name it without judging it.") ,
+        reflection:
+          "Based on how you feel, decide whether tomorrow should be lighter, similar, or a bit more active.",
+        forgiveness:
+          "If you skip today, tomorrow can still be a reset. You’re allowed to restart inside the same week."
+      });
+
+      days.push({
+        title: "Day 7 — Integration",
+        focus: "Gather what worked, gently.",
+        action:
+          "Look back over the week and choose one thing you’d like to keep for next week—no more than that.",
+        reflection:
+          "Finish the sentence: “This week reminded me that I can…”",
+        forgiveness:
+          "If this week felt messy, that’s still a week of paying attention. That matters more than a perfect streak."
+      });
+
+      return days;
+    }
+
+    function ensurePlanGenerated() {
+      if (!state.plan) {
+        state.plan = generatePlanFromAnswers(state.answers);
+        state.planStartDate = new Date().toISOString().slice(0, 10);
+        saveState();
+      }
+    }
+
     function renderStep() {
       fadeIn();
       const container = document.getElementById("step-container");
@@ -399,7 +528,7 @@
           "<h1>Hi, I’m Peakora.</h1>" +
           "<p>Let’s take a gentle step toward the version of you that feels more grounded and steady.</p>" +
           '<div class="actions">' +
-          '<button class="btn secondary" onclick="handleBackToHome()">Back</button>' +
+          '<button class="btn secondary" onclick="goToStepKey(\'home\')">Back</button>' +
           '<button class="btn primary" onclick="goToStepKey(\'explanation\')">Begin</button>' +
           "</div>" +
           "</div>";
@@ -425,6 +554,7 @@
           '<div class="step">' +
           "<h2>What’s one area you’d like to feel better in?</h2>" +
           '<textarea class="input" id="goal-input" placeholder="Sleep, stress, focus, movement… whatever feels true."></textarea>' +
+          '<p class="tiny-note">This helps me shape a plan that actually fits your life. Please don’t skip it.</p>' +
           '<div class="actions">' +
           '<button class="btn secondary" onclick="goToPrevious()">Back</button>' +
           '<button class="btn primary" onclick="handleGoal()">Continue</button>' +
@@ -438,6 +568,7 @@
           '<div class="step">' +
           "<h2>What’s been making this hard lately?</h2>" +
           '<textarea class="input" id="challenge-input" placeholder="Be honest. Overwhelm, time, burnout, pain…"></textarea>' +
+          '<p class="tiny-note">Sharing this helps me design a plan that works with your reality, not against it.</p>' +
           '<div class="actions">' +
           '<button class="btn secondary" onclick="goToPrevious()">Back</button>' +
           '<button class="btn primary" onclick="handleChallenge()">Continue</button>' +
@@ -455,6 +586,7 @@
           '<button class="btn ghost" onclick="handleTime(\'15–20 minutes\')">15–20 minutes</button>' +
           '<button class="btn ghost" onclick="handleTime(\'30+ minutes\')">30+ minutes</button>' +
           "</div>" +
+          '<p class="tiny-note">This shapes the size of your daily steps so they stay realistic.</p>' +
           '<div class="actions">' +
           '<button class="btn secondary" onclick="goToPrevious()">Back</button>' +
           "</div>" +
@@ -467,6 +599,7 @@
           '<div class="step">' +
           "<h2>Is there anything else I should know about your energy or mood lately?</h2>" +
           '<textarea class="input" id="insight-input" placeholder="You can skip this if nothing comes to mind."></textarea>' +
+          '<p class="tiny-note">You can skip this, but sharing a bit more helps me shape a stronger plan for you.</p>' +
           '<div class="actions">' +
           '<button class="btn secondary" onclick="goToPrevious()">Back</button>' +
           '<button class="btn primary" onclick="handleInsight()">Continue</button>' +
@@ -480,6 +613,7 @@
           '<div class="step">' +
           "<h2>What would feel like a gentle win this week?</h2>" +
           '<textarea class="input" id="extended1-input" placeholder="Something small, kind, and realistic."></textarea>' +
+          '<p class="tiny-note">You can skip this, but naming a gentle win helps me give you something to look forward to.</p>' +
           '<div class="actions">' +
           '<button class="btn secondary" onclick="goToPrevious()">Back</button>' +
           '<button class="btn primary" onclick="handleExtended1()">Continue</button>' +
@@ -493,6 +627,7 @@
           '<div class="step">' +
           "<h2>What tends to throw you off when you try to make changes?</h2>" +
           '<textarea class="input" id="extended2-input" placeholder="Patterns, triggers, thoughts…"></textarea>' +
+          '<p class="tiny-note">You can skip this, but knowing your patterns helps me design a plan that doesn’t fight them.</p>' +
           '<div class="actions">' +
           '<button class="btn secondary" onclick="goToPrevious()">Back</button>' +
           '<button class="btn primary" onclick="handleExtended2()">Continue</button>' +
@@ -508,6 +643,7 @@
           '<input type="email" class="input" id="email-input" placeholder="you@example.com" value="' +
           (state.email || "") +
           '">' +
+          '<p class="tiny-note">I’ll send your full 7-day plan here so you can keep it close.</p>' +
           '<div class="actions">' +
           '<button class="btn secondary" onclick="goToPrevious()">Back</button>' +
           '<button class="btn primary" onclick="handleEmail()">Send my plan</button>' +
@@ -570,6 +706,7 @@
       }
 
       if (key === "done") {
+        ensurePlanGenerated();
         state.completed = true;
         saveState();
         container.innerHTML =
@@ -702,7 +839,49 @@
         return;
       }
 
+      if (key === "plan_full") {
+        ensurePlanGenerated();
+        const plan = state.plan || [];
+        let html =
+          '<div class="step">' +
+          "<h2>Your full 7-day plan</h2>" +
+          "<p class=\"soft-note\">You can come back to this anytime during the week.</p>" +
+          '<div class="plan-full-list">';
+
+        plan.forEach(function (day, index) {
+          html +=
+            '<div class="card">' +
+            "<h3>" + day.title + "</h3>" +
+            "<p><strong>Focus:</strong> " + day.focus + "</p>" +
+            "<p><strong>Action:</strong> " + day.action + "</p>" +
+            "<p><strong>Reflection:</strong> " + day.reflection + "</p>" +
+            "<p><strong>Forgiveness:</strong> " + day.forgiveness + "</p>" +
+            "</div>";
+        });
+
+        html +=
+          "</div>" +
+          '<div class="actions">' +
+          '<button class="btn primary" onclick="goToStepKey(\'home\')">Back to home</button>' +
+          "</div>" +
+          "</div>";
+
+        container.innerHTML = html;
+        return;
+      }
+
       if (key === "home") {
+        ensurePlanGenerated();
+        const plan = state.plan || [];
+        const todayIndex = getTodayPlanIndex();
+        const today = plan[todayIndex] || {
+          title: "Today",
+          focus: "Start gently.",
+          action: "Take a few minutes to choose one small action that feels kind and realistic.",
+          reflection: "Notice how it feels to choose something small on purpose.",
+          forgiveness: "If today doesn’t go as planned, you’re still allowed to try again tomorrow."
+        };
+
         container.innerHTML =
           '<div class="step">' +
           '<div class="home-grid">' +
@@ -717,17 +896,15 @@
           '<div class="card">' +
           "<h2>Your plan</h2>" +
           '<p class="soft-note">This is your anchor for the week. You chose it. You can return to it anytime.</p>' +
+          "<h3>" + today.title + "</h3>" +
           '<ul class="preview-list">' +
-          "<li>Focus: " +
-          (state.answers.goal || "—") +
-          "</li>" +
-          "<li>Gentle win: " +
-          (state.answers.extended1 || "—") +
-          "</li>" +
-          "<li>Time you chose: " +
-          (state.answers.time || "—") +
-          "</li>" +
+          "<li>Focus: " + today.focus + "</li>" +
+          "<li>Action: " + today.action + "</li>" +
+          "<li>Forgiveness: " + today.forgiveness + "</li>" +
           "</ul>" +
+          '<div class="actions" style="margin-top: 8px;">' +
+          '<button class="btn ghost" onclick="goToStepKey(\'plan_full\')">View full 7-day plan</button>' +
+          "</div>" +
           "</div>" +
 
           // 3) Tools card
@@ -781,6 +958,10 @@
     function handleGoal() {
       const el = document.getElementById("goal-input");
       const value = (el && el.value.trim()) || "";
+      if (!value) {
+        alert("Please share at least a few words about what you’d like to feel better in.");
+        return;
+      }
       state.answers.goal = value;
       saveState();
       goToStepKey("challenge");
@@ -789,12 +970,20 @@
     function handleChallenge() {
       const el = document.getElementById("challenge-input");
       const value = (el && el.value.trim()) || "";
+      if (!value) {
+        alert("Please share what’s been making this hard lately, even in a simple sentence.");
+        return;
+      }
       state.answers.challenge = value;
       saveState();
       goToStepKey("time");
     }
 
     function handleTime(choice) {
+      if (!choice) {
+        alert("Please choose the amount of time that feels doable for you.");
+        return;
+      }
       state.answers.time = choice;
       saveState();
       goToStepKey("insight");
@@ -827,6 +1016,10 @@
     function handleEmail() {
       const el = document.getElementById("email-input");
       const value = (el && el.value.trim()) || "";
+      if (!value || value.indexOf("@") === -1) {
+        alert("Please enter a valid email address so I can send your plan.");
+        return;
+      }
       state.email = value;
       saveState();
       goToStepKey("processing");
@@ -884,13 +1077,12 @@
     function showOnboardingModal() {
       const modal = document.getElementById("onboarding-modal");
       if (!modal) {
-        // Fallback: if modal is missing, just continue to current step
         const currentKey = steps[state.stepIndex] || "welcome";
         goToStepKey(currentKey);
         return;
       }
 
-      modal.classList.remove("hidden");
+      modal.style.display = "block";
 
       const startOverBtn = document.getElementById("modal-startover");
       const continueBtn = document.getElementById("modal-continue");
@@ -898,14 +1090,14 @@
       if (startOverBtn) {
         startOverBtn.onclick = function () {
           clearState();
-          modal.classList.add("hidden");
+          modal.style.display = "none";
           goToStepKey("welcome");
         };
       }
 
       if (continueBtn) {
         continueBtn.onclick = function () {
-          modal.classList.add("hidden");
+          modal.style.display = "none";
           const currentKey = steps[state.stepIndex] || "welcome";
           goToStepKey(currentKey);
         };
