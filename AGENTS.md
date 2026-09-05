@@ -1,5 +1,12 @@
 # Peakora Affiliate Engine — Session Notes
 
+# Global Session Rules (MANDATORY)
+
+- CRITICAL INSTRUCTION: Do not output raw parameter tags, DSML tags, or XML tool closing tags in text. Execute tool actions cleanly without echoing parser parameters.
+- Commit every finished task immediately (so the owner never has to chase progress across sessions). No task is done until it is committed and pushed.
+- No em-dashes (use plain hyphens or restructure). No emoji anywhere (chat, code, copy, commits).
+- Big prompts: divide into chunks and confirm the split before executing; finish and verify one chunk before starting the next.
+
 ## Architecture (Cloudflare stack)
 - Worker: `worker/src/index.js` (router) + `worker/src/affiliate.js` (engine) + `worker/src/dodo.js` (billing). Deployed via `wrangler deploy` or `.github/workflows/deploy-worker.yml`.
 - D1 schema: `worker/schema.sql` (idempotent CREATE TABLE IF NOT EXISTS + backfill UPDATEs, runs on every deploy).
