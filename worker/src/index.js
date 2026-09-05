@@ -147,8 +147,9 @@ function mapDodoEvent(payload, env) {
   const productId = sub.product_id || data.product_id || null;
   const yearlyId = env.DODO_YEARLY_PRODUCT_ID;
   const monthlyId = env.DODO_MONTHLY_PRODUCT_ID;
+  const tripwireId = env.DODO_TRIPWIRE_PRODUCT_ID;
   const plan = (productId === yearlyId) ? 'yearly'
-    : (productId === monthlyId ? 'monthly' : (sub.plan || 'monthly'));
+    : (productId === monthlyId ? 'monthly' : (productId === tripwireId ? 'tripwire' : (sub.plan || 'monthly')));
 
   let status = 'active';
   const t = type.toLowerCase();
@@ -226,9 +227,11 @@ async function handleDodoConfig(_request, env) {
     configured: true,
     monthlyPrice: '$9.99',
     yearlyPrice: '$95.88',
+    tripwirePrice: '$4.99',
     merchantOfRecord: 'Dodo Payments',
     monthlyLink: env.DODO_MONTHLY_PAYMENT_LINK,
-    yearlyLink: env.DODO_YEARLY_PAYMENT_LINK
+    yearlyLink: env.DODO_YEARLY_PAYMENT_LINK,
+    tripwireLink: env.DODO_TRIPWIRE_PAYMENT_LINK
   });
 }
 
@@ -256,10 +259,11 @@ async function handleDodoCreateCheckout(request, env) {
   let body;
   try { body = await readJson(request); }
   catch { return json({ success: false, error: 'Invalid JSON body' }, 400); }
-  const plan = body.plan === 'yearly' ? 'yearly' : 'monthly';
+  const planRaw = (body.plan || 'monthly').toLowerCase();
+  const plan = planRaw === 'yearly' ? 'yearly' : (planRaw === 'tripwire' ? 'tripwire' : 'monthly');
   const email = (String(body.email || '')).toLowerCase().slice(0, 320);
   const via = String(body.via || '').trim().toUpperCase().slice(0, 32);
-  const productId = plan === 'yearly' ? env.DODO_YEARLY_PRODUCT_ID : env.DODO_MONTHLY_PRODUCT_ID;
+  const productId = plan === 'yearly' ? env.DODO_YEARLY_PRODUCT_ID : (plan === 'tripwire' ? env.DODO_TRIPWIRE_PRODUCT_ID : env.DODO_MONTHLY_PRODUCT_ID);
   if (!productId) return json({ success: false, error: 'Payment product not configured' }, 500);
 
   const { baseUrl, apiKey } = dodoApiCreds(env);

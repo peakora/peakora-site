@@ -75,7 +75,8 @@ Then do it. That is the whole method.
 
 The reason it works is not the doing - it is the deciding. You stop carrying the mental weight of "what should I..." and let one small action prove to you that momentum is possible.
 
-Pick your one thing,
+Pick your one thing.
+
 The Peakora team`,
     ctaLabel: 'Start your one list',
     ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html',
@@ -96,9 +97,11 @@ The restart is smaller than you think: do not rebuild the whole routine. Do the 
 Momentum is not sustained - it is rekindled. Repeatedly. That is the skill.
 
 You are doing fine,
+
+P.S. There is a smaller step than the plan itself: the Quiet Start Mini Pack ($4.99 one-time) gives you 5 calm soundscapes to keep forever, no subscription and no streak to protect. If the plan feels too big today, that room is enough.
 The Peakora team`,
-    ctaLabel: 'Continue in the Assistant',
-    ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html',
+    ctaLabel: 'Get the Quiet Start Mini Pack',
+    ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html?open=tripwire',
   },
 ];
 

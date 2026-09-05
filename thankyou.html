@@ -264,6 +264,18 @@
       secondaryCta.hidden = false;
       return;
     }
+    if (plan === 'tripwire' && status === 'success') {
+      // One-time pack: no subscription state involved; just own the 5 sounds.
+      localStorage.setItem('peakora_tripwire_owned', 'true');
+      titleEl.textContent = 'Your Quiet Start pack is yours now';
+      leadEl.textContent = 'The 5 premium soundscapes are live in your Assistant, at the top of the Soundscape Library. Keep them for as long as you want — there is no expiry and no subscription to cancel.';
+      primaryCta.textContent = 'Open your pack in the Assistant';
+      primaryCta.setAttribute('href', 'assistant.html');
+      secondaryCta.textContent = 'Back to the Assistant';
+      secondaryCta.setAttribute('href', 'assistant.html');
+      secondaryCta.hidden = false;
+      return;
+    }
     // Subscribe confirmation. The webhook is the source of truth; we never grant
     // Plus from a URL param alone. We confirm against the server and reflect that.
     titleEl.textContent = 'Welcome to Peakora+';

@@ -642,6 +642,10 @@
              (window.location.search || "").indexOf("dev=1") !== -1;
     }
 
+    function hasTripwire() {
+      return localStorage.getItem("peakora_tripwire_owned") === "true";
+    }
+
     function getBrandName() {
       return isPeakoraPlusActive() ? "Peakora+" : "Peakora";
     }
@@ -1937,6 +1941,7 @@
                 <!-- SOUNDSCAPE LIBRARY -->
                 <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-md); padding:12px;">
                   <div style="font-size:12px; font-weight:700; color:#ffffff; margin-bottom:6px;">Soundscape Library</div>
+                  ${hasTripwire() ? '<div style="margin-bottom:8px; padding:6px 10px; border-radius:var(--radius-sm); background:rgba(244,162,97,0.06); border:1px dashed rgba(244,162,97,0.4); font-size:12px; color:var(--theme-text-muted);">Quiet Start pack: your 5 premium soundscapes are at the top of the list, live forever.</div>' : ''}
                   <div id="audio-playing-status" style="font-size:13px; font-weight:600; margin-bottom:8px; padding:6px 10px; background:rgba(244,162,97,0.15); border-radius:var(--radius-sm); border:1px solid rgba(244,162,97,0.35); color:var(--theme-accent, #f4a261); display:none;"></div>
                   <select id="audio-track-select" class="input" style="font-size:12px; font-weight:600; text-align:left;" onchange="switchSoundscapeTrack(this.value)">
                     ${SOUNDSCAPE_TRACKS.map(t => `<option value="${t.key}" ${currentlyPlayingTrack === t.key ? 'selected' : ''}>${t.name}</option>`).join('')}
@@ -2969,6 +2974,47 @@
       }
     }
 
+    function openTripwireModal() {
+      const plan = 'tripwire';
+      const price = '$4.99';
+      const modal = document.getElementById('dodo-checkout-modal');
+      const content = document.getElementById('dodo-checkout-content');
+      const userEmail = localStorage.getItem('peakora_user_email') || '';
+      if (modal && content) {
+        const currentTheme = localStorage.getItem('peakora_theme') || 'sunrise';
+        modal.setAttribute('data-theme', currentTheme);
+        content.innerHTML = `
+          <div style="text-align:center;">
+            <h3 style="margin:0 0 6px; font-size:18px; color:var(--theme-heading, #ffffff);">Quiet Start Mini Pack</h3>
+            <p style="font-size:13px; color:var(--theme-text-muted); margin:0 0 12px; line-height:1.55;">
+              One-time $4.99. Five premium soundscapes that stay yours forever — thunderstorm, studio room, deep fireplace, mountain brook, soft synth. No subscription. No streaks. Just a small first step.
+
+            </p>
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--theme-card-border); border-radius:var(--radius-md); padding:12px; margin-bottom:12px; font-size:12px; color:var(--theme-text-muted); line-height:1.5;">
+              Why it exists: we found the people who take one small paid step, however tiny, are the ones who actually get traction. This is yours to keep either way — it is not a trial.
+            </div>
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--theme-card-border); border-radius:var(--radius-md); padding:14px; margin-bottom:16px;">
+              <label style="display:block; font-size:13px; color:var(--theme-text-muted); margin-bottom:6px; font-weight:600;">EMAIL (for your receipt)</label>
+              <input type="email" id="dodo-email" value="${userEmail}" style="width:100%; padding:10px 14px; border:1px solid rgba(255,255,255,0.15); border-radius:var(--radius-sm); font-size:13px; background:rgba(0,0,0,0.25); color:#ffffff;" placeholder="your.email@example.com">
+            </div>
+            <button type="button" id="dodo-continue-btn" class="btn primary" style="width:100%; padding:13px; font-size:14px; font-weight:800; background:var(--theme-primary-grad); color:#fff; border-radius:var(--radius-sm); cursor:pointer;" onclick="startDodoCheckout('${plan}', '${price}')">
+              Get the Quiet Start Pack
+            </button>
+            <div style="margin-top:14px; font-size:13px; color:var(--theme-text-muted); line-height:1.5;">
+              Billed securely by Dodo Payments (Merchant of Record).<br>
+              One-time purchase. 7-day money-back guarantee.
+            </div>
+          </div>
+        `;
+        modal.style.display = 'flex';
+        if (window.PeakoraTracker) {
+          window.PeakoraTracker.track('tripwire_checkout_opened', { price });
+        }
+      } else {
+        startDodoCheckout('tripwire', price);
+      }
+    }
+
     async function startDodoCheckout(plan, price) {
       const emailInput = document.getElementById('dodo-email');
       const email = emailInput && emailInput.value.trim() ? emailInput.value.trim() : '';
@@ -3530,6 +3576,21 @@
       { key: 'night', name: 'Night Crickets — summer evening chorus' },
       { key: 'binaural', name: 'Binaural Theta (6Hz) — deep focus drift' }
     ];
+
+    // Quiet Start Mini Pack (one-time tripwire): 5 premium soundscapes
+    // that stay live forever for the buyer — a real, won't-expire taste of Plus.
+    const QUIET_START_TRACKS = [
+      { key: 'qs-storm', name: 'Quiet Start: Thunderstorm Distance — rolling low rumble' },
+      { key: 'qs-studio', name: 'Quiet Start: Analog Studio Room — faint airy warmth' },
+      { key: 'qs-fire', name: 'Quiet Start: Deep Fireplace Heartbeat — warm slow crackle' },
+      { key: 'qs-stream', name: 'Quiet Start: Mountain Brook — clear ribbon of water' },
+      { key: 'qs-synth', name: 'Quiet Start: Soft Synth Pad — slow amber drift' }
+    ];
+    if (hasTripwire()) {
+      // Prepending keeps them at the top of the library without forcing anything else off.
+
+      QUIET_START_TRACKS.slice().reverse().forEach(t => SOUNDSCAPE_TRACKS.unshift(t));
+    }
     const SOUNDSCAPE_NAME = {};
     SOUNDSCAPE_TRACKS.forEach(t => { SOUNDSCAPE_NAME[t.key] = t.name.split(' — ')[0]; });
 
@@ -4670,6 +4731,12 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const hasState = loadState();
+
+      // Open the Quiet Start one-time pack iff navigated here with ?open=tripwire
+      // (a purchase mid-flow would have returned here from the Dodo checkout).
+      if (new URLSearchParams(window.location.search).get('open') === 'tripwire' && !hasTripwire()) {
+        setTimeout(openTripwireModal, 400);
+      }
 
       // Seed today's mood from the day's plan/theme so your Mood Pattern
       // always has real data — even before your first check-in, or when you
