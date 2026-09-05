@@ -35,15 +35,23 @@ const WELCOME_SEQUENCE = [
   {
     step: 1,
     delayHours: 0,
-    subject: 'Welcome to Peakora - one gentle step at a time',
-    preheader: 'Your quiet corner starts here.',
+    subject: 'Your 5-Minute Reset is inside',
+    preheader: 'Read it in about two minutes, act on it in five.',
     body: `Hi there,
 
-Welcome to Peakora. You are in.
+Welcome to Peakora. Thank you for trusting this corner with your inbox.
 
 No overwhelm. No 47-step morning routine. Just one small, honest step you can take today to feel a little more like yourself.
 
-Over the next few days I will send you three short notes. Each one is a single idea you can read in under a minute and act on in under five. That is the whole promise.
+Over the next few days I will send you three short notes. Each one is a single idea you can read in under a minute and act on in under five. That is the whole promise. Here is what is inside:
+
+1. The morning check-in - two minutes, one honest feeling, no streaks.
+2. The breath ring - one slow 4-2-6 round, right at your desk.
+3. The mood pattern - how your week actually feels at a glance;
+4. The wind-down - five minutes to hand your day back;
+5. A soundscape, if today needs one - rain, bowl, or ocean.
+
+Pick one today. Just one. The others will still be here tomorrow.
 
 If now is not the right moment, no pressure. This corner stays quiet until you are ready.
 
