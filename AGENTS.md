@@ -48,6 +48,8 @@
 
 ## Workflow rules (mandatory)
 - Big prompts: when a partner request bundles many distinct tasks, divide it into manageable chunks (PROMPT A, PROMPT B, ...) and confirm the split before executing. Do not try to do everything in one pass; finish and verify one chunk before starting the next.
+- CRITICAL INSTRUCTION: Do not output raw parameter tags, DSML tags, or XML tool closing tags in text. Execute tool actions cleanly without echoing parser parameters.
+ Commit every task when you finish it (and push., so the partner never has to chase the build. Do not start fucking around - one chunk at a time, verify, commit, push, then next.
 
 ---
 
