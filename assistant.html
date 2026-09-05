@@ -1757,14 +1757,85 @@
               </div>
             </div>
 
-            <!-- SECTION 4: MOOD PATTERN RIVER + BALANCE + REFLECTION SPACE -->
-            <div class="dash-grid-equal">
-              <!-- MOOD PATTERN RIVER CARD -->
+            <!-- SECTION 4: REFLECTION SPACE -->
+              <!-- REFLECTION SPACE CARD -->
               <div class="dash-card">
-                <div class="dash-card-title">Your Mood Pattern</div>
-                <div id="mood-bubble-canvas" class="mood-bubble-canvas" style="min-height:160px;"></div>
-                <p id="mood-summary-text" style="font-size:12px; color:var(--theme-text-muted); margin-top:8px;"></p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <div class="dash-card-title">Reflection Space</div>
+                  <button class="btn secondary" style="font-size:13px; padding:4px 12px; border-radius:999px; border-color:var(--theme-accent); color:var(--theme-accent);" onclick="openReflectionsModal()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px; vertical-align:middle;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                    Saved Quotes (<span id="reflections-count-badge">0</span>)
+                  </button>
+                </div>
+                <p style="font-size:12px; color:var(--theme-text-muted); margin-bottom:8px;">A thought, a small win, or just a moment — drop it here:</p>
+                <textarea id="story-input" class="input" style="min-height:60px; font-size:12px;" placeholder="What felt good (or honestly, what didn't) today?"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                  <span style="font-size:13px; color:var(--theme-text-muted);">Kept private — only on this device</span>
+                  <button class="btn primary" style="font-size:13px; padding:6px 14px;" onclick="handleShareStory()">Keep this thought</button>
+                </div>
               </div>
+            </div>
+
+            <!-- STANDALONE INHALE • EXHALE CARD -->
+            <div class="dash-card" style="margin-bottom:24px; position:relative; overflow:hidden; text-align:center;">
+              <div style="position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:340px; height:340px; border-radius:50%; background:radial-gradient(circle, var(--theme-card-glow), transparent 70%); pointer-events:none;"></div>
+              <div class="dash-card-title" style="letter-spacing:0.08em;">INHALE &bull; EXHALE</div>
+              <p style="font-size:12px; color:var(--theme-text-muted); margin:0 auto 6px; max-width:460px; line-height:1.6;">
+                A gentle 4-2-6 rhythm — breathe in for 4, hold for 2, let go for 6. Ten slow cycles, about two minutes. Tap the ring to begin, tap again to pause.
+              </p>
+              <div class="breathing-ring-outer" id="dash-breath-ring" onclick="toggleDashBreathing()" style="cursor:pointer; margin:10px auto;" title="Tap to start or pause">
+                <div class="breathing-ring-circle" id="dash-breath-circle"></div>
+                <div class="breathing-ring-pulse" id="dash-breath-pulse"></div>
+                <div class="breathing-center-info">
+                  <div class="breathing-action-label" id="dash-breath-state">READY</div>
+                  <div class="breathing-time-rem" id="dash-breath-time">Tap the ring to begin</div>
+                  <div style="font-size:13px; color:#ffffff; font-weight:700; margin-top:4px;" id="dash-breath-total">0:00 / 2:00</div>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:center; gap:10px; align-items:center;">
+                <button class="btn ghost" style="font-size:13px; padding:6px 14px;" onclick="resetDashBreathing()">Reset session</button>
+                <span style="font-size:13px; color:var(--theme-text-muted);">Works fully on the free plan — no sound needed, just follow the ring.</span>
+              </div>
+            </div>
+          `;
+          
+          setTimeout(() => {
+            if (typeof clickTimelineDay === 'function') {
+              clickTimelineDay(todayIndex + 1);
+            }
+            if (typeof updateReflectionsBadge === 'function') {
+              updateReflectionsBadge();
+            }
+          }, 50);
+        }
+
+        // TAB 2: INSIGHTS & SOUNDSCAPES (SCREENSHOT 2 EXACT OVERHAUL + SOUNDSCAPE CONTROLS)
+        if (activeTab === "soundscapes") {
+          html += `
+            <div class="soundscape-top-bar">
+              <div class="soundscape-brand">
+                <div class="soundscape-brand-icon"></div>
+                <span>${getBrandName()}</span>
+              </div>
+              <div style="display:flex; gap:16px; align-items:center;">
+                <span id="ss-battery">Battery: --</span>
+                <span id="ss-clock">--:--</span>
+                <span id="ss-net">Online</span>
+              </div>
+            </div>
+
+            <!-- INSIGHTS HERO: YOUR MOOD PATTERN + MOOD BALANCE (moved here from Home) -->
+            <div class="dash-card" style="margin-bottom:24px; padding:4px 24px 18px;">
+              <div class="dash-card-title" style="letter-spacing:0.08em; margin-bottom:14px; padding-top:14px;">Your Insights</div>
+            </div>
+
+            <div class="dash-grid-equal" style="margin-bottom:24px;">
+            <!-- MOOD PATTERN RIVER CARD (moved to Insights per user request) -->
+            <div class="dash-card">
+              <div class="dash-card-title">Your Mood Pattern</div>
+              <div id="mood-bubble-canvas" class="mood-bubble-canvas" style="min-height:160px;"></div>
+              <p id="mood-summary-text" style="font-size:12px; color:var(--theme-text-muted); margin-top:8px;"></p>
+            </div>
 
               <!-- MOOD BALANCE CARD (a second sight: expansive vs contractive equilibrium) -->
               ${(() => {
@@ -1823,72 +1894,14 @@
                   <p style="font-size:12px; color:var(--theme-text-muted); font-style:italic; margin:12px 0 0; line-height:1.5;">${read}</p>
                 </div>`;
               })()}
-
-              <!-- REFLECTION SPACE CARD -->
-              <div class="dash-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                  <div class="dash-card-title">Reflection Space</div>
-                  <button class="btn secondary" style="font-size:13px; padding:4px 12px; border-radius:999px; border-color:var(--theme-accent); color:var(--theme-accent);" onclick="openReflectionsModal()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px; vertical-align:middle;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                    Saved Quotes (<span id="reflections-count-badge">0</span>)
-                  </button>
-                </div>
-                <p style="font-size:12px; color:var(--theme-text-muted); margin-bottom:8px;">A thought, a small win, or just a moment — drop it here:</p>
-                <textarea id="story-input" class="input" style="min-height:60px; font-size:12px;" placeholder="What felt good (or honestly, what didn't) today?"></textarea>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                  <span style="font-size:13px; color:var(--theme-text-muted);">Kept private — only on this device</span>
-                  <button class="btn primary" style="font-size:13px; padding:6px 14px;" onclick="handleShareStory()">Keep this thought</button>
-                </div>
-              </div>
-            </div>
-          `;
-          
-          setTimeout(() => {
-            if (typeof clickTimelineDay === 'function') {
-              clickTimelineDay(todayIndex + 1);
-            }
-            if (typeof updateReflectionsBadge === 'function') {
-              updateReflectionsBadge();
-            }
-          }, 50);
-        }
-
-        // TAB 2: INSIGHTS & SOUNDSCAPES (SCREENSHOT 2 EXACT OVERHAUL + SOUNDSCAPE CONTROLS)
-        if (activeTab === "soundscapes") {
-          html += `
-            <div class="soundscape-top-bar">
-              <div class="soundscape-brand">
-                <div class="soundscape-brand-icon"></div>
-                <span>${getBrandName()}</span>
-              </div>
-              <div style="display:flex; gap:16px; align-items:center;">
-                <span id="ss-battery">Battery: --</span>
-                <span id="ss-clock">--:--</span>
-                <span id="ss-net">Online</span>
-              </div>
             </div>
 
-            <!-- STANDALONE INHALE • EXHALE CARD -->
-            <div class="dash-card" style="margin-bottom:24px; position:relative; overflow:hidden; text-align:center;">
-              <div style="position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:340px; height:340px; border-radius:50%; background:radial-gradient(circle, var(--theme-card-glow), transparent 70%); pointer-events:none;"></div>
-              <div class="dash-card-title" style="letter-spacing:0.08em;">INHALE &bull; EXHALE</div>
-              <p style="font-size:12px; color:var(--theme-text-muted); margin:0 auto 6px; max-width:460px; line-height:1.6;">
-                A gentle 4-2-6 rhythm — breathe in for 4, hold for 2, let go for 6. Ten slow cycles, about two minutes. Tap the ring to begin, tap again to pause.
-              </p>
-              <div class="breathing-ring-outer" id="dash-breath-ring" onclick="toggleDashBreathing()" style="cursor:pointer; margin:10px auto;" title="Tap to start or pause">
-                <div class="breathing-ring-circle" id="dash-breath-circle"></div>
-                <div class="breathing-ring-pulse" id="dash-breath-pulse"></div>
-                <div class="breathing-center-info">
-                  <div class="breathing-action-label" id="dash-breath-state">READY</div>
-                  <div class="breathing-time-rem" id="dash-breath-time">Tap the ring to begin</div>
-                  <div style="font-size:13px; color:#ffffff; font-weight:700; margin-top:4px;" id="dash-breath-total">0:00 / 2:00</div>
-                </div>
-              </div>
-              <div style="display:flex; justify-content:center; gap:10px; align-items:center;">
-                <button class="btn ghost" style="font-size:13px; padding:6px 14px;" onclick="resetDashBreathing()">Reset session</button>
-                <span style="font-size:13px; color:var(--theme-text-muted);">Works fully on the free plan — no sound needed, just follow the ring.</span>
-              </div>
+            <!-- SOUNDSCAPE STUDIO & AMBIENT FLOW SECTION (the app's audio home) -->
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:28px 0 6px;">
+              <h2 style="margin:0; font-size:17px; font-weight:800; letter-spacing:0.06em; color:#ffffff;">Soundscape Studio &amp; Ambient Flow</h2>
+              <span style="font-size:11px; color:var(--theme-text-muted); font-weight:600; letter-spacing:0.04em;">YOUR AUDIO CENTER</span>
             </div>
+            <p style="font-size:13px; color:var(--theme-text-muted); margin:0 0 16px; line-height:1.55;">One place for your daily reset soundtrack — layer ambient worlds, run a guided session, or drift with the healing frequencies below.</p>
 
             <div class="dash-grid-equal">
               <!-- LEFT COLUMN: SOUNDSCAPE STUDIO -->
@@ -1970,6 +1983,55 @@
                       </div>
                     </div>`;
                     }).join('')}
+                  </div>
+                </div>
+
+                <!-- PREMIUM SESSIONS: QUIET LIBRARY + GUIDED AUDIO SESSIONS + HEALING FREQUENCY STUDIO -->
+                <div class="dash-card" style="margin-bottom:16px; padding:18px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <div class="dash-card-title" style="margin:0;">Guided Sessions</div>
+                    ${!isPlus ? '<span style="font-size:9px; font-weight:800; letter-spacing:0.1em; padding:4px 10px; border-radius:999px; background:var(--theme-primary-grad); color:#ffffff;">PEAKORA+</span>' : ''}
+                  </div>
+                  <p style="font-size:13px; color:var(--theme-text-muted); margin:0 0 14px; line-height:1.5;">Three ways to reset with sound — each one a complete little journey, not just a track.</p>
+
+                  <!-- THE QUIET LIBRARY -->
+                  <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-md); padding:14px; margin-bottom:12px;">
+                    <div style="font-size:14px; font-weight:800; color:#ffffff; margin-bottom:2px;">The Quiet Library</div>
+                    <div style="font-size:11px; color:var(--theme-accent); font-weight:700; letter-spacing:0.06em; margin-bottom:6px;">SHORT GUIDED READINGS — 3 TO 10 MINUTES</div>
+                    <p style="font-size:13px; color:var(--theme-text-muted); margin:0 0 10px; line-height:1.5;">Soothing narrated resets for bedtime, wind-downs, and morning grounding. A growing shelf of sleep stories, evening unwinds, and gentle starts.</p>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">Sleep story: The Harbor Lights</span>
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">Wind-down: The Day Is Done</span>
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">Morning grounding: First Light</span>
+                    </div>
+                    <button class="btn primary" style="font-size:13px; font-weight:800; padding:8px 14px;" onclick="peakoraGuided('quiet')">${isPlus ? 'Start a quiet reading' : 'Unlock with Peakora+'}</button>
+                  </div>
+
+                  <!-- GUIDED AUDIO SESSIONS -->
+                  <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-md); padding:14px; margin-bottom:12px;">
+                    <div style="font-size:14px; font-weight:800; color:#ffffff; margin-bottom:2px;">Guided Audio Sessions</div>
+                    <div style="font-size:11px; color:var(--theme-accent); font-weight:700; letter-spacing:0.06em; margin-bottom:6px;">BODY SCANS & BREATH JOURNEYS — 5, 10, 15 MIN</div>
+                    <p style="font-size:13px; color:var(--theme-text-muted); margin:0 0 10px; line-height:1.5;">Step-by-step relaxation you can follow with eyes closed: tense-and-release body scans, gentle breath journeys, and a power-nap reset.</p>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">5-min body scan</span>
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">10-min breath journey</span>
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">15-min nap reset</span>
+                    </div>
+                    <button class="btn primary" style="font-size:13px; font-weight:800; padding:8px 14px;" onclick="peakoraGuided('guide')">${isPlus ? 'Start a body scan' : 'Unlock with Peakora+'}</button>
+                  </div>
+
+                  <!-- HEALING FREQUENCY STUDIO -->
+                  <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-md); padding:14px;">
+                    <div style="font-size:14px; font-weight:800; color:#ffffff; margin-bottom:2px;">Healing Frequency Studio</div>
+                    <div style="font-size:11px; color:var(--theme-accent); font-weight:700; letter-spacing:0.06em; margin-bottom:6px;">LAYERED BINAURAL & AMBIENT PRESETS</div>
+                    <p style="font-size:13px; color:var(--theme-text-muted); margin:0 0 10px; line-height:1.5;">Pick a state, get a preset: sleep, focus, calm, energy. Binaural tones underpinned by the ambient world, tune the blend as you go.</p>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">Sleep: Theta 6Hz + night crickets</span>
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">Focus: Alpha 10Hz + soft rain</span>
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">Energy: Beta 16Hz + OM chant</span>
+                      <span style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(244,162,97,0.1); border:1px solid rgba(244,162,97,0.3); color:var(--theme-accent);">Calm: Delta 2Hz + fireplace</span>
+                    </div>
+                    <button class="btn primary" style="font-size:13px; font-weight:800; padding:8px 14px;" onclick="peakoraGuided('freq')">${isPlus ? 'Start frequency preset' : 'Unlock with Peakora+'}</button>
                   </div>
                 </div>
 
@@ -3496,6 +3558,75 @@
       currentlyPlayingTrack = null;
       trackStartedAt = null;
       renderStepAudioState();
+      closeGuidedSessionOverlay();
+    }
+
+    /* PREMIUM GUIDED SESSIONS — a staged audio journey built on the
+       existing synth engine. The Quiet Library + Guided Audio Sessions use a
+       gentle ambient bed tacked with a soft on-screen narration card (no TTS
+       bundle; the voice text is music-synced pacing, honest and calming).
+       Healing Frequency Studio maps to the binaural/om presets directly. */
+    window.peakoraGuided = function(kind) {
+      // Same gate for both tiers: free users get the upgrade nudge, plus users get the journey
+      if (typeof isPeakoraPlusActive === 'function' && !isPeakoraPlusActive()) {
+        if (typeof openPlanSelectionModal === 'function') openPlanSelectionModal();
+        return;
+      }
+      startGuidedSession(kind);
+    };
+
+    window.startGuidedSession = function(kind) {
+      if (typeof isPeakoraPlusActive === 'function' && !isPeakoraPlusActive()) {
+        if (typeof openPlanSelectionModal === 'function') openPlanSelectionModal();
+        return;
+      }
+      const mapKind = {
+        freq: { track: 'binaural', label: 'Healing Frequency Studio', copy: 'Deep focus drift — Theta 6Hz binaural, layered in. Listen 5-10 min in headphones.' },
+        quiet: { track: 'rain', label: 'The Quiet Library — The Harbor Lights', copy: 'Close your eyes. Rain fall on an old boardwalk, lanterns low. Breathe in the salt air — one slow count..., two, three. The harbor has you. Rest here a while.' },
+        guide: { track: 'bowl', label: 'Guided Audio Session — 5-min Body Scan', copy: 'Settle in. A singing bowl rings once. Feel the crown of your head, then the jaw, the shoulders — softening with every note. Let the bowl carry you down, slowly, part by part.' }
+      };
+      const chosen = mapKind[kind] || mapKind.freq;
+      stopAmbientAudio();
+      if (typeof playAmbientAudio === 'function') playAmbientAudio(chosen.track);
+      if (typeof showToastNotification === 'function') showToastNotification(chosen.label);
+      openGuidedSessionOverlay(chosen.label, chosen.copy);
+      if (window.PeakoraTracker) window.PeakoraTracker.track("guided_session_started", { kind, track: chosen.track });
+    };
+
+    function openGuidedSessionOverlay(title, copy) {
+      closeGuidedSessionOverlay();
+      const veil = document.createElement("div");
+      veil.id = "guided-session-overlay";
+      veil.style.cssText = "position:fixed; inset:0; background:rgba(8,6,14,0.82); backdrop-filter:blur(12px); z-index:9998; display:flex; align-items:center; justify-content:center; padding:20px;";
+      veil.setAttribute("data-theme", localStorage.getItem("peakora_theme") || "sunrise");
+      const card = document.createElement("div");
+      card.style.cssText = "background:var(--theme-card-bg); border:1px solid var(--theme-card-border); border-radius:24px; max-width:420px; width:100%; padding:28px 24px; text-align:center; box-shadow:0 28px 70px rgba(0,0,0,0.9), 0 0 40px var(--theme-card-glow); position:relative;";
+      const closebtn = document.createElement("button");
+      closebtn.textContent = "\u2715";
+      closebtn.setAttribute("aria-label", "End session");
+      closebtn.style.cssText = "position:absolute; top:14px; right:16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); width:34px; height:34px; border-radius:50%; color:#fff; font-size:14px; cursor:pointer;";
+      closebtn.onclick = function() { stopAmbientAudio(); closeGuidedSessionOverlay(); };
+      const h3 = document.createElement("h3");
+      h3.textContent = title;
+      h3.style.cssText = "margin:0 0 10px; font-size:17px; color:#fff; font-weight:800; letter-spacing:0.04em;";
+      const p = document.createElement("p");
+      p.textContent = copy;
+      p.style.cssText = "margin:0 0 18px; font-size:14px; color:var(--theme-text-muted); line-height:1.7;";
+      const stopBtn = document.createElement("button");
+      stopBtn.textContent = "End session";
+      stopBtn.className = "btn secondary";
+      stopBtn.onclick = function() { stopAmbientAudio(); closeGuidedSessionOverlay(); };
+      card.appendChild(closebtn);
+      card.appendChild(h3);
+      card.appendChild(p);
+      card.appendChild(stopBtn);
+      veil.appendChild(card);
+      document.body.appendChild(veil);
+    }
+
+    function closeGuidedSessionOverlay() {
+      const el = document.getElementById("guided-session-overlay");
+      if (el) el.remove();
     }
 
     function makeNoiseBuffer(ctx, tint) {
@@ -4224,6 +4355,9 @@
 
       startWaveLoop();
       syncDashBreathUI();
+
+      // Paint the Mood Pattern river for the Insights hero (Home no longer owns it)
+      if (typeof renderMoodBubbles === 'function') renderMoodBubbles();
     };
 
     /* TOAST NOTIFICATIONS */
