@@ -260,11 +260,61 @@
       }
     }
 
-    function addCheckin(feeling) {
+    function addCheckin(feeling, opts) {
       const list = getCheckins();
       const today = new Date().toISOString().slice(0, 10);
-      list.push({ date: today, feeling });
-      localStorage.setItem(CHECKINS_KEY, JSON.stringify(list.slice(-30)));
+      // Replace same-day entry instead of stacking, so the river stays honest
+      // (one honest dot per day, never a pile). The full history is kept forever,
+      // no truncation - the user's data is theirs and never silently deleted..
+      const idx = list.findIndex(c => c.date === today);
+      const entry = { date: today, feeling: feeling || "Steady", ...(opts || {}) };
+      if (idx >= 0) {
+        list[idx] = Object.assign({}, list[idx], entry);
+      } else {
+        list.push(entry);
+      }
+      localStorage.setItem(CHECKINS_KEY, JSON.stringify(list));
+    }
+
+    /* Seed today's mood from plan/theme context so the Mood Pattern never
+       shows an empty placeholder - even for free-plan users who only opened
+       the app or changed a theme without logging a check-in. */
+    const MOOD_THEME_FEELINGS = {
+      sunrise: "Hopeful / Light",
+      sage:"Steady / Calm",
+      amethyst: "Anxious / Wired",
+      twilight: "Tired / Heavy",
+      solar: "Energized / Strong",
+      sunset:"Calm / Warm",
+      ocean: "Energized / Strong",
+      emerald: "Steady / Calm",
+      sky: "Energized / Strong"
+    };
+
+    function todayHasUserCheckin() {
+      const today = new Date().toISOString().slice(0, 10);
+      return getCheckins().some(c => c.date === today && !c.seeded);
+    }
+
+    function planFeelingForToday() {
+      const idx = getTodayPlanIndex();
+      const day = (state.plan || [])[idx];
+      if (!day) return "";
+      const text = ((day.title || "") + " " + (day.focus || "") + " " + (day.action || "")).toLowerCase();
+      if (/calm|relax|breathe|ground|wind|arrive|soften/.test(text)) return "Steady / Calm";
+      if (/energ|move|wake|strong|spark|align/.test(text)) return "Energized / Strong";
+      if (/focus|clarity|empt|attention|single/.test(text)) return "Hopeful / Light";
+      if (/heav|rest|tired|sleep|gentle/.test(text)) return "Tired / Heavy";
+      return "Neutral / Steady";
+    }
+
+    function seedMoodFromContext(themeKey) {
+      // Only ever fill an empty (or seeded) spot for today - never overwrite
+      // an honest user check-in..
+      if (todayHasUserCheckin()) return;
+      const themeFeeling = MOOD_THEME_FEELINGS[themeKey || (localStorage.getItem("peakora_theme") || "sunrise")];
+      const feeling = themeFeeling || planFeelingForToday() || "Neutral / Steady";
+      addCheckin(feeling, { seeded: true, source: "context" });
     }
 
     /* Mood bubbles helpers + placeholder */
@@ -345,8 +395,32 @@
 
     function getLast7CheckinsOrPlaceholder() {
       const real = getCheckins();
+      // Real data always wins. Once any check-in exists, the river is built
+      // from the truth - even if that means fewer days than seven at first..
       if (real && real.length >= 1) {
-        return real.slice(-7);
+        // Build a rolling 7-day window ending today: fill gaps with a
+        // plan/theme-derived seeded mood so the pattern never looks broken
+        // or empty (seeded entries are marked and replaced by real check-ins).
+        const byDate = {};
+        real.forEach(c => { byDate[c.date] = c; });
+        const out = [];
+        const today = new Date().toISOString().slice(0, 10);
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const key = d.toISOString().slice(0, 10);
+          const existing = byDate[key];
+          if (existing) {
+            out.push({ date: key, feeling: existing.feeling, ...existing });
+          } else if (state.plan || localStorage.getItem("peakora_theme")) {
+            // A day without an honest check-in still gets a soft plan/theme mood,
+            // so the river stays whole - the user's data is never erased, only gently completed..
+            seedMoodFromContext();
+            const seeded = byDate[key] || { date: key, feeling: planFeelingForToday() || "Neutral / Steady", seeded: true, source: "context" };
+            out.push(seeded);
+          }
+        }
+        if (out.length) return out;
       }
       return PLACEHOLDER_WEEK;
     }
@@ -496,8 +570,10 @@
           return '<span class="mood-family-legend-item"><span class="mood-family-legend-dot" style="background:' + c + ';"></span>' + lbl + '</span>';
         }).join('') + '</div>';
 
-      const sampleTag = usingSample ? '<span class="mood-sample-tag">Preview</span>' : '';
-      host.innerHTML = sampleTag + chips + svg + legend;
+      // Show the "Preview" tag only when literally nothing has shaped this week yet —
+      // once ANY entry exists (real or seeded-from-plan), it is this user's data, not a sample..
+      const hasAnyData = (real && real.length > 0) || data.some(c => c.seeded);
+      host.innerHTML = (usingSample && !hasAnyData) ? '<span class="mood-sample-tag">Preview</span>' : '' + chips + svg + legend;
 
       // One-line read under the chart.
       const seq = points.map(p => p.feeling).join(" -> ");
@@ -1694,7 +1770,8 @@
               ${(() => {
                 const real = getCheckins();
                 const usingSample = !real || real.length === 0;
-                const week = usingSample ? getLast7CheckinsOrPlaceholder() : real.slice(-7);
+                // Same 7-day real+seeded window as the Mood Pattern — never an empty week..
+                const week = getLast7CheckinsOrPlaceholder();
                 const expansiveFamilies = ['hopeful', 'energized'];
                 const contractiveFamilies = ['heavy', 'anxious'];
                 let expansive = 0, contractive = 0, neutral = 0;
@@ -1900,7 +1977,8 @@
                 ${(() => {
                   const real = getCheckins();
                   const usingSample = !real || real.length === 0;
-                  const week = usingSample ? getLast7CheckinsOrPlaceholder() : real.slice(-7);
+                  // Same 7-day real+seeded window as the Mood Pattern — never an empty week..
+                  const week = getLast7CheckinsOrPlaceholder();
                   const energyScore = { heavy: 22, anxious: 45, neutral: 55, hopeful: 74, energized: 92 };
                   const familyLabels = {
                     hopeful: ['Bright & Hopeful', '#AEE6C5'],
@@ -2938,6 +3016,10 @@
       document.body.setAttribute("data-theme", themeKey);
       localStorage.setItem("peakora_theme", themeKey);
       document.querySelectorAll('.modal-overlay').forEach(m => m.setAttribute("data-theme", themeKey));
+
+      // A changed theme also seeds today's mood (if today has no honest check-in)
+      // so the Mood Pattern keeps real, current data for this user.
+      seedMoodFromContext(themeKey);
 
       // Dynamic CSS custom property update for dashboard card glows based on active theme
       const themeGlowMap = {
@@ -4454,6 +4536,11 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const hasState = loadState();
+
+      // Seed today's mood from the day's plan/theme so your Mood Pattern
+      // always has real data — even before your first check-in, or when you
+      // only changed a theme. It never overwrites an honest user check-in..
+      seedMoodFromContext();
 
       // Check auto-theme on load if active and today's mood exists
       checkAndApplyAutoTheme();
