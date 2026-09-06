@@ -2235,3 +2235,29 @@ body[data-theme="sunset"], [data-theme="sunset"] {
   .node-desc { max-width: 38px; font-size: 9px; }
   .timeline-popover { width: min(190px, 84vw); }
 }
+
+/* ONBOARDING PAGE-MODE -- question fills the page like the landing, no card chrome, big type, ambient bg, progress stays in the header */
+.assistant-card.is-onboarding-mode {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.onboarding-flow .step {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 44px 16px 56px;
+}
+.onboarding-flow .step h2 {
+  font-size: 28px;
+  letter-spacing: 0.01em;
+}
+.onboarding-flow .step p {
+  font-size: 16px;
+  line-height:  1.7;
+}
+.onboarding-flow .input {
+  min-height:  44px;
+  font-size:  16px;
+}

@@ -973,6 +973,12 @@
         if (outerFooter) outerFooter.style.display = "";
       }
 
+      // Onboarding page-mode: each question fills the page like a landing view,
+      // the card chrome drops away; progress bar stays in the header.
+      const inOnboarding = onboardingSteps.includes(key);
+      if (outerCard) outerCard.classList.toggle("is-onboarding-mode", inOnboarding);
+      if (outerShell) outerShell.classList.toggle("onboarding-flow", inOnboarding);
+
       // Dynamic header brand name update based on Peakora+ membership
       const isPlusActive = isPeakoraPlusActive();
 
