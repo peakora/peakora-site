@@ -104,6 +104,132 @@ The Peakora team`,
     ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html?open=tripwire',
   },
 ];
+// ── Weekly nurture cadence (deposit, deposit, offer — the offer frame lives in copy) ──
+// delayDays is measured from subscribed_at. Steps n1/n2/n3 at days 7/14/21.
+const NURTURE_WEEKS = [
+  {
+    step: 'n1',
+    delayDays: 7,
+    subject: 'Two minutes, one tiny win',
+    preheader: 'The one-list method, done imperfectly.',
+    body: `Hi there,
+
+Last week you picked one thing. This week, do it once more - badly, if that is all you have.
+
+Two minutes. One imperfect rep. That is the whole task. The muscle you are building is not discipline; it is showing up again cheaply.
+
+Pick the same one thing - or a smaller one, if yesterday proved too big. Sitting down with the bowl of tea is a win too.
+
+
+
+The Peakora team`,
+    ctaLabel: 'Open your one-list plan',
+    ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html',
+  },
+  {
+    step: 'n2',
+    delayDays: 14,
+    subject: 'What the breath ring did on a bad day',
+    preheader: 'A small story, one minute long.',
+    body: `Hi there,
+
+A note from someone who had a day where nothing worked. The plan said "morning theme", and she could not get out of bed.
+
+
+
+She skipped the plan entirely - except she pressed the breath ring for one slow inhale on the way to the kettle. That was it. That counted as the whole reset that day..
+
+
+
+The reset is not the plan; it is the moment you choose to come back. One breath is enough for that day. That is not failure; it is the skill, working.
+
+
+
+The Peakora team`,
+    ctaLabel: 'Open the Assistant',
+    ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html',
+  },
+  {
+    step: 'n3',
+    delayDays: 21,
+    subject: 'A smaller step, in case the plan feels big today',
+    preheader: 'The Quiet Start pack + a softer Peakora+ offer.',
+    body: `Hi there,
+
+By week three, some people feel the dip again. If the plan feels big today, there is a smaller step:the Quiet Start Mini Pack, one-time $4.99, five calm soundscapes that stay yours forever. No subscription, no streak. Some people need a room they can stand in before they plan a path.
+
+
+
+And when you are ready for the full companion - Peakora+ at $9.99/mo unlocks the guided readings, body scans, healing frequencies, and the full library. This offer is live until Sunday evening; after that, the next note is just another small story, no chasing, no deadline hangover.
+
+
+
+The Peakora team`,
+    ctaLabel: 'Get the Quiet Start Mini Pack',
+    ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html?open=tripwire',
+  },
+];
+
+// ── Re-engagement cadence (90/97/104 days; if no click after r3, suppress) ──
+const REENGAGE_SEQUENCE = [
+  {
+    step: 'r1',
+    delayDays: 90,
+    subject: 'No pressure - just checking in',
+    preheader: 'Peakora is still here, quietly.',
+    body: `Hi there,
+
+It has been a while since you opened a note. No guilt from us - life gets loud.
+
+
+
+Peakora is still here, same as before: one small step, one breath, no streaks, no pressure. If you want back, one click reopens the Assistant and we pick up where you were.
+
+
+
+The Peakora team`,
+    ctaLabel: 'Open the Assistant',
+    ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html',
+  },
+  {
+    step: 'r2',
+    delayDays: 97,
+    subject: 'One small story before we pause',
+    preheader: 'The Wednesday 3pm reset, one more time.',
+    body: `Hi there,
+
+Remember the person who reset at 3pm on a Wednesday, mid-scramble? She is you, some version, somewhere. She does not need a perfect day; she needs one two-minute thing that is hers.
+
+
+
+That is all we ever asked: one thing, yours, today. If you want it back, it is one click away - and we remember your plan, your moods, your soundscapes.
+
+
+
+The Peakora team`,
+    ctaLabel: 'Come back to your plan',
+    ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html',
+  },
+  {
+    step: 'r3',
+    delayDays: 104,
+    subject: 'One last note - take care',
+    preheader: 'We will pause here unless you come back.',
+    body: `Hi there,
+
+This is the last note for now. We will pause these emails until you come back - no churn tricks, no guilt. When you return, one click brings you right back: your plan, your mood pattern, your soundscape library, all saved.
+
+
+
+Until then, take care of the small things. That is where momentum lives.
+
+
+
+The Peakora team`,
+    ctaLabel: 'Keep your reset ready',
+    ctaUrl: 'https://peakora-assistant.pages.dev/assistant.html',
+  },
+];
 
 // ── HTML template (Peakora dark luxury wellness design) ───────────────────
 function renderEmailHtml(step, opts) {
@@ -126,7 +252,7 @@ function renderEmailHtml(step, opts) {
         </td></tr>
         <!-- Preheader / step indicator -->
         <tr><td style="padding:14px 32px 0;text-align:center;">
-          <span style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(224,122,95,0.18);color:#f4a261;font-size:11px;font-weight:700;letter-spacing:0.05em;">Note ${step} of 3</span>
+          <span style="display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(224,122,95,0.18);color:#f4a261;font-size:11px;font-weight:700;letter-spacing:0.05em;">Peakora note</span>
         </td></tr>
         <!-- Subject -->
         <tr><td style="padding:18px 32px 0;">
@@ -274,6 +400,7 @@ export async function runSequenceTick(env) {
     if (isNaN(subTime)) continue;
     const elapsedHours = (now - subTime) / 3600000;
 
+    let anyWelcomeSent = false;
     for (const tpl of WELCOME_SEQUENCE) {
       if (elapsedHours < tpl.delayHours) break; // not due yet for this or later steps
       if (await alreadySent(env, sub.email, 'welcome-3', tpl.step)) continue; // already sent
@@ -284,9 +411,55 @@ export async function runSequenceTick(env) {
         text: tpl.body + '\n\n' + tpl.ctaLabel + ': ' + tpl.ctaUrl,
       });
       await recordSend(env, sub.email, 'welcome-3', tpl.step, result);
-      if (result.ok) sent++; else failed++;
-      // One email per tick per subscriber, to avoid bursting.
+      if (result.ok) { sent++; anyWelcomeSent = true; } else failed++;
       break;
+    }
+
+    // Nurture + re-engage buckets advance only when no welcome email was
+    // sent this tick (one email per subscriber per day, to avoid bursting).
+    const day = elapsedHours / 24;
+    const seq = sub.sequence || 'welcome-3';
+    if (!anyWelcomeSent && seq === 'welcome-3') {
+      const w3 = await alreadySent(env, sub.email, 'welcome-3', 3);
+      if (w3 && day >= 7) {
+        await env.DB.prepare(`UPDATE subscribers SET sequence = ? WHERE email = ?`).bind('nurture', sub.email).run();
+      }
+    } else if (!anyWelcomeSent && seq === 'nurture') {
+      for (const tpl of NURTURE_WEEKS) {
+        if (day < tpl.delayDays) break;
+        if (await alreadySent(env, sub.email, 'nurture', tpl.step)) continue;
+        const result = await sendViaResend(env, {
+          to: sub.email,
+          subject: tpl.subject,
+          html: renderEmailHtml(tpl.step, tpl),
+          text: tpl.body + '\n\n' + tpl.ctaLabel + ': ' + tpl.ctaUrl,
+        });
+        await recordSend(env, sub.email, 'nurture', tpl.step, result);
+        if (result.ok) sent++; else failed++;
+        break;
+      }
+      const n3 = await alreadySent(env, sub.email, 'nurture', 'n3');
+      if (n3 && day >= 28) {
+        await env.DB.prepare(`UPDATE subscribers SET sequence = ? WHERE email = ?`).bind('reengage', sub.email).run();
+      }
+    } else if (!anyWelcomeSent && seq === 'reengage') {
+      for (const tpl of REENGAGE_SEQUENCE) {
+        if (day < tpl.delayDays) break;
+        if (await alreadySent(env, sub.email, 'reengage', tpl.step)) continue;
+        const result = await sendViaResend(env, {
+          to: sub.email,
+          subject: tpl.subject,
+          html: renderEmailHtml(tpl.step, tpl),
+          text: tpl.body + '\n\n' + tpl.ctaLabel + ': ' + tpl.ctaUrl,
+        });
+        await recordSend(env, sub.email, 'reengage', tpl.step, result);
+        if (result.ok) sent++; else failed++;
+        break;
+      }
+      const r3 = await alreadySent(env, sub.email, 'reengage', 'r3');
+      if (r3) {
+        await env.DB.prepare(`UPDATE subscribers SET sequence = ? WHERE email = ?`).bind('suppressed', sub.email).run();
+      }
     }
     skipped++;
   }

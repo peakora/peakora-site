@@ -161,9 +161,9 @@
         <p class="footer-brand-desc">
           Gentle guidance for real momentum. Peakora helps you reset, one small step at a time.
         </p>
-        <form onsubmit="event.preventDefault(); var b=this.querySelector('button'); var e=this.querySelector('input'); fetch('https://peakora-api.peakora.workers.dev/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e.value,source:'landing-footer'})}).catch(function(){}); b.textContent='You are in'; b.disabled=true; e.disabled=true;" style="display:flex; gap:8px; margin-top:14px; margin-bottom:22px; max-width:320px;">
+        <form onsubmit="event.preventDefault(); var b=this.querySelector('button'); var e=this.querySelector('input'); fetch('https://peakora-api.peakora.workers.dev/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e.value,source:'landing-footer'})}).catch(function(){}); b.textContent='Guide is on its way'; b.disabled=true; e.disabled=true;" style="display:flex; gap:8px; margin-top:14px; margin-bottom:22px; max-width:320px;">
           <input type="email" required placeholder="Your email, one gentle note a week" style="flex:1; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#fff; font-size:12px;">
-          <button type="submit" style="padding:10px 14px; border-radius:var(--radius-sm); border:none; background:linear-gradient(135deg,#e07a5f,#f4a261); color:#fff; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;">Keep me posted</button>
+          <button type="submit" style="padding:10px 14px; border-radius:var(--radius-sm); border:none; background:linear-gradient(135deg,#e07a5f,#f4a261); color:#fff; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;">Send me the Reset Guide</button>
         </form>
         <div class="footer-social">
           <a href="https://www.instagram.com/peakora.life/" target="_blank" rel="noopener noreferrer" title="Instagram">
