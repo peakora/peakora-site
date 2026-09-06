@@ -67,7 +67,7 @@
       </main>
 
       <footer class="assistant-footer">
-        © 2026 Peakora™ — For a Better You.
+        © 2026 Peakora™ — For a Better You. · build v17
       </footer>
     </div>
   </div>
@@ -2629,27 +2629,6 @@
         }
 
         html += `
-              </div> <!-- /dash-content -->
-            </div> <!-- /dash-container -->
-          </div> <!-- /assistant-card -->
-
-          <!-- Dodo Merchant Compliance Footer Links -->
-          <div style="text-align:center; padding:16px 0 10px; border-top:1px solid rgba(255,255,255,0.08); font-size:13px; color:var(--theme-text-muted);">
-            <div>© 2026 Peakora™ — For a Better You.</div>
-            <div style="margin-top:6px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
-              <a href="#" style="color:var(--accent-violet, #a78bfa); text-decoration:none;" onclick="openLegalModal('privacy'); return false;">Privacy Policy</a>
-              <span>•</span>
-              <a href="#" style="color:#7c3aed; text-decoration:none;" onclick="openLegalModal('terms'); return false;">Terms of Service</a>
-              <span>•</span>
-              <a href="#" style="color:#7c3aed; text-decoration:none;" onclick="openLegalModal('refund'); return false;">Refund & Guarantee</a>
-              <span>•</span>
-              <a href="#" style="color:#7c3aed; text-decoration:none;" onclick="openLegalModal('contact'); return false;">Contact Support</a>
-              <span>•</span>
-              <a href="affiliate.html" style="color:#7c3aed; text-decoration:none;">Affiliate Program</a>
-            </div>
-            <div style="margin-top:6px; font-size:13px; color:#999;">© 2026 Peakora. Billed securely. Support: peakora.network@gmail.com</div>
-          </div>
-        </div>
       `;
         container.innerHTML = html;
         renderMoodBubbles();
@@ -4783,7 +4762,7 @@
 
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js?v=16").catch(() => {});
+      navigator.serviceWorker.register("./service-worker.js?v=17").catch(() => {});
       // When a new SW takes control (skipWaiting -> controllerchange), reload once
       // so an already-open installed PWA picks up the fresh version instead of
       // running stale HTML/CSS until the next manual reload.
