@@ -301,6 +301,10 @@ function escapeAttr(s) {
 }
 
 // ── Resend transport ──────────────────────────────────────────────────────
+// Marketing rail contract: this Resend key sends ONLY sequence + nurture
+// marketing. Transactional receipts are sent by Dodo itself (Merchant of
+// Record) — never route auth resets, invoices, or order emails here;
+// their deliverability depends on this rail staying clean.
 async function sendViaResend(env, { to, subject, html, text }) {
   if (!env.RESEND_API_KEY) {
     return { ok: false, status: 0, error: 'RESEND_API_KEY not set' };

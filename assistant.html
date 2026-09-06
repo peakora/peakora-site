@@ -2770,6 +2770,18 @@
       // AUTO-THEME TRIGGER: If auto-theme is active, calculate & apply theme for today's new mood pattern!
       checkAndApplyAutoTheme(value);
 
+      // One-time honest Peakora+ nudge after 3+ resets (shown once, never nagged).
+      if (!isPeakoraPlusActive() && !hasTripwire()) {
+
+        const checkinCount = getCheckins().length;
+        const nudged = localStorage.getItem("peakora_plus_nudge_shown") === "true";
+        if (checkinCount >= 3 && !nudged) {
+          localStorage.setItem("peakora_plus_nudge_shown", "true");
+          const nudgeMsg = "Quiet Start proven: 3 resets in. The full library, guided sessions, healing frequencies wait behind Peakora+. No rush, no nagging — it is here when you want it.";
+          if (typeof showToastNotification === "function") showToastNotification(nudgeMsg);
+        }
+      }
+
       goToStepKey("daily_summary");
     }
 
