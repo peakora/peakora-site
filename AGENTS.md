@@ -48,7 +48,9 @@
 - VAPID keys are Cloudflare secrets (VAPID_PUBLIC_KEY returned by /push-key, VAPID_PRIVATE_KEY used to sign JWTs). Daily nudge cron: `0 9 * * *` UTC.
 
 ## Style rules (mandatory)
-- NO labels/eyebrows/badges (no hero-eyebrow, aff-hero-badge, diff-eyebrow).
+- NO labels/eyebrows/badges (no hero-eyebrow, aff-hero-badge, diff-eyebrow.
+- Cards NEVER carry per-card labels, pills, badges, kickers, or category tags - including story/testimonial cards. A story card = quote, author name, one line of life-context, nothing else. No chips above quotes. No tiny uppercase tags. The card speaks for itself.
+- Category filter tabs are interface controls (okay);per-card label pills are decoration (forbidden.
 - NO em-dashes - use plain hyphens or restructure.
 - No emoji anywhere.
 - Insights charts: pure inline SVG (no chart libs). The Mood Pattern card is a "mood river" SVG (quadratic trend path + gradient area + glow dots). Do NOT reintroduce absolute-positioned bubble divs positioned from clientWidth/clientHeight - they collapse to a stacked pile when rendered before the container has a measured width (the original stacking-on-start bug).
