@@ -446,13 +446,13 @@ select.input option {
   border-radius: 999px;
   margin: 20px auto;
   background: var(--theme-primary-grad);
-  box-shadow: 0 0 32px var(--theme-accent-glow);
+  box-shadow: 0 0 12px var(--theme-accent-glow);
   animation: breathe 4s ease-in-out infinite;
 }
 
 @keyframes breathe {
   0% { transform: scale(0.9); opacity: 0.85; }
-  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 48px var(--theme-accent-glow); }
+  50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 14px var(--theme-accent-glow); }
   100% { transform: scale(0.9); opacity: 0.85; }
 }
 
