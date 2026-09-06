@@ -965,12 +965,10 @@
         if (outerCard) outerCard.classList.add("is-dashboard-mode");
         if (outerShell) outerShell.classList.add("is-dashboard-mode");
         if (outerHeader) outerHeader.style.display = "none";
-        if (outerFooter) outerFooter.style.display = "none";
       } else {
         if (outerCard) outerCard.classList.remove("is-dashboard-mode");
         if (outerShell) outerShell.classList.remove("is-dashboard-mode");
         if (outerHeader) outerHeader.style.display = "";
-        if (outerFooter) outerFooter.style.display = "";
       }
 
       // Onboarding page-mode: each question fills the page like a landing view,
@@ -984,7 +982,7 @@
 
       const brandEl = document.getElementById("header-brand-name");
       if (brandEl) {
-        brandEl.innerHTML = isPlusActive ? 'PEAKORA <span style="color:var(--accent-color, #7c3aed); font-weight:900; margin-left:2px;">+</span>' : 'PEAKORA';
+        brandEl.innerHTML = (isPlusActive ? 'PEAKORA <span style="color:var(--accent-color, #7c3aed); font-weight:900; margin-left:2px;">+</span>' : 'PEAKORA') + ' <span style="font-size:11px; font-weight:700; letter-spacing:0.08em; color:var(--accent-color, #f4a261);">build v17</span>';
       }
 
       const container = document.getElementById("step-container");
