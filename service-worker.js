@@ -1,5 +1,5 @@
 // Copyright (c) 2026 Peakora. All rights reserved. Licensed under the MIT License; see NOTICE and LICENSE.
-const CACHE_VERSION = "v14-footer-css";
+const CACHE_VERSION = "v15-assistant-live";
 const CACHE_NAME = `peakora-cache-${CACHE_VERSION}`;
 
 const OFFLINE_URL = "./offline.html";
@@ -7,7 +7,6 @@ const OFFLINE_URL = "./offline.html";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
-  "./assistant.html",
   "./affiliate.html",
   "./assistant.css",
   "./css/styles.css",
